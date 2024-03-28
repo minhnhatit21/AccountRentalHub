@@ -4,7 +4,7 @@ import DefaultLayout from './components/layout/defaultLayout';
 import Dashboard from './components/pages/dashboard';
 import Services from './components/pages/service/services';
 import Orders from './components/pages/orders';
-import Accounts from './components/pages/accounts';
+import Accounts from './components/pages/account/accounts';
 import Users from './components/pages/users'
 
 function App() {

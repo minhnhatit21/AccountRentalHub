@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-function AddServiceModal({ isOpen, onClose, action, initialData }) {
+function AddAccountPackageModal({ isOpen, onClose, action, initialData }) {
     const initFormData = (data) => {
         let initData;
         if (Array.isArray(data) && data.length > 0) {
@@ -11,11 +11,11 @@ function AddServiceModal({ isOpen, onClose, action, initialData }) {
         console.log("Init Data: ", initData)
         return {
             image: initData.image || null,
-            serviceName: initData.name || '',
+            accountPackageName: initData.name || '',
             description: initData.description || '',
-            serviceType: initData.category || '',
-            website: initData.website || '',
-            pricingInfo: initData.pricing_info || '',
+            serviceType: initData.service || '',
+            price: initData.pricing || '',
+            duration: initData.duration || '',
         };
     };
 
@@ -47,9 +47,9 @@ function AddServiceModal({ isOpen, onClose, action, initialData }) {
 
     const titleModal = (action) => {
         console.log("Actions: ", action)
-        if (action === "add") return "Thêm dịch vụ"
-        else if (action === "edit") return "Chỉnh sửa dịch vụ"
-        else if (action === "view") return "Xem chi tiết dịch vụ"
+        if (action === "add") return "Thêm gói tài khoản"
+        else if (action === "edit") return "Chỉnh sửa gói tài khoản"
+        else if (action === "view") return "Xem chi tiết tài khoản"
     }
 
 
@@ -86,31 +86,19 @@ function AddServiceModal({ isOpen, onClose, action, initialData }) {
                                             </div>
                                             <div className="mb-4">
                                                 <label htmlFor="serviceName" className="block text-sm font-medium text-gray-700">
-                                                    Tên dịch vụ
+                                                    Tên gói tài khoản
                                                 </label>
                                                 <input
                                                     type="text"
-                                                    id="serviceName"
-                                                    name="serviceName"
-                                                    value={action === "add" ? "" : formData.serviceName}
+                                                    id="accountPackageName"
+                                                    name="accountPackageName"
+                                                    value={action !== "add" ? formData.accountPackageName : ""}
                                                     className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                     onChange={handleInputChange}
                                                     disabled={action === "view"}
                                                 />
                                             </div>
-                                            <div className="mb-4">
-                                                <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-                                                    Mô tả
-                                                </label>
-                                                <textarea
-                                                    id="description"
-                                                    name="description"
-                                                    value={action === "add" ? "" : formData.description}
-                                                    className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                    onChange={handleInputChange}
-                                                    disabled={action === "view"}
-                                                ></textarea>
-                                            </div>
+
                                             <div className="mb-4">
                                                 <label htmlFor="serviceType" className="block text-sm font-medium text-gray-700">
                                                     Loại dịch vụ
@@ -134,11 +122,10 @@ function AddServiceModal({ isOpen, onClose, action, initialData }) {
                                                             Chọn loại dịch vụ
                                                         </option>
                                                         <option className="hover:bg-gray-100">
-                                                            Giải trí
+                                                            Netflix
                                                         </option>
-                                                        <option className="hover:bg-gray-100">Học tập</option>
-                                                        <option className="hover:bg-gray-100">Làm việc</option>
-                                                        <option className="hover:bg-gray-100">Dịch vụ khác</option>
+                                                        <option className="hover:bg-gray-100">Spotify</option>
+                                                        <option className="hover:bg-gray-100">YouTube Premium</option>
                                                     </select>
                                                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                                                         <svg
@@ -159,13 +146,13 @@ function AddServiceModal({ isOpen, onClose, action, initialData }) {
                                             </div>
                                             <div className="mb-4">
                                                 <label htmlFor="website" className="block text-sm font-medium text-gray-700">
-                                                    Website
+                                                    Thời gian
                                                 </label>
                                                 <input
                                                     type="text"
-                                                    id="website"
-                                                    name="website"
-                                                    value={action === "add" ? "" : formData.website}
+                                                    id="duration"
+                                                    name="duration"
+                                                    value={action === "add" ? "" : formData.duration}
                                                     className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                     onChange={handleInputChange}
                                                     disabled={action === "view"}
@@ -173,12 +160,26 @@ function AddServiceModal({ isOpen, onClose, action, initialData }) {
                                             </div>
                                             <div className="mb-4">
                                                 <label htmlFor="pricingInfo" className="block text-sm font-medium text-gray-700">
-                                                    Thông tin giá dịch vụ
+                                                    Giá gói tài khoản
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    id="price"
+                                                    name="price"
+                                                    value={action === "add" ? "" : formData.price}
+                                                    className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                    onChange={handleInputChange}
+                                                    disabled={action === "view"}
+                                                />
+                                            </div>
+                                            <div className="mb-4">
+                                                <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+                                                    Mô tả
                                                 </label>
                                                 <textarea
-                                                    id="pricingInfo"
-                                                    name="pricingInfo"
-                                                    value={action === "add" ? "" : formData.pricingInfo}
+                                                    id="description"
+                                                    name="description"
+                                                    value={action === "add" ? "" : formData.description}
                                                     className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                     onChange={handleInputChange}
                                                     disabled={action === "view"}
@@ -213,4 +214,4 @@ function AddServiceModal({ isOpen, onClose, action, initialData }) {
     );
 }
 
-export default AddServiceModal;
+export default AddAccountPackageModal;
