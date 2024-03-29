@@ -24,7 +24,13 @@ function AddAccountModal({ isOpen, onClose, action, initialData }) {
         };
     };
 
-    console.log("Account Modal Data: ", initialData)
+    const convertStringToDate = (dateString) => {
+        const dateObj = new Date(dateString);
+        const year = dateObj.getFullYear();
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const day = String(dateObj.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
 
     const [formData, setFormData] = useState(initFormData(initialData || {}));
 
@@ -34,12 +40,18 @@ function AddAccountModal({ isOpen, onClose, action, initialData }) {
         }
     }, [initialData]);
 
+    useEffect(() => {
+        if (action === "add") {
+            setFormData(initFormData({}));
+        }
+    }, [action]);
 
 
     const handleInputChange = (e) => {
-        const { name, value, files } = e.target;
-        if (name === 'image') {
-            setFormData((prevState) => ({ ...prevState, [name]: files[0] || null }));
+        const { name, value } = e.target;
+
+        if (name === 'accountSupcriptionDate' || name === 'accountRenewStartDate' || name === 'accountRenewEndDate') {
+            setFormData((prevState) => ({ ...prevState, [name]: value }));
         } else {
             setFormData((prevState) => ({ ...prevState, [name]: value }));
         }
@@ -86,7 +98,7 @@ function AddAccountModal({ isOpen, onClose, action, initialData }) {
                                                     type="text"
                                                     id="accountUserName"
                                                     name="accountUserName"
-                                                    value={action !== "add" ? formData.accountUserName : ""}
+                                                    value={formData.accountUserName || ""}
                                                     className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                     onChange={handleInputChange}
                                                     disabled={action === "view"}
@@ -100,7 +112,7 @@ function AddAccountModal({ isOpen, onClose, action, initialData }) {
                                                     type="text"
                                                     id="accountEmail"
                                                     name="accountEmail"
-                                                    value={action !== "add" ? formData.accountEmail : ""}
+                                                    value={formData.accountEmail || ""}
                                                     className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                     onChange={handleInputChange}
                                                     disabled={action === "view"}
@@ -114,7 +126,7 @@ function AddAccountModal({ isOpen, onClose, action, initialData }) {
                                                     type="text"
                                                     id="accountEmail"
                                                     name="accountEmail"
-                                                    value={action !== "add" ? formData.accountEmail : ""}
+                                                    value={formData.accountEmail || ""}
                                                     className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                     onChange={handleInputChange}
                                                     disabled={action === "view"}
@@ -129,7 +141,7 @@ function AddAccountModal({ isOpen, onClose, action, initialData }) {
                                                     type="date"
                                                     id="accountSupcriptionDate"
                                                     name="accountSupcriptionDate"
-                                                    value={action !== "add" ? formData.accountSupcriptionDate : ""}
+                                                    value={convertStringToDate(formData.accountSupcriptionDate) || ""}
                                                     className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                     onChange={handleInputChange}
                                                     disabled={action === "view"}
@@ -144,7 +156,7 @@ function AddAccountModal({ isOpen, onClose, action, initialData }) {
                                                     type="date"
                                                     id="accountRenewStartDate"
                                                     name="accountRenewStartDate"
-                                                    value={action !== "add" ? Date.parse(formData.accountRenewStartDate) : ""}
+                                                    value={convertStringToDate(formData.accountRenewStartDate) || ''}
                                                     className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                     onChange={handleInputChange}
                                                     disabled={action === "view"}
@@ -159,7 +171,7 @@ function AddAccountModal({ isOpen, onClose, action, initialData }) {
                                                     type="date"
                                                     id="accountRenewEndDate"
                                                     name="accountRenewEndDate"
-                                                    value={action !== "add" ? formData.accountRenewEndDate : ""}
+                                                    value={convertStringToDate(formData.accountRenewEndDate) || ""}
                                                     className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                     onChange={handleInputChange}
                                                     disabled={action === "view"}

@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
-import AccountPackage from "./accountPackageView";
+import AccountPackage from "../accountPackage/accountPackageView";
 import Account from "./accountView";
+import AccountSlotView from "./accountSlotView";
 
 const accountList = [
      {
@@ -152,97 +153,173 @@ const accountList = [
 
 ]
 
-const accountPackageList = [
+const accountSlots = [
      {
-          "id": "1",
-          "name": "Netflix 1 tháng",
-          "duration": 30,
-          "description": "Truy cập YouTube không quảng cáo, xem video ngoại tuyến",
-          "pricing": 77000,
-          "description": "Tài khoảng netflix 1 tháng",
-          "service": "Netflix"
+          "id": 1,
+          "account": {
+               "id": 1,
+               "service":
+               {
+                    "service_name": "Netflix",
+                    "website_link": "https://www.netflix.com"
+               }
+               ,
+               "username": "user1",
+               "email": "user1@example.com",
+               "password": "encrypted_password",
+               "description": "Netflix account",
+               "account_package": "Netflix 1 tháng",
+               "supcription_date": "2024-02-28T10:30:00Z",
+               "renew_start_date": "2024-03-28T10:30:00Z",
+               "renew_end_date": "2024-04-28T10:30:00Z",
+               "created_at": "2023-03-28T10:30:00Z",
+               "updated_at": "2023-03-28T10:30:00Z",
+               "status": "active"
+          },
+          "renter": {
+               "id": 1,
+               "username": "minhnhat01",
+               "fullname": "Nguyễn Hữu Minh Nhật",
+               "email": "minhnhat@gmail.com"
+          },
+          "date_stared_rent": "2024-03-28T10:30:00Z",
+          "date_end_rent": "2024-04-28T10:30:00Z",
+          "price": 80000,
+          "status": "rented"
      },
      {
-          "id": "2",
-          "name": "Netflix 3 tháng",
-          "duration": 90,
-          "description": "Truy cập Netflix không quảng cáo, xem nội dung ngoại tuyến",
-          "pricing": 210000,
-          "service": "Netflix"
+          "id": 2,
+          "account": {
+               "id": 1,
+               "service":
+               {
+                    "service_name": "Netflix",
+                    "website_link": "https://www.netflix.com"
+               }
+               ,
+               "username": "user1",
+               "email": "user1@example.com",
+               "password": "encrypted_password",
+               "description": "Netflix account",
+               "account_package": "Netflix 1 tháng",
+               "supcription_date": "2024-02-28T10:30:00Z",
+               "renew_start_date": "2024-03-28T10:30:00Z",
+               "renew_end_date": "2024-04-28T10:30:00Z",
+               "created_at": "2023-03-28T10:30:00Z",
+               "updated_at": "2023-03-28T10:30:00Z",
+               "status": "active"
+          },
+          "renter": {
+               "id": 2,
+               "username": "anhtuan99",
+               "fullname": "Nguyễn Anh Tuấn",
+               "email": "anhtuan99@gmail.com"
+          },
+          "date_stared_rent": "2024-04-15T09:00:00Z",
+          "date_end_rent": "2024-05-15T09:00:00Z",
+          "price": 60000,
+          "status": "rented"
      },
      {
-          "id": "3",
-          "name": "Amazon Prime 1 năm",
-          "duration": 365,
-          "description": "Giao hàng miễn phí, xem nội dung Prime Video",
-          "pricing": 499000,
-          "service": "Amazon Prime"
+          "id": 3,
+          "account": {
+               "id": 1,
+               "service":
+               {
+                    "service_name": "Netflix",
+                    "website_link": "https://www.netflix.com"
+               }
+               ,
+               "username": "user1",
+               "email": "user1@example.com",
+               "password": "encrypted_password",
+               "description": "Netflix account",
+               "account_package": "Netflix 1 tháng",
+               "supcription_date": "2024-02-28T10:30:00Z",
+               "renew_start_date": "2024-03-28T10:30:00Z",
+               "renew_end_date": "2024-04-28T10:30:00Z",
+               "created_at": "2023-03-28T10:30:00Z",
+               "updated_at": "2023-03-28T10:30:00Z",
+               "status": "active"
+          },
+          "renter": {
+               "id": 3,
+               "username": "thanhvan02",
+               "fullname": "Trần Thanh Vân",
+               "email": "thanhvan02@gmail.com"
+          },
+          "date_stared_rent": "2024-11-01T00:00:00Z",
+          "date_end_rent": "2024-12-01T00:00:00Z",
+          "price": 120000,
+          "status": "rented"
      },
      {
-          "id": "4",
-          "name": "Spotify Premium 3 tháng",
-          "duration": 90,
-          "description": "Nghe nhạc không quảng cáo, tải về ngoại tuyến",
-          "pricing": 149000,
-          "service": "Spotify"
+          "id": 4,
+          "account": {
+               "id": 1,
+               "service":
+               {
+                    "service_name": "Netflix",
+                    "website_link": "https://www.netflix.com"
+               }
+               ,
+               "username": "user1",
+               "email": "user1@example.com",
+               "password": "encrypted_password",
+               "description": "Netflix account",
+               "account_package": "Netflix 1 tháng",
+               "supcription_date": "2024-02-28T10:30:00Z",
+               "renew_start_date": "2024-03-28T10:30:00Z",
+               "renew_end_date": "2024-04-28T10:30:00Z",
+               "created_at": "2023-03-28T10:30:00Z",
+               "updated_at": "2023-03-28T10:30:00Z",
+               "status": "rented"
+          },
+          "renter": {
+               "id": 4,
+               "username": "phuonganh88",
+               "fullname": "Lê Phương Anh",
+               "email": "phuonganh88@gmail.com"
+          },
+          "date_stared_rent": "2024-04-10T15:30:00Z",
+          "date_end_rent": "2024-05-10T15:30:00Z",
+          "price": 70000,
+          "status": "rented"
      },
      {
-          "id": "5",
-          "name": "YouTube Premium 1 năm",
-          "duration": 365,
-          "description": "Xem YouTube không quảng cáo, tải video ngoại tuyến",
-          "pricing": 599000,
-          "service": "YouTube"
-     },
-     {
-          "id": "6",
-          "name": "Disney+ 1 tháng",
-          "duration": 30,
-          "description": "Xem nội dung Disney, Pixar, Marvel, Star Wars",
-          "pricing": 99000,
-          "service": "Disney+"
-     },
-     {
-          "id": "7",
-          "name": "Hulu 6 tháng",
-          "duration": 180,
-          "description": "Xem phim, chương trình truyền hình và nội dung gốc",
-          "pricing": 299000,
-          "service": "Hulu"
-     },
-     {
-          "id": "8",
-          "name": "HBO Max 1 năm",
-          "duration": 365,
-          "description": "Xem phim, chương trình truyền hình và nội dung gốc HBO",
-          "pricing": 799000,
-          "service": "HBO Max"
-     },
-     {
-          "id": "9",
-          "name": "Apple TV+ 6 tháng",
-          "duration": 180,
-          "description": "Xem nội dung gốc Apple TV+, không quảng cáo",
-          "pricing": 249000,
-          "service": "Apple TV+"
-     },
-     {
-          "id": "10",
-          "name": "Peacock Premium 1 năm",
-          "duration": 365,
-          "description": "Xem nội dung NBC, phim, chương trình truyền hình",
-          "pricing": 499000,
-          "service": "Peacock"
-     },
-     {
-          "id": "11",
-          "name": "Paramount+ 3 tháng",
-          "duration": 90,
-          "description": "Xem nội dung Paramount, phim, chương trình truyền hình",
-          "pricing": 149000,
-          "service": "Paramount+"
-     },
+          "id": 5,
+          "account": {
+               "id": 3,
+               "service": {
+                    "service_name": "Amazon Prime",
+                    "website_link": "https://amazon.com"
+               },
+               "username": "user3",
+               "email": "user3@example.com",
+               "password": "encrypted_password",
+               "description": "Amazon Prime membership",
+               "account_package": "Amazon Prime Annual",
+               "supcription_date": "2023-12-01T00:00:00Z",
+               "renew_start_date": "2024-11-01T00:00:00Z",
+               "renew_end_date": "2024-12-01T00:00:00Z",
+               "created_at": "2023-12-01T00:00:00Z",
+               "updated_at": "2023-12-01T00:00:00Z",
+               "status": "active"
+          },
+          "renter": {
+               "id": 5,
+               "username": "ngocdiep77",
+               "fullname": "Trần Ngọc Diệp",
+               "email": "ngocdiep77@gmail.com"
+          },
+          "date_stared_rent": "2024-11-20T08:00:00Z",
+          "date_end_rent": "2024-12-20T08:00:00Z",
+          "price": 90000,
+          "status": "available"
+     }
+
 ]
+
 
 const actions = ["add", "edit", "view", "delete"];
 
@@ -254,10 +331,12 @@ function Accounts() {
      const [showDeteteModal, setShowDeleteModal] = useState(false);
      const dataModalRef = useRef(null);
 
-     // Account Package Modal
-     const [showAddAccountPackageModal, setShowAddAccountPackageModal] = useState(false);
-     const [showDeteteAccountPackageModal, setShowDeteteAccountPackageModal] = useState(false);
-     const dataAccountPackageModalRef = useRef(null);
+     // Account Slot Modal
+     const [showAccountSlotModal, setShowAccountSlotModal] = useState(false);
+     const [showAccountSlotDeteteModal, setShowAccountSlotDeteteModal] = useState(false);
+     const dataAccountSlotModalRef = useRef(null);
+
+
 
      /**
       * Add Account
@@ -326,72 +405,70 @@ function Accounts() {
 
 
      /**
-      * Add Account Package
+      * Add Account Slot
       */
-     const handleAddAccountPackageClick = () => {
-          dataAccountPackageModalRef.current = null;
+
+     const handleAddAccountSlotClick = () => {
           setAction(actions[0]);
-          setShowAddAccountPackageModal(true);
-     };
+          setShowAccountSlotModal(true);
+     }
 
      /**
-      * Edit Account Package
+      * Edit Account Slot Slot
      */
-     const handleEditAccountPackageClick = (id) => {
+     const handleEditAccountSlotClick = (id) => {
           setAction(actions[1]);
-          const data = accountPackageList.filter(service => service.id === id);
-          dataAccountPackageModalRef.current = data;
-          setShowAddAccountPackageModal(true);
+          const data = accountSlots.filter(slot => slot.id === id);
+          dataAccountSlotModalRef.current = data;
+          setShowAccountSlotModal(true);
      };
 
      /**
-      * View Detail Account Package
+      * View Details Slot Account
       */
-     const handleViewAccountPackageClick = (id) => {
+     const handleViewAccountSlotClick = (id) => {
           setAction(actions[2]);
-          const data = accountPackageList.filter(service => service.id === id);
-          dataAccountPackageModalRef.current = data;
-          setShowAddAccountPackageModal(true);
+          const data = accountSlots.filter(slot => slot.id === id);
+          dataAccountSlotModalRef.current = data;
+          setShowAccountSlotModal(true);
      }
 
      /***
-      * Account Package Modal Close
+      * Account Modal Slot Close
       */
-     const handleAccountPackageModalClose = () => {
-          setShowAddAccountPackageModal(false);
-          dataAccountPackageModalRef.current = null;
+     const handleAccountSlotModalClose = () => {
+          setShowAccountSlotModal(false);
+          dataAccountSlotModalRef.current = null;
      };
 
      /**
-      * Delete Account Package Click
+      * Delete Account Slot Click
       */
 
-     const handleDeteteAccountPackageClick = (id) => {
+     const handleDeteteAccountSlotClick = (id) => {
           setAction(actions[3]);
-          const data = accountPackageList.filter(service => service.id === id);
-          dataAccountPackageModalRef.current = data;
-          setShowDeteteAccountPackageModal(true);
+          const data = accountSlots.filter(slot => slot.id === id);
+          dataAccountSlotModalRef.current = data;
+          setShowAccountSlotDeteteModal(true);
      }
 
      /**
-      * Delete Account Package Modal Close
+      * Delete Account Slot Modal Close
       */
-     const handleDeleteAccountPackageClose = () => {
+     const handleDeleteModalSlotClose = () => {
           console.log('Call close delete');
-          setShowDeteteAccountPackageModal(false);
-          dataAccountPackageModalRef.current = null
+          setShowAccountSlotDeteteModal(false);
+          dataAccountSlotModalRef.current = null
      }
 
-
      /**
-     * Delete Account Package
+     * Delete Account Slot
      */
-     const handleDeleteAccountPackage = (Id) => {
-          console.log(`Xóa gói tài khoản có id ${Id}`);
-          setShowDeteteAccountPackageModal(false);
-          dataAccountPackageModalRef.current = null
+     const handleDeleteAccountSlot = (accountId) => {
+          console.log(`Xóa dịch vụ có id ${accountId}`);
+          setShowAccountSlotDeteteModal(false);
+          dataAccountSlotModalRef.current = null
      };
-
 
      return (
           <>
@@ -416,20 +493,20 @@ function Accounts() {
 
                <hr></hr>
                <div className="mt-10">
-                    <h1 class="font-bold mb-8 text-2xl">Quản lý gói tài khoản</h1>
-                    <AccountPackage
-                         accountPackageList={accountPackageList}
+                    <h1 class="font-bold mb-8 text-2xl">Quản lý slot tài khoản cho thuê </h1>
+                    <AccountSlotView
+                         accountSlots={accountSlots}
                          action={action}
-                         showAddAccountPackageModal={showAddAccountPackageModal}
-                         showDeteteAccountPackageModal={showDeteteAccountPackageModal}
-                         dataAccountPackageModalRef={dataAccountPackageModalRef}
-                         handleAddAccountPackageClick={handleAddAccountPackageClick}
-                         handleEditAccountPackageClick={handleEditAccountPackageClick}
-                         handleViewAccountPackageClick={handleViewAccountPackageClick}
-                         handleAccountPackageModalClose={handleAccountPackageModalClose}
-                         handleDeteteAccountPackageClick={handleDeteteAccountPackageClick}
-                         handleDeleteAccountPackageClose={handleDeleteAccountPackageClose}
-                         handleDeleteAccountPackage={handleDeleteAccountPackage}
+                         dataAccountSlotModalRef={dataAccountSlotModalRef}
+                         showAccountSlotModal={showAccountSlotModal}
+                         showAccountSlotDeteteModal={setShowAccountSlotDeteteModal}
+                         handleAddAccountSlotClick={handleAddAccountSlotClick}
+                         handleEditAccountSlotClick={handleEditAccountSlotClick}
+                         handleDeteteAccountSlotClick={handleDeteteAccountSlotClick}
+                         handleViewAccountSlotClick={handleViewAccountSlotClick}
+                         handleAccountSlotModalClose={handleAccountSlotModalClose}
+                         handleDeteteAccountSlotClose={handleDeleteModalSlotClose}
+                         handleDeleteAccountSlot={handleDeleteAccountSlot}
                     />
                </div>
 
