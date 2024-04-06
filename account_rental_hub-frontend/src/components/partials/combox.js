@@ -1,24 +1,35 @@
-import { Fragment, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { Combobox, Transition } from '@headlessui/react'
 
 function M_Combobox({
-    data
+    data,
+    onChangeInput,
+    c_name,
+    initialData,
 }) {
 
     const [selected, setSelected] = useState(data[0])
     const [query, setQuery] = useState('')
 
-    console.log("Combox Data: ", data)
+    console.log(`Default combobox value: ${data[0].name}, Name: ${c_name}`)
+
+    useEffect(() => {
+        if(initialData) {
+            setSelected(initialData)
+        }
+    },[initialData])
 
     const filteredPeople =
         query === ''
             ? data
             : data.filter((person) =>
-                person.name
+                person.name || person.email
                     .toLowerCase()
                     .replace(/\s+/g, '')
                     .includes(query.toLowerCase().replace(/\s+/g, ''))
             )
+    
+    onChangeInput(selected,c_name);
 
     return (
         <div className="relative w-full">
@@ -26,8 +37,8 @@ function M_Combobox({
                 <div className="relative w-full rounded-md border-gray-300 border-2 py-2 px-2 text-base focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm appearance-none bg-white">
                     <Combobox.Input
                         className="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0"
-                        displayValue={(person) => person.name || person.service.service_name}
-                        onChange={(event) => setQuery(event.target.value)}
+                        displayValue={(person) => person.name || person.email}
+                        onChange={(event) =>  setQuery(event.target.value)}
                     />
                     <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
@@ -63,7 +74,7 @@ function M_Combobox({
                                                 className={`block truncate ${selected ? 'font-medium' : 'font-normal'
                                                     }`}
                                             >
-                                                {person.name || person.service.service_name}
+                                                {person.name || person.email}
                                             </span>
                                             {selected ? (
                                                 <span

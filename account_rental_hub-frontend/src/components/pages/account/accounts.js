@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import AccountPackage from "../accountPackage/accountPackageView";
 import Account from "./accountView";
 import AccountSlotView from "./accountSlotView";
+import Datepicker from "../../partials/datepicker";
 
 const accountList = [
      {
@@ -160,15 +161,28 @@ const accountSlots = [
                "id": 1,
                "service":
                {
-                    "service_name": "Netflix",
-                    "website_link": "https://www.netflix.com"
+                    "id": "1",
+                    "name": "Netflix",
+                    "image": "https://i.ibb.co/L6MDz9X/HD-wallpaper-netflix-logo-black-logo-minimal-netflix.jpg",
+                    "description": "Dịch vụ xem phim trực tuyến phổ biến nhất hiện nay",
+                    "pricing_info": "Từ $8.99/tháng",
+                    "website": "netflix.com",
+                    "category": "Giải trí"
                }
                ,
                "username": "user1",
                "email": "user1@example.com",
                "password": "encrypted_password",
                "description": "Netflix account",
-               "account_package": "Netflix 1 tháng",
+               "account_package": {
+                    "id": "1",
+                    "name": "Netflix 1 tháng",
+                    "duration": 30,
+                    "description": "Truy cập YouTube không quảng cáo, xem video ngoại tuyến",
+                    "pricing": 77000,
+                    "description": "Tài khoảng netflix 1 tháng",
+                    "service": "Netflix"
+               },
                "supcription_date": "2024-02-28T10:30:00Z",
                "renew_start_date": "2024-03-28T10:30:00Z",
                "renew_end_date": "2024-04-28T10:30:00Z",
@@ -193,15 +207,28 @@ const accountSlots = [
                "id": 1,
                "service":
                {
-                    "service_name": "Netflix",
-                    "website_link": "https://www.netflix.com"
+                    "id": "1",
+                    "name": "Netflix",
+                    "image": "https://i.ibb.co/L6MDz9X/HD-wallpaper-netflix-logo-black-logo-minimal-netflix.jpg",
+                    "description": "Dịch vụ xem phim trực tuyến phổ biến nhất hiện nay",
+                    "pricing_info": "Từ $8.99/tháng",
+                    "website": "netflix.com",
+                    "category": "Giải trí"
                }
                ,
                "username": "user1",
                "email": "user1@example.com",
                "password": "encrypted_password",
                "description": "Netflix account",
-               "account_package": "Netflix 1 tháng",
+               "account_package": {
+                    "id": "1",
+                    "name": "Netflix 1 tháng",
+                    "duration": 30,
+                    "description": "Truy cập YouTube không quảng cáo, xem video ngoại tuyến",
+                    "pricing": 77000,
+                    "description": "Tài khoảng netflix 1 tháng",
+                    "service": "Netflix"
+               },
                "supcription_date": "2024-02-28T10:30:00Z",
                "renew_start_date": "2024-03-28T10:30:00Z",
                "renew_end_date": "2024-04-28T10:30:00Z",
@@ -226,15 +253,28 @@ const accountSlots = [
                "id": 1,
                "service":
                {
-                    "service_name": "Netflix",
-                    "website_link": "https://www.netflix.com"
+                    "id": "1",
+                    "name": "Netflix",
+                    "image": "https://i.ibb.co/L6MDz9X/HD-wallpaper-netflix-logo-black-logo-minimal-netflix.jpg",
+                    "description": "Dịch vụ xem phim trực tuyến phổ biến nhất hiện nay",
+                    "pricing_info": "Từ $8.99/tháng",
+                    "website": "netflix.com",
+                    "category": "Giải trí"
                }
                ,
                "username": "user1",
                "email": "user1@example.com",
                "password": "encrypted_password",
                "description": "Netflix account",
-               "account_package": "Netflix 1 tháng",
+               "account_package": {
+                    "id": "1",
+                    "name": "Netflix 1 tháng",
+                    "duration": 30,
+                    "description": "Truy cập YouTube không quảng cáo, xem video ngoại tuyến",
+                    "pricing": 77000,
+                    "description": "Tài khoảng netflix 1 tháng",
+                    "service": "Netflix"
+               },
                "supcription_date": "2024-02-28T10:30:00Z",
                "renew_start_date": "2024-03-28T10:30:00Z",
                "renew_end_date": "2024-04-28T10:30:00Z",
@@ -259,15 +299,28 @@ const accountSlots = [
                "id": 1,
                "service":
                {
-                    "service_name": "Netflix",
-                    "website_link": "https://www.netflix.com"
+                    "id": "1",
+                    "name": "Netflix",
+                    "image": "https://i.ibb.co/L6MDz9X/HD-wallpaper-netflix-logo-black-logo-minimal-netflix.jpg",
+                    "description": "Dịch vụ xem phim trực tuyến phổ biến nhất hiện nay",
+                    "pricing_info": "Từ $8.99/tháng",
+                    "website": "netflix.com",
+                    "category": "Giải trí"
                }
                ,
                "username": "user1",
                "email": "user1@example.com",
                "password": "encrypted_password",
                "description": "Netflix account",
-               "account_package": "Netflix 1 tháng",
+               "account_package": {
+                    "id": "1",
+                    "name": "Netflix 1 tháng",
+                    "duration": 30,
+                    "description": "Truy cập YouTube không quảng cáo, xem video ngoại tuyến",
+                    "pricing": 77000,
+                    "description": "Tài khoảng netflix 1 tháng",
+                    "service": "Netflix"
+               },
                "supcription_date": "2024-02-28T10:30:00Z",
                "renew_start_date": "2024-03-28T10:30:00Z",
                "renew_end_date": "2024-04-28T10:30:00Z",
@@ -291,14 +344,26 @@ const accountSlots = [
           "account": {
                "id": 3,
                "service": {
-                    "service_name": "Amazon Prime",
-                    "website_link": "https://amazon.com"
+                    "id": "3",
+                    "name": "Amazon Prime",
+                    "image": "https://i.ibb.co/xCFY6mW/amazon-prime.jpg",
+                    "description": "Dịch vụ giao hàng miễn phí, xem phim và nhiều ưu đãi khác",
+                    "pricing_info": "$119/năm hoặc $12.99/tháng",
+                    "website": "amazon.com/prime",
+                    "category": "Mua sắm"
                },
                "username": "user3",
                "email": "user3@example.com",
                "password": "encrypted_password",
                "description": "Amazon Prime membership",
-               "account_package": "Amazon Prime Annual",
+               "account_package": {
+                    "id": "3",
+                    "name": "Amazon Prime 1 năm",
+                    "duration": 365,
+                    "description": "Giao hàng miễn phí, xem nội dung Prime Video",
+                    "pricing": 499000,
+                    "service": "Amazon Prime"
+               },
                "supcription_date": "2023-12-01T00:00:00Z",
                "renew_start_date": "2024-11-01T00:00:00Z",
                "renew_end_date": "2024-12-01T00:00:00Z",
@@ -499,7 +564,7 @@ function Accounts() {
                          action={action}
                          dataAccountSlotModalRef={dataAccountSlotModalRef}
                          showAccountSlotModal={showAccountSlotModal}
-                         showAccountSlotDeteteModal={setShowAccountSlotDeteteModal}
+                         showAccountSlotDeteteModal={showAccountSlotDeteteModal}
                          handleAddAccountSlotClick={handleAddAccountSlotClick}
                          handleEditAccountSlotClick={handleEditAccountSlotClick}
                          handleDeteteAccountSlotClick={handleDeteteAccountSlotClick}
@@ -509,8 +574,6 @@ function Accounts() {
                          handleDeleteAccountSlot={handleDeleteAccountSlot}
                     />
                </div>
-
-
           </>
      );
 }

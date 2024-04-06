@@ -1,79 +1,44 @@
+
 import Pagination from "../../partials/pagination";
-import AddAccountSlotModal from "./addAccountSlotModal";
-import DeleteAccountSlotModal from "./deleteAccountSlotModal";
+import CustomerDeleteModal from "./customerDeleteModal";
+import CustomerModal from "./customerModal";
 
-function AccountSlotView({
-    accountSlots,
+function CustomerView({
     action,
-    dataAccountSlotModalRef,
-    showAccountSlotModal,
-    showAccountSlotDeteteModal,
-    handleAddAccountSlotClick,
-    handleEditAccountSlotClick,
-    handleViewAccountSlotClick,
-    handleDeteteAccountSlotClick,
-    handleAccountSlotModalClose,
-    handleDeteteAccountSlotClose,
-    handleDeleteAccountSlot,
+    customerList,
+    handleEditCustomerClick,
+    handleViewCustomerClick,
+    handleDeleteCustomerClick,
+    isOpenModal,
+    isOpenDeleteModal,
+    dataModal,
+    customerModalClose,
+    handleDeleteCustomerModalClose,
+    handleDeleteCustomer
+
 }) {
-    const onDeleteClick = (id) => {
-        handleDeteteAccountSlotClick(id);
+
+    console.log("Customer List", customerList)
+
+    const onDeleteCustomerClick = (id) => {
+        handleDeleteCustomerClick(id);
     }
 
-    const onViewClick = (id) => {
-        handleViewAccountSlotClick(id);
+    const onViewCustomerClick = (id) => {
+        handleViewCustomerClick(id);
     }
 
-    const onEditClick = (id) => {
-        handleEditAccountSlotClick(id);
+    const onEditCustomerClick = (id) => {
+        handleEditCustomerClick(id);
     }
+
     return (
         <>
+            <h1 class="font-bold mb-8 text-2xl">Quản lý khách hàng</h1>
             <div
                 className="rounded-xl border border-stroke bg-white px-5 py-6 m-4 shadow-default sm:px-7.5 xl:pb-1"
             >
                 <div className="flex flex-col mb-4 md:flex-row items-center justify-center md:space-x-4">
-                    <div className="w-full md:w-64 mb-6 md:mb-0">
-                        <div className="relative">
-                            <select
-                                id="accountStatus"
-                                name="accountStatus"
-                                className="block w-full rounded-md border-gray-300 border-2 py-2 pl-3 pr-8 text-base focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm appearance-none bg-white"
-                                defaultValue=""
-                            >
-                                <option value="" disabled className="text-gray-500">
-                                    Trạng thái tài khoản
-                                </option>
-                                <option className="hover:bg-gray-100">
-                                    Đang hoạt động
-                                </option>
-                                <option className="hover:bg-gray-100">
-                                    Tài khoản bị tạm khóa
-                                </option>
-                                <option className="hover:bg-gray-100">
-                                    Tài khoản đã hết hạn
-                                </option>
-                                <option className="hover:bg-gray-100">
-                                    Tài khoản đã bị hủy
-                                </option>
-                            </select>
-                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                                <svg
-                                    className="h-5 w-5 text-gray-400"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20"
-                                    fill="currentColor"
-                                    aria-hidden="true"
-                                >
-                                    <path
-                                        fillRule="evenodd"
-                                        d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
                     <div className="w-full md:w-64 mb-6 md:mb-0">
                         <div className="relative">
                             <select
@@ -83,20 +48,14 @@ function AccountSlotView({
                                 defaultValue=""
                             >
                                 <option value="" disabled className="text-gray-500">
-                                    Dịch vụ tài khoản
+                                    Chọn loại dịch vụ
                                 </option>
                                 <option className="hover:bg-gray-100">
-                                    Netflix
+                                    Giải trí
                                 </option>
-                                <option className="hover:bg-gray-100">
-                                    Spotify
-                                </option>
-                                <option className="hover:bg-gray-100">
-                                    Hulu
-                                </option>
-                                <option className="hover:bg-gray-100">
-                                    Amazon Price
-                                </option>
+                                <option className="hover:bg-gray-100">Học tập</option>
+                                <option className="hover:bg-gray-100">Làm việc</option>
+                                <option className="hover:bg-gray-100">Dịch vụ khác</option>
                             </select>
                             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                                 <svg
@@ -119,7 +78,7 @@ function AccountSlotView({
                         <div className="flex-grow">
                             <input
                                 type="text"
-                                placeholder="Nhập tên tài khoản cần tìm kiếm..."
+                                placeholder="Nhập tên dịch vụ cần tìm kiếm..."
                                 className="w-full px-4 py-2 rounded-md border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         </div>
@@ -144,28 +103,41 @@ function AccountSlotView({
                             <span>Tìm kiếm</span>
                         </button>
                     </form>
-                    <div className="flex items-center justify-center md:space-x-4 space-y-4 md:space-y-0 md:w-64">
+                    <CustomerModal
+                        isOpen={isOpenModal}
+                        onClose={customerModalClose}
+                        action={action}
+                        initialData={dataModal.current}
+                    />
+                    <CustomerDeleteModal
+                        isOpen={isOpenDeleteModal}
+                        onClose={handleDeleteCustomerModalClose}
+                        onDelete={handleDeleteCustomer}
+                        dataToDelete={dataModal.current}
+                        
+                    />
+                    {/* <div className="flex items-center justify-center md:space-x-4 space-y-4 md:space-y-0 md:w-64">
                         <button
-                            onClick={handleAddAccountSlotClick}
-                            className="flex items-center px-2 py-2 w-44 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            onClick={handleAddCustomerClick}
+                            className="flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 mr-2">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                             </svg>
-                            <span>Thêm tài khoản</span>
+                            <span>Thêm dịch vụ</span>
                         </button>
-                        <AddAccountSlotModal
-                            isOpen={showAccountSlotModal}
-                            onClose={handleAccountSlotModalClose}
+                        <AddCustomerModal
+                            isOpen={showModal}
+                            onClose={handleModalClose}
                             action={action}
-                            initialData={dataAccountSlotModalRef.current}
+                            initialData={dataModalRef.current}
                         />
-                        <DeleteAccountSlotModal
-                            isOpen={showAccountSlotDeteteModal}
-                            onClose={handleDeteteAccountSlotClose}
-                            accountDataToDelete={dataAccountSlotModalRef.current}
-                            onDeleteAccount={handleDeleteAccountSlot}
+                        <DeleteCustomerModal
+                            isOpen={showDeleteModal}
+                            onClose={handleDeleteModalClose}
+                            customerDataToDelete={dataModalRef.current}
+                            onDeleteCustomer={handleDeleteCustomer}
                         />
-                    </div>
+                    </div> */}
                 </div>
 
                 <div className="max-w-full overflow-x-auto rounded-xl border-solid border-2 border-[#F2F2F2]">
@@ -178,7 +150,7 @@ function AccountSlotView({
                                     <p
                                         className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-md font-medium text-success"
                                     >
-                                        Tên tài khoản
+                                        Tên khách hàng
                                     </p>
                                 </th>
                                 <th
@@ -187,7 +159,7 @@ function AccountSlotView({
                                     <p
                                         className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-md font-medium text-success"
                                     >
-                                        Gói tài khoản
+                                        Số điện thoại
                                     </p>
 
                                 </th>
@@ -197,7 +169,7 @@ function AccountSlotView({
                                     <p
                                         className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-md font-medium text-success"
                                     >
-                                        Người thuê
+                                        Email
                                     </p>
                                 </th>
                                 <th
@@ -206,25 +178,7 @@ function AccountSlotView({
                                     <p
                                         className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-md font-medium text-success"
                                     >
-                                        Ngày bắt đầu thuê
-                                    </p>
-                                </th>
-                                <th
-                                    className="min-w-[130px] px-4 py-4 font-medium text-black"
-                                >
-                                    <p
-                                        className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-md font-medium text-success"
-                                    >
-                                        Ngày kết thúc thuê
-                                    </p>
-                                </th>
-                                <th
-                                    className="min-w-[120px] px-4 py-4 font-medium text-black"
-                                >
-                                    <p
-                                        className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-md font-medium text-success"
-                                    >
-                                        Trạng thái
+                                        Địa chỉ
                                     </p>
                                 </th>
                                 <th className="px-4 py-4 font-medium text-black">
@@ -237,54 +191,40 @@ function AccountSlotView({
                             </tr>
                         </thead>
                         <tbody>
-                            {accountSlots.map(slot => (
-                                <tr key={slot.id}>
+                            {customerList.map(customer => (
+                                <tr key={customer.id}>
                                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                                         <p
                                             className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
                                         >
-                                            {slot.account.username}
+                                            {customer.fullname}
                                         </p>
                                     </td>
                                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                                         <p
                                             className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
                                         >
-                                            {slot.account.account_package.name}
+                                            {customer.phone}
                                         </p>
                                     </td>
                                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                                         <p
                                             className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
                                         >
-                                            {slot.renter.username}
+                                            {customer.user.email}
                                         </p>
                                     </td>
                                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                                         <p
                                             className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
                                         >
-                                            {slot.date_stared_rent}
-                                        </p>
-                                    </td>
-                                    <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                                        <p
-                                            className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
-                                        >
-                                            {slot.date_end_rent}
-                                        </p>
-                                    </td>
-                                    <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                                        <p
-                                            className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
-                                        >
-                                            {slot.status}
+                                            {customer.address}
                                         </p>
                                     </td>
                                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                                         <div className="flex items-center space-x-3.5">
                                             <button
-                                                onClick={() => onViewClick(slot.id)}
+                                                onClick={() => onViewCustomerClick(customer.id)}
                                                 className="hover:text-primary">
                                                 <svg
                                                     width="18"
@@ -304,7 +244,7 @@ function AccountSlotView({
                                                 </svg>
                                             </button>
                                             <button
-                                                onClick={() => onDeleteClick(slot.id)}
+                                                onClick={() => onDeleteCustomerClick(customer.id)}
                                                 className="hover:text-primary">
                                                 <svg
 
@@ -333,7 +273,7 @@ function AccountSlotView({
                                                 </svg>
                                             </button>
                                             <button
-                                                onClick={() => onEditClick(slot.id)}
+                                                onClick={() => onEditCustomerClick(customer.id)}
                                                 className="hover:text-primary">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#00B69B" className="w-5 h-5">
                                                     <path d="m5.433 13.917 1.262-3.155A4 4 0 0 1 7.58 9.42l6.92-6.918a2.121 2.121 0 0 1 3 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 0 1-.65-.65Z" />
@@ -351,7 +291,6 @@ function AccountSlotView({
             </div>
         </>
     );
-
 }
 
-export default AccountSlotView;
+export default CustomerView;

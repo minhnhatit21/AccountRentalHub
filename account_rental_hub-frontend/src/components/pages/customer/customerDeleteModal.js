@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-
-function DeleteAccountSlotModal({ isOpen, onClose, accountDataToDelete, onDeleteAccount }) {
+function CustomerDeleteModal({ isOpen, onClose, dataToDelete, onDelete }) {
     const [isDeleting, setIsDeleting] = useState(false);
     
     const deleteData = (data) => {
@@ -11,25 +10,25 @@ function DeleteAccountSlotModal({ isOpen, onClose, accountDataToDelete, onDelete
             initData = data;
         }
         return {
-            accountEmail:  Object.keys(initData).length > 0 ? initData.account.email : '',
+            fullname:  initData.fullname || '',
         };
     };
-    const [formData, setFormData] = useState(deleteData(accountDataToDelete || {}));
+    const [formData, setFormData] = useState(deleteData(dataToDelete || {}));
     
     const handleDelete = () => {
         setIsDeleting(true);
-        onDeleteAccount(accountDataToDelete.id);
+        onDelete(dataToDelete.id);
     };
 
     useEffect(() => {
-        if (accountDataToDelete) {
-            setFormData(deleteData(accountDataToDelete));
+        if (dataToDelete) {
+            setFormData(deleteData(dataToDelete));
         }
-    }, [accountDataToDelete]);
-
+    }, [dataToDelete]);
+    
     return (
         <>
-            {isOpen ? (
+             {isOpen ? (
                 <div className="fixed z-[200] inset-0 overflow-y-auto">
                     <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                         <div className="fixed inset-0 transition-opacity" aria-hidden="true">
@@ -42,11 +41,11 @@ function DeleteAccountSlotModal({ isOpen, onClose, accountDataToDelete, onDelete
                             <div>
                                 <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                                     <h3 className="text-lg leading-6 font-medium text-gray-900">
-                                        Xóa tài khoản slot tài khoản "{formData.accountEmail}"
+                                        Xóa tài khách hàng này "{formData.fullname}"
                                     </h3>
                                     <div className="mt-2">
                                         <p className="text-sm text-gray-500">
-                                            Bạn có chắc chắn muốn xóa slot của tài khoản "{formData.accountEmail}"? Hành động này sẽ không thể hoàn tác.
+                                            Bạn có chắc chắn muốn xóa khách hàng "{formData.fullname}"? Hành động này sẽ không thể hoàn tác.
                                         </p>
                                     </div>
                                 </div>
@@ -74,7 +73,7 @@ function DeleteAccountSlotModal({ isOpen, onClose, accountDataToDelete, onDelete
                 </div>
             ) : null}
         </>
-    );
+      );
 }
 
-export default DeleteAccountSlotModal;
+export default CustomerDeleteModal;

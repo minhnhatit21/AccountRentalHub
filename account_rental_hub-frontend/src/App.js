@@ -5,8 +5,9 @@ import Dashboard from './components/pages/dashboard';
 import Services from './components/pages/service/services';
 import Orders from './components/pages/orders';
 import Accounts from './components/pages/account/accounts';
-import Users from './components/pages/users'
 import AccountPackage from './components/pages/accountPackage/accountPackage';
+import Customers from './components/pages/customer/customers';
+import Users from './components/pages/user/users';
 
 function App() {
   return (
@@ -19,6 +20,8 @@ function App() {
           <Route path="/account" element={<DefaultLayout><Accounts /></DefaultLayout>} />
           <Route path="/accountPackage" element={<DefaultLayout><AccountPackage /></DefaultLayout>} />
           <Route path="/user" element={<DefaultLayout><Users /></DefaultLayout>} />
+          <Route path="/customer" element={<DefaultLayout><Customers /></DefaultLayout>} />
+
         </Routes>
       </Router>
     </div>

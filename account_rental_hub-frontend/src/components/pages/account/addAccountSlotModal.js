@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import M_Combobox from "../../partials/combox";
+import DatePicker from "../../partials/datepicker";
+import Datepicker from "../../partials/datepicker";
+import C_Datepicker from "../../partials/datepicker";
 
 const people = [
     { id: 1, name: 'Wade Cooper' },
@@ -109,150 +112,150 @@ const accountPackageList = [
 
 const accountList = [
     {
-         "id": 1,
-         "service":
-         {
-              "service_name": "Netflix",
-              "website_link": "https://www.netflix.com"
-         }
-         ,
-         "username": "user1",
-         "email": "user1@example.com",
-         "password": "encrypted_password",
-         "description": "Netflix account",
-         "account_package": "Netflix 1 tháng",
-         "supcription_date": "2024-02-28T10:30:00Z",
-         "renew_start_date": "2024-03-28T10:30:00Z",
-         "renew_end_date": "2024-04-28T10:30:00Z",
-         "created_at": "2023-03-28T10:30:00Z",
-         "updated_at": "2023-03-28T10:30:00Z",
-         "status": "active"
+        "id": 1,
+        "service":
+        {
+            "service_name": "Netflix",
+            "website_link": "https://www.netflix.com"
+        }
+        ,
+        "username": "user1",
+        "email": "user1@example.com",
+        "password": "encrypted_password",
+        "description": "Netflix account",
+        "account_package": "Netflix 1 tháng",
+        "supcription_date": "2024-02-28T10:30:00Z",
+        "renew_start_date": "2024-03-28T10:30:00Z",
+        "renew_end_date": "2024-04-28T10:30:00Z",
+        "created_at": "2023-03-28T10:30:00Z",
+        "updated_at": "2023-03-28T10:30:00Z",
+        "status": "active"
     },
     {
-         "id": 2,
-         "service": {
-              "service_name": "Spotify",
-              "website_link": "https://spotify.com"
-         },
-         "username": "user2",
-         "email": "user2@example.com",
-         "password": "encrypted_password",
-         "description": "Spotify Premium account",
-         "account_package": "Spotify Premium Individual",
-         "supcription_date": "2024-01-15T09:00:00Z",
-         "renew_start_date": "2024-04-15T09:00:00Z",
-         "renew_end_date": "2024-05-15T09:00:00Z",
-         "created_at": "2023-04-15T09:00:00Z",
-         "updated_at": "2023-04-15T09:00:00Z",
-         "status": "active"
+        "id": 2,
+        "service": {
+            "service_name": "Spotify",
+            "website_link": "https://spotify.com"
+        },
+        "username": "user2",
+        "email": "user2@example.com",
+        "password": "encrypted_password",
+        "description": "Spotify Premium account",
+        "account_package": "Spotify Premium Individual",
+        "supcription_date": "2024-01-15T09:00:00Z",
+        "renew_start_date": "2024-04-15T09:00:00Z",
+        "renew_end_date": "2024-05-15T09:00:00Z",
+        "created_at": "2023-04-15T09:00:00Z",
+        "updated_at": "2023-04-15T09:00:00Z",
+        "status": "active"
     },
     {
-         "id": 3,
-         "service": {
-              "service_name": "Amazon Prime",
-              "website_link": "https://amazon.com"
-         },
-         "username": "user3",
-         "email": "user3@example.com",
-         "password": "encrypted_password",
-         "description": "Amazon Prime membership",
-         "account_package": "Amazon Prime Annual",
-         "supcription_date": "2023-12-01T00:00:00Z",
-         "renew_start_date": "2024-11-01T00:00:00Z",
-         "renew_end_date": "2024-12-01T00:00:00Z",
-         "created_at": "2023-12-01T00:00:00Z",
-         "updated_at": "2023-12-01T00:00:00Z",
-         "status": "active"
+        "id": 3,
+        "service": {
+            "service_name": "Amazon Prime",
+            "website_link": "https://amazon.com"
+        },
+        "username": "user3",
+        "email": "user3@example.com",
+        "password": "encrypted_password",
+        "description": "Amazon Prime membership",
+        "account_package": "Amazon Prime Annual",
+        "supcription_date": "2023-12-01T00:00:00Z",
+        "renew_start_date": "2024-11-01T00:00:00Z",
+        "renew_end_date": "2024-12-01T00:00:00Z",
+        "created_at": "2023-12-01T00:00:00Z",
+        "updated_at": "2023-12-01T00:00:00Z",
+        "status": "active"
     },
     {
-         "id": 4,
-         "service": {
-              "service_name": "Hulu",
-              "website_link": "https://hulu.com"
-         },
-         "username": "user4",
-         "email": "user4@example.com",
-         "password": "encrypted_password",
-         "description": "Hulu subscription",
-         "account_package": "Hulu (No Ads)",
-         "supcription_date": "2024-03-10T15:30:00Z",
-         "renew_start_date": "2024-04-10T15:30:00Z",
-         "renew_end_date": "2024-05-10T15:30:00Z",
-         "created_at": "2023-04-10T15:30:00Z",
-         "updated_at": "2023-04-10T15:30:00Z",
-         "status": "active"
+        "id": 4,
+        "service": {
+            "service_name": "Hulu",
+            "website_link": "https://hulu.com"
+        },
+        "username": "user4",
+        "email": "user4@example.com",
+        "password": "encrypted_password",
+        "description": "Hulu subscription",
+        "account_package": "Hulu (No Ads)",
+        "supcription_date": "2024-03-10T15:30:00Z",
+        "renew_start_date": "2024-04-10T15:30:00Z",
+        "renew_end_date": "2024-05-10T15:30:00Z",
+        "created_at": "2023-04-10T15:30:00Z",
+        "updated_at": "2023-04-10T15:30:00Z",
+        "status": "active"
     },
     {
-         "id": 5,
-         "service": {
-              "service_name": "Disney+",
-              "website_link": "https://disneyplus.com"
-         },
-         "username": "user5",
-         "email": "user5@example.com",
-         "password": "encrypted_password",
-         "description": "Disney+ subscription",
-         "account_package": "Disney+ Premium",
-         "supcription_date": "2023-11-20T08:00:00Z",
-         "renew_start_date": "2024-11-20T08:00:00Z",
-         "renew_end_date": "2024-12-20T08:00:00Z",
-         "created_at": "2023-11-20T08:00:00Z",
-         "updated_at": "2023-11-20T08:00:00Z",
-         "status": "active"
+        "id": 5,
+        "service": {
+            "service_name": "Disney+",
+            "website_link": "https://disneyplus.com"
+        },
+        "username": "user5",
+        "email": "user5@example.com",
+        "password": "encrypted_password",
+        "description": "Disney+ subscription",
+        "account_package": "Disney+ Premium",
+        "supcription_date": "2023-11-20T08:00:00Z",
+        "renew_start_date": "2024-11-20T08:00:00Z",
+        "renew_end_date": "2024-12-20T08:00:00Z",
+        "created_at": "2023-11-20T08:00:00Z",
+        "updated_at": "2023-11-20T08:00:00Z",
+        "status": "active"
     },
     {
-         "id": 6,
-         "service": {
-              "service_name": "YouTube Premium",
-              "website_link": "https://youtube.com"
-         },
-         "username": "user6",
-         "email": "user6@example.com",
-         "password": "encrypted_password",
-         "description": "YouTube Premium subscription",
-         "account_package": "YouTube Premium Family",
-         "supcription_date": "2023-07-01T00:00:00Z",
-         "renew_start_date": "2024-07-01T00:00:00Z",
-         "renew_end_date": "2024-08-01T00:00:00Z",
-         "created_at": "2023-07-01T00:00:00Z",
-         "updated_at": "2023-07-01T00:00:00Z",
-         "status": "active"
+        "id": 6,
+        "service": {
+            "service_name": "YouTube Premium",
+            "website_link": "https://youtube.com"
+        },
+        "username": "user6",
+        "email": "user6@example.com",
+        "password": "encrypted_password",
+        "description": "YouTube Premium subscription",
+        "account_package": "YouTube Premium Family",
+        "supcription_date": "2023-07-01T00:00:00Z",
+        "renew_start_date": "2024-07-01T00:00:00Z",
+        "renew_end_date": "2024-08-01T00:00:00Z",
+        "created_at": "2023-07-01T00:00:00Z",
+        "updated_at": "2023-07-01T00:00:00Z",
+        "status": "active"
     },
     {
-         "id": 7,
-         "service": {
-              "service_name": "Apple Music",
-              "website_link": "https://apple.com/music"
-         },
-         "username": "user7",
-         "email": "user7@example.com",
-         "password": "encrypted_password",
-         "description": "Apple Music subscription",
-         "account_package": "Apple Music Individual",
-         "supcription_date": "2023-09-15T12:00:00Z",
-         "renew_start_date": "2024-09-15T12:00:00Z",
-         "renew_end_date": "2024-10-15T12:00:00Z",
-         "created_at": "2023-09-15T12:00:00Z",
-         "updated_at": "2023-09-15T12:00:00Z",
-         "status": "active"
+        "id": 7,
+        "service": {
+            "service_name": "Apple Music",
+            "website_link": "https://apple.com/music"
+        },
+        "username": "user7",
+        "email": "user7@example.com",
+        "password": "encrypted_password",
+        "description": "Apple Music subscription",
+        "account_package": "Apple Music Individual",
+        "supcription_date": "2023-09-15T12:00:00Z",
+        "renew_start_date": "2024-09-15T12:00:00Z",
+        "renew_end_date": "2024-10-15T12:00:00Z",
+        "created_at": "2023-09-15T12:00:00Z",
+        "updated_at": "2023-09-15T12:00:00Z",
+        "status": "active"
     },
     {
-         "id": 8,
-         "service": {
-              "service_name": "HBO Max",
-              "website_link": "https://hbomax.com"
-         },
-         "username": "user8",
-         "email": "user8@example.com",
-         "password": "encrypted_password",
-         "description": "HBO Max subscription",
-         "account_package": "HBO Max Ad-Free",
-         "supcription_date": "2023-06-01T18:00:00Z",
-         "renew_start_date": "2024-06-01T18:00:00Z",
-         "renew_end_date": "2024-07-01T18:00:00Z",
-         "created_at": "2023-06-01T18:00:00Z",
-         "updated_at": "2023-06-01T18:00:00Z",
-         "status": "active"
+        "id": 8,
+        "service": {
+            "service_name": "HBO Max",
+            "website_link": "https://hbomax.com"
+        },
+        "username": "user8",
+        "email": "user8@example.com",
+        "password": "encrypted_password",
+        "description": "HBO Max subscription",
+        "account_package": "HBO Max Ad-Free",
+        "supcription_date": "2023-06-01T18:00:00Z",
+        "renew_start_date": "2024-06-01T18:00:00Z",
+        "renew_end_date": "2024-07-01T18:00:00Z",
+        "created_at": "2023-06-01T18:00:00Z",
+        "updated_at": "2023-06-01T18:00:00Z",
+        "status": "active"
     },
 
 ]
@@ -304,18 +307,15 @@ function AddAccountSlotModal({ isOpen, onClose, action, initialData }) {
         } else {
             initData = data;
         }
-        console.log("Init Data: ", initData)
+        console.log("Account Slot Init Data: ", initData)
         return {
-            accountUserName: initData.username || '',
-            accountEmail: initData.email || '',
-            accountPassword: initData.password || '',
+            accountSlotRenter: initData.account ? initData.renter : null,
             accountStatus: initData.status || '',
-            accountServiceWebsite: initData.service && initData.service.website_link ? initData.service.website_link : '',
-            accountService: initData.service && initData.service.service_name ? initData.service.service_name : '',
-            accountPackage: initData.account_package,
-            accountSupcriptionDate: initData.supcription_date || '',
-            accountRenewStartDate: initData.renew_start_date || '',
-            accountRenewEndDate: initData.renew_end_date || '',
+            accountListData: initData.account ? initData.account : null,
+            accountSlotServiceData: initData.account ? initData.account.service : null,
+            accountSlotPackageData: initData.account ? initData.account.account_package : null,
+            rentStartDate: initData.date_stared_rent || '',
+            rentEndDate: initData.date_end_rent || '',
 
         };
     };
@@ -343,15 +343,34 @@ function AddAccountSlotModal({ isOpen, onClose, action, initialData }) {
     }, [action]);
 
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
+        if (e.target) {
+            const { name, value } = e.target;
 
-        if (name === 'accountSupcriptionDate' || name === 'accountRenewStartDate' || name === 'accountRenewEndDate') {
-            setFormData((prevState) => ({ ...prevState, [name]: value }));
+            if (name === 'rentStartDate' || name === 'rentEndDate') {
+                setFormData((prevState) => ({
+                    ...prevState,
+                    [name]: value ? new Date(value) : null,
+                }));
+            } else {
+                setFormData((prevState) => ({
+                    ...prevState,
+                    [name]: value,
+                }));
+            }
         } else {
-            setFormData((prevState) => ({ ...prevState, [name]: value }));
+            // Xử lý trường hợp e không có target
+            // Ví dụ: khi cập nhật giá trị từ DatePicker
+            const { name, value } = e;
+            setFormData((prevState) => ({
+                ...prevState,
+                [name]: value,
+            }));
         }
     };
 
+    const handleComboboxInputChange = (value, name) => {
+        console.log(`selected: ${value}, name: ${name}`);
+    }
     const handleSubmit = (e) => {
         e.preventDefault();
         // Xử lý logic lưu dữ liệu dịch vụ mới
@@ -387,70 +406,102 @@ function AddAccountSlotModal({ isOpen, onClose, action, initialData }) {
                                                 <div className="w-1/2">
                                                     {/* Dịch vụ */}
                                                     <div className="mb-4">
-                                                        <label htmlFor="serviceName" className="block text-sm font-medium text-gray-700 mb-2">
+                                                        <label htmlFor="accountSlotService" className="block text-sm font-medium text-gray-700 mb-2">
                                                             Gói dịch vụ
                                                         </label>
-                                                        <M_Combobox data={serviceList}/>
+                                                        <M_Combobox
+                                                            data={serviceList}
+                                                            onChangeInput={handleComboboxInputChange}
+                                                            c_name={"accountSlotService"}
+                                                            initialData={formData.accountSlotServiceData || null}
+                                                        />
                                                     </div>
 
                                                     {/* Gói tài khoản */}
                                                     <div className="mb-4">
-                                                        <label htmlFor="serviceType" className="block text-sm font-medium text-gray-700 mb-2">
+                                                        <label htmlFor="accountSlotPackage" className="block text-sm font-medium text-gray-700 mb-2">
                                                             Gói tài khoản
                                                         </label>
                                                         <div className="relative">
-                                                            <M_Combobox data={accountPackageList}/>
+                                                            <M_Combobox
+                                                                data={accountPackageList}
+                                                                onChangeInput={handleComboboxInputChange}
+                                                                c_name={"accountSlotPackage"}
+                                                                initialData={formData.accountSlotPackageData || null}
+                                                            />
                                                         </div>
                                                     </div>
 
                                                     {/* Tài khoản cho thuê */}
                                                     <div className="mb-4">
-                                                        <label htmlFor="serviceName" className="block text-sm font-medium text-gray-700 mb-2">
+                                                        <label htmlFor="accountRent" className="block text-sm font-medium text-gray-700 mb-2">
                                                             Tài khoản cho thuê
                                                         </label>
-                                                        <M_Combobox data={accountList}/>
+                                                        <M_Combobox
+                                                            data={accountList}
+                                                            onChangeInput={handleComboboxInputChange}
+                                                            c_name={"accountRent"}
+                                                            initialData={formData.accountListData || null}
+                                                        />
                                                     </div>
 
                                                 </div>
                                                 <div className="w-1/2">
                                                     {/* Người thuê */}
                                                     <div className="mb-4">
-                                                        <label htmlFor="serviceType" className="block text-sm font-medium text-gray-700 mb-2">
+                                                        <label htmlFor="accountRenter" className="block text-sm font-medium text-gray-700 mb-2">
                                                             Người thuê
                                                         </label>
-                                                        <M_Combobox data={people}/>
-                                                    </div>
-
-                                                    {/* Ngày bắt đâu thuê */}
-                                                    <div className="mb-4">
-                                                        <label htmlFor="serviceName" className="block text-sm font-medium text-gray-700 mb-2">
-                                                            Ngày bắt đầu thuê
-                                                        </label>
-                                                        <input
-                                                            type="date"
-                                                            id="accountSupcriptionDate"
-                                                            name="accountSupcriptionDate"
-                                                            value={convertStringToDate(formData.accountSupcriptionDate) || ""}
-                                                            className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                            onChange={handleInputChange}
-                                                            disabled={action === "view"}
+                                                        <M_Combobox
+                                                            data={people}
+                                                            onChangeInput={handleComboboxInputChange}
+                                                            c_name={"accountRenter"}
+                                                            initialData={formData.accountSlotRenter || null}
                                                         />
                                                     </div>
 
-                                                    {/* Ngày kết thúc thuê */}
-                                                    <div className="mb-4">
-                                                        <label htmlFor="serviceName" className="block text-sm font-medium text-gray-700 mb-2">
-                                                            Ngày kết thúc thuê
-                                                        </label>
-                                                        <input
+                                                    <div className="flex flex-row gap-32 my-3">
+                                                        {/* Ngày bắt đâu thuê */}
+                                                        <div className="mb-4">
+                                                            <label htmlFor="rentStartDate" className="block text-sm font-medium text-gray-700 mb-2">
+                                                                Ngày bắt đầu thuê
+                                                            </label>
+                                                            {/* <input
                                                             type="date"
-                                                            id="accountRenewStartDate"
-                                                            name="accountRenewStartDate"
-                                                            value={convertStringToDate(formData.accountRenewStartDate) || ''}
+                                                            id="rentStartDate"
+                                                            name="rentStartDate"
+                                                            value={convertStringToDate(formData.rentStartDate) || ""}
                                                             className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                             onChange={handleInputChange}
                                                             disabled={action === "view"}
-                                                        />
+                                                        /> */}
+                                                            <C_Datepicker
+                                                                value={formData.rentStartDate}
+                                                                onChange={(date) => handleInputChange({ name: 'rentStartDate', value: date })}
+                                                                disabled={action === 'view'}
+                                                            />
+                                                        </div>
+
+                                                        {/* Ngày kết thúc thuê */}
+                                                        <div className="mb-4">
+                                                            <label htmlFor="rentEndDate" className="block text-sm font-medium text-gray-700 mb-2">
+                                                                Ngày kết thúc thuê
+                                                            </label>
+                                                            {/* <input
+                                                            type="date"
+                                                            id="rentEndDate"
+                                                            name="rentEndDate"
+                                                            value={convertStringToDate(formData.rentEndDate) || ''}
+                                                            className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                            onChange={handleInputChange}
+                                                            disabled={action === "view"}
+                                                        /> */}
+                                                            <C_Datepicker
+                                                                value={formData.rentEndDate}
+                                                                onChange={(date) => handleInputChange({ name: 'rentEndDate', value: date })}
+                                                                disabled={action === 'view'}
+                                                            />
+                                                        </div>
                                                     </div>
 
                                                     {/* Trạng thái tài khoản */}
