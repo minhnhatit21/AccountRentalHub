@@ -37,7 +37,7 @@ function Sidebar({ toggleSidebar, isOpen }) {
                     <div className="flex items-center">
                         <img
                             className="object-cover h-16 w-64 p-2 my-2"
-                            src={require('../../../../images/logo/logo.png')}
+                            src={require('../../../../assets/images/logo/logo.png')}
                         />
                         <button onClick={() => toggleSidebar((prevState) => !prevState)} className="block lg:hidden pr-4">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#4880FF" className="w-6 h-6">
