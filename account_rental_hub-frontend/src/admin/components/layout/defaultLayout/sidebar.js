@@ -37,7 +37,7 @@ function Sidebar({ toggleSidebar, isOpen }) {
                     <div className="flex items-center">
                         <img
                             className="object-cover h-16 w-64 p-2 my-2"
-                            src={require('../../../images/logo/logo.png')}
+                            src={require('../../../../images/logo/logo.png')}
                         />
                         <button onClick={() => toggleSidebar((prevState) => !prevState)} className="block lg:hidden pr-4">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#4880FF" className="w-6 h-6">
@@ -88,8 +88,8 @@ function Sidebar({ toggleSidebar, isOpen }) {
                                     }
                                     title={"Quản lý tài khoản cho thuê"}
                                 >
-                                     <NavLink
-                                        to="/service"
+                                    <NavLink
+                                        to="/admin/service"
                                         className={({ isActive }) =>
                                             classNames(
                                                 isActive
@@ -113,13 +113,13 @@ function Sidebar({ toggleSidebar, isOpen }) {
                                             />
                                         </svg>
                                         <span className="text-sm">
-                                        Danh sách các dịch vụ
+                                            Danh sách các dịch vụ
                                         </span>
-                                       
+
                                     </NavLink>
-                                    
+
                                     <NavLink
-                                        to="/account"
+                                        to="/admin/account"
                                         className={({ isActive }) =>
                                             classNames(
                                                 isActive
@@ -148,7 +148,7 @@ function Sidebar({ toggleSidebar, isOpen }) {
                                     </NavLink>
 
                                     <NavLink
-                                        to="/accountPackage"
+                                        to="/admin/accountPackage"
                                         className={({ isActive }) =>
                                             classNames(
                                                 isActive
@@ -176,10 +176,10 @@ function Sidebar({ toggleSidebar, isOpen }) {
                                         </span>
                                     </NavLink>
                                 </MenuItem>
-                                
+
                                 {/* ==== Custoemr ====*/}
                                 <NavLink
-                                    to="/customer"
+                                    to="/admin/customer"
                                     className={({ isActive }) =>
                                         classNames(
                                             isActive
@@ -207,7 +207,7 @@ function Sidebar({ toggleSidebar, isOpen }) {
 
                                 {/* ==== User ====*/}
                                 <NavLink
-                                    to="/user"
+                                    to="/admin/user"
                                     className={({ isActive }) =>
                                         classNames(
                                             isActive
@@ -216,53 +216,56 @@ function Sidebar({ toggleSidebar, isOpen }) {
                                         )
                                     }
                                 >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        strokeWidth={1.5}
-                                        stroke="currentColor"
-                                        className="w-6 h-6"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
-                                        />
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                     </svg>
+
                                     Quản lý tài khoản người dùng
                                 </NavLink>
 
-                                <NavLink
-                                    to="/order"
-                                    className={({ isActive }) =>
-                                        classNames(
-                                            isActive
-                                                ? 'bg-regal-blue text-white group flex items-center px-2 py-2 gap-2 text-md font-medium rounded-md'
-                                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 gap-2 text-md font-medium rounded-md'
-                                        )
+                                {/* ==== Order ==== */}
+                                <MenuItem
+                                    to=""
+                                    icon={
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 0 1 2.012 1.244l.256.512a2.25 2.25 0 0 0 2.013 1.244h3.218a2.25 2.25 0 0 0 2.013-1.244l.256-.512a2.25 2.25 0 0 1 2.013-1.244h3.859m-19.5.338V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 0 0-2.15-1.588H6.911a2.25 2.25 0 0 0-2.15 1.588L2.35 13.177a2.25 2.25 0 0 0-.1.661Z" />
+                                        </svg>
+
                                     }
+                                    title={"Quản lý đơn hàng"}
                                 >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        strokeWidth={1.5}
-                                        stroke="currentColor"
-                                        className="w-6 h-6"
+                                    <NavLink
+                                        to="/admin/orderList"
+                                        className={({ isActive }) =>
+                                            classNames(
+                                                isActive
+                                                    ? 'bg-regal-blue text-white group flex items-center px-2 py-2 gap-2 text-md font-medium rounded-md'
+                                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 gap-2 text-md font-medium rounded-md'
+                                            )
+                                        }
                                     >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
-                                        />
-                                    </svg>
-                                    Orders
-                                </NavLink>
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            strokeWidth={1.5}
+                                            stroke="currentColor"
+                                            className="w-6 h-6"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
+                                            />
+                                        </svg>
+                                        Orders
+                                    </NavLink>
+                                </MenuItem>
+
 
                                 {/* ==== Payment ====*/}
                                 <MenuItem
-                                    to="/payment"
+                                    to="/admin/payment"
                                     icon={
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
@@ -271,7 +274,7 @@ function Sidebar({ toggleSidebar, isOpen }) {
                                     title={"Thanh toán"}
                                 >
                                     <NavLink
-                                        to="/payment"
+                                        to="/admin/payment"
                                         className={({ isActive }) =>
                                             classNames(
                                                 isActive

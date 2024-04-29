@@ -169,7 +169,7 @@ const userAccountList =
         }
     ]
 
- const actions = ["add", "edit", "view", "delete"];
+const actions = ["add", "edit", "view", "delete"];
 function Users() {
     const [action, setAction] = useState(actions[0]);
     const [showUserModal, setShowUserModal] = useState(false);

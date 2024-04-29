@@ -1,5 +1,5 @@
-import NotificationDropdown from "../../dropdown/notification_dropdown";
-import ProfileMenuDropdown from "../../dropdown/profile_dropdown";
+import NotificationDropdown from "../../../../admin/components/dropdown/notification_dropdown"
+import ProfileMenuDropdown from "../../../../admin/components/dropdown/profile_dropdown";
 
 function Header({toggleSidebar}) {
     return (

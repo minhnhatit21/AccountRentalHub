@@ -1,5 +1,5 @@
 
-import Pagination from "../../partials/pagination";
+import Pagination from "../../../components/partials/pagination";
 import CustomerDeleteModal from "./customerDeleteModal";
 import CustomerModal from "./customerModal";
 
