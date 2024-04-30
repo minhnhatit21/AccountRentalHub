@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
+import { useNavigate  } from 'react-router-dom';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const negative = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     // Thực hiện xử lý đăng nhập tại đây
     console.log('Email:', email);
     console.log('Password:', password);
+
+    negative('/admin/dashboard');
   };
 
   return (

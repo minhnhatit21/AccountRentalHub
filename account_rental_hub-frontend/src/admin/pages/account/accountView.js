@@ -1,6 +1,6 @@
-import Pagination from "../../partials/pagination";
-import AddAccountModal from "./addAccountModal";
-import DeleteAccountModal from "./deleteAccountModal";
+import Pagination from "../../components/partials/pagination";
+import AddAccountModal from "./AddAccountModal";
+import DeleteAccountModal from "./DeleteAccountModal";
 
 function Account({
     accountList,

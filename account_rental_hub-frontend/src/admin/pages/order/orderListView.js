@@ -1,4 +1,4 @@
-import Pagination from "../components/partials/pagination";
+import Pagination from "../../components/partials/pagination";
 
 function OrderListView({
     action,

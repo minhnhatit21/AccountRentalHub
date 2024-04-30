@@ -1,52 +1,11 @@
-import { useRef, useState } from "react";
-import MyListbox from "../../partials/listbox";
-import AddServiceModal from "./addModal";
-import Pagination from "../../partials/pagination";
-import DeleteServiceModal from "./deleteModal";
-import ServicesComponent from "./serviceComponent";
+import { useRef, useState, useContext } from "react";
+import ServicesComponent from "./ServiceView";
+import { AccountContext } from "../../context/AccountContext";
 
-const serviceList = [
-    {
-        "id": "1",
-        "name": "Netflix",
-        "image": "https://i.ibb.co/L6MDz9X/HD-wallpaper-netflix-logo-black-logo-minimal-netflix.jpg",
-        "description": "Dịch vụ xem phim trực tuyến phổ biến nhất hiện nay",
-        "pricing_info": "Từ $8.99/tháng",
-        "website": "netflix.com",
-        "category": "Giải trí"
-    },
-    {
-        "id": "2",
-        "name": "Spotify",
-        "image": "https://i.ibb.co/3TKMSxn/spotify.png",
-        "description": "Dịch vụ nghe nhạc trực tuyến với hàng triệu bài hát và podcast",
-        "pricing_info": "Miễn phí với quảng cáo hoặc Premium từ $9.99/tháng",
-        "website": "spotify.com",
-        "category": "Giải trí"
-    },
-    {
-        "id": "3",
-        "name": "Amazon Prime",
-        "image": "https://i.ibb.co/xCFY6mW/amazon-prime.jpg",
-        "description": "Dịch vụ giao hàng miễn phí, xem phim và nhiều ưu đãi khác",
-        "pricing_info": "$119/năm hoặc $12.99/tháng",
-        "website": "amazon.com/prime",
-        "category": "Mua sắm"
-    },
-    {
-        "id": "4",
-        "name": "YouTube Premium",
-        "image": "https://i.ibb.co/6WshX41/youtube-premium.png",
-        "description": "Truy cập YouTube không quảng cáo, xem video ngoại tuyến",
-        "pricing_info": "$11.99/tháng",
-        "website": "youtube.com/premium",
-        "category": "Giải trí"
-    }
-]
-const actions = ["add", "edit", "view", "delete"];
 function Services() {
 
-    const [action, setAction] = useState(actions[0]);
+    const {action, setAction, actions, serviceAccounts} = useContext(AccountContext);
+
     const [showModal, setShowModal] = useState(false);
     const [showDeteteModal, setShowDeleteModal] = useState(false);
     const dataModalRef = useRef(null);
@@ -59,14 +18,14 @@ function Services() {
 
     const handleEditServiceClick = (id) => {
         setAction(actions[1]);
-        const data = serviceList.filter(service => service.id === id);
+        const data = serviceAccounts.filter(service => service.id === id);
         dataModalRef.current = data;
         setShowModal(true);
     };
 
     const handleViewServiceClick = (id) => {
         setAction(actions[2]);
-        const data = serviceList.filter(service => service.id === id);
+        const data = serviceAccounts.filter(service => service.id === id);
         dataModalRef.current = data;
         setShowModal(true);
     }
@@ -80,7 +39,7 @@ function Services() {
 
     const handleDeteteServiceClick = (id) => {
         setAction(actions[3]);
-        const data = serviceList.filter(service => service.id === id);
+        const data = serviceAccounts.filter(service => service.id === id);
         dataModalRef.current = data;
         setShowDeleteModal(true);
     }
@@ -101,7 +60,7 @@ function Services() {
     return (
         <>
             <ServicesComponent
-                serviceList={serviceList}
+                serviceAccounts={serviceAccounts}
                 action={action}
                 showModal={showModal}
                 showDeleteModal={showDeteteModal}

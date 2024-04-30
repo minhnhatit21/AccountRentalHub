@@ -1,7 +1,7 @@
-import Pagination from "../../partials/pagination";
+import Pagination from "../../components/partials/pagination";
 
-import AddAccountPackageModal from "../accountPackage/addAccountPackageModal"
-import DeleteAccountPackageModal from "../accountPackage/deleteAccountPackageModal";
+import AddAccountPackageModal from "./AddAccountPackageModal"
+import DeleteAccountPackageModal from "./DeleteAccountPackageModal";
 
 function AccountPackageView({
     accountPackageList,
@@ -17,8 +17,6 @@ function AccountPackageView({
     handleDeleteAccountPackageClose,
     handleDeleteAccountPackage,
 }) {
-
-    console.log("Account Package: ", accountPackageList)
 
     const onDeleteClick = (id) => {
         handleDeteteAccountPackageClick(id);

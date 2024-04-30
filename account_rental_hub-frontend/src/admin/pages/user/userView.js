@@ -1,7 +1,7 @@
 
-import Pagination from "../../partials/pagination";
-import UserDeleteModal from "./userDeleteModal";
-import UserModal from "./userModal";
+import Pagination from "../../components/partials/pagination";
+import UserDeleteModal from './UserDeleteModal'
+import UserModal from "./UserModal";
 
 function UserView({
     action,

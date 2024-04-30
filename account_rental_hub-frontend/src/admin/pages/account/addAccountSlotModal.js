@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
-import M_Combobox from "../../partials/combox";
-import DatePicker from "../../partials/datepicker";
-import Datepicker from "../../partials/datepicker";
-import C_Datepicker from "../../partials/datepicker";
+import M_Combobox from "../../components/partials/combox";
+import C_Datepicker from "../../components/partials/datepicker";
 
 const people = [
     { id: 1, name: 'Wade Cooper' },

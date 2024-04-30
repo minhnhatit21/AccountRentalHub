@@ -1,7 +1,7 @@
 
-import Pagination from "../../../components/partials/pagination";
-import CustomerDeleteModal from "./customerDeleteModal";
-import CustomerModal from "./customerModal";
+import Pagination from "../../components/partials/pagination";
+import CustomerDeleteModal from "./CustomerDeleteModal";
+import CustomerModal from "./CustomerModal";
 
 function CustomerView({
     action,

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import C_Datepicker from "../../../components/partials/datepicker";
+import C_Datepicker from "../../components/partials/datepicker";
 
 function CustomerModal({ isOpen, onClose, action, initialData }) {
     const initFormData = (data) => {

@@ -1,6 +1,6 @@
-import Pagination from "../../partials/pagination";
-import AddAccountSlotModal from "./addAccountSlotModal";
-import DeleteAccountSlotModal from "./deleteAccountSlotModal";
+import Pagination from "../../components/partials/pagination";
+import AddAccountSlotModal from "./DeleteAccountSlotModal";
+import DeleteAccountSlotModal from "./DeleteAccountSlotModal";
 
 function AccountSlotView({
     accountSlots,

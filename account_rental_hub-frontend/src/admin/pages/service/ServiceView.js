@@ -1,10 +1,9 @@
-import MyListbox from "../../partials/listbox";
-import AddServiceModal from "./addModal";
-import Pagination from "../../partials/pagination";
-import DeleteServiceModal from "./deleteModal";
+import AddServiceModal from "./AddModal";
+import Pagination from "../../components/partials/pagination";
+import DeleteServiceModal from "./DeleteModal";
 
 function ServicesComponent({
-    serviceList,
+    serviceAccounts,
     action,
     showModal,
     showDeleteModal,
@@ -197,7 +196,7 @@ function ServicesComponent({
                             </tr>
                         </thead>
                         <tbody>
-                            {serviceList.map(service => (
+                            {serviceAccounts.map(service => (
                                 <tr key={service.id}>
                                     <td
                                         className="border-b border-[#eee] px-4 py-5 pl-9 dark:border-strokedark"
