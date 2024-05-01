@@ -1,11 +1,18 @@
-import NotificationDropdown from "./dropdown/notification_dropdown";
-import ProfileMenuDropdown from "./dropdown/profile_dropdown";
+import NotificationDropdown from "../../../../admin/components/dropdown/notification_dropdown"
+import ProfileMenuDropdown from "../../../../admin/components/dropdown/profile_dropdown";
 
-function Header() {
+function Header({toggleSidebar}) {
     return (
-        <header class="fixed w-full bg-white p-4 shadow-md">
-            <div className="flex items-center w-3/4 justify-between flex-row">
-                <div className="flex w-96 p-2 pl-4" >
+        <header className="sticky top-0 z-[100] flex w-full bg-white shadow-sm">
+            <div className="flex flex-grow items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11">
+                <div className="flex items-center gap-2 sm:gap-4 lg:hidden">
+                    <button onClick={() => toggleSidebar((prevState) => !prevState)}>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                        </svg>
+                    </button>
+                </div>
+                <div className="hidden sm:block" >
                     <form action="#">
                         <div className="relative rounded-md">
                             <button className="absolute left-2 top-1/2 -translate-y-1/2">
