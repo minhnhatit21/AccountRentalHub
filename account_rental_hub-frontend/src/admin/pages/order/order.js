@@ -35,7 +35,6 @@ function Orders() {
   };
 
   // Delete Order
-
   const handleDeteteOrderClick = (id) => {
     setAction(actions[3]);
     const data = orderList.filter(Order => Order.id === id);

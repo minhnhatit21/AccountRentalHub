@@ -32,9 +32,7 @@ function ServicesComponent({
     return (
         <>
             <h1 class="font-bold mb-8 text-2xl">Quản lý dịch vụ</h1>
-            <div
-                className="rounded-xl border border-stroke bg-white px-5 py-6 m-4 shadow-default sm:px-7.5 xl:pb-1"
-            >
+            <div className="rounded-xl border border-stroke bg-white px-5 py-6 m-4 shadow-default sm:px-7.5 xl:pb-1" >
                 <div className="flex flex-col mb-4 md:flex-row items-center justify-center md:space-x-4">
                     <div className="w-full md:w-64 mb-6 md:mb-0">
                         {/* <label htmlFor="serviceType" className="block text-md font-medium text-gray-700">

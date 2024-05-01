@@ -25,9 +25,9 @@ function OrderListView({
         handleEditOrderClick(id);
     }
 
-    return ( 
+    return (
         <>
-<h1 class="font-bold mb-8 text-2xl">Danh sách đơn hàng</h1>
+            <h1 class="font-bold mb-8 text-2xl">Danh sách đơn hàng</h1>
             <div
                 className="rounded-xl border border-stroke bg-white px-5 py-6 m-4 shadow-default sm:px-7.5 xl:pb-1"
             >
@@ -238,7 +238,7 @@ function OrderListView({
                 <Pagination />
             </div>
         </>
-     );
+    );
 }
 
 export default OrderListView;

@@ -137,6 +137,7 @@ function UserView({
                                         Tên tài khoản
                                     </p>
                                 </th>
+                                {/*  Mật khẩu */}
                                 <th
                                     className="min-w-[120px] px-4 py-4 font-medium text-black"
                                 >

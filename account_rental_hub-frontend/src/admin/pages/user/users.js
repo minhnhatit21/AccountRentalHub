@@ -34,7 +34,6 @@ function Users() {
     };
 
     // Delete User
-
     const handleDeteteUserClick = (id) => {
         setAction(actions[3]);
         const data = userAccountList.filter(User => User.id === id);

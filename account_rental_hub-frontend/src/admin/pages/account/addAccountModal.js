@@ -71,8 +71,6 @@ function AddAccountModal({ isOpen, onClose, action, initialData }) {
         else if (action === "view") return "Xem chi tiết tài khoản"
     }
 
-
-
     return (
         <>
             {isOpen ? (

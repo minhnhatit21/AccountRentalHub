@@ -35,7 +35,6 @@ function Customers() {
     };
 
     // Delete customer
-
     const handleDeteteCustomerClick = (id) => {
         setAction(actions[3]);
         const data = customerList.filter(customer => customer.id === id);

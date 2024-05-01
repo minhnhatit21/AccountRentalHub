@@ -36,7 +36,6 @@ function Services() {
     };
 
     // Delete service
-
     const handleDeteteServiceClick = (id) => {
         setAction(actions[3]);
         const data = serviceAccounts.filter(service => service.id === id);

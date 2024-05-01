@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect} from "react";
 
 function AddServiceModal({ isOpen, onClose, action, initialData }) {
     const initFormData = (data) => {
@@ -51,8 +51,6 @@ function AddServiceModal({ isOpen, onClose, action, initialData }) {
         else if (action === "edit") return "Chỉnh sửa dịch vụ"
         else if (action === "view") return "Xem chi tiết dịch vụ"
     }
-
-
 
     return (
         <>

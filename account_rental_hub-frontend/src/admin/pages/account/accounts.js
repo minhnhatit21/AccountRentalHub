@@ -18,8 +18,6 @@ function Accounts() {
      const [showAccountSlotDeteteModal, setShowAccountSlotDeteteModal] = useState(false);
      const dataAccountSlotModalRef = useRef(null);
 
-
-
      /**
       * Add Account
       */

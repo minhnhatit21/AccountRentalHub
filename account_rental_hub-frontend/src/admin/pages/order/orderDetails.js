@@ -46,7 +46,6 @@ const OrderDetails = () => {
     return (
         <div className="bg-white shadow-lg rounded-lg p-6">
             <h1 className="text-2xl font-bold mb-4">Chi tiết đơn hàng</h1>
-
             <div className="grid grid-cols-2 gap-4">
                 <div>
                     <p className="font-bold">Order ID:</p>

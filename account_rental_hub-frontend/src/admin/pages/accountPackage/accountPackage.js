@@ -6,9 +6,6 @@ import { AccountContext } from "../../context/AccountContext";
 function AccountPackage() {
 
     const {action, setAction, actions, servicePlanOptions} = useContext(AccountContext);
-
-    console.log("servicePlanOptions: ", servicePlanOptions)
-
     // Account Package Modal
     const [showAddAccountPackageModal, setShowAddAccountPackageModal] = useState(false);
     const [showDeteteAccountPackageModal, setShowDeteteAccountPackageModal] = useState(false);

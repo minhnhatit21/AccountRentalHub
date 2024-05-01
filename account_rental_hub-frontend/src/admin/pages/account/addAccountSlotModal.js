@@ -305,7 +305,6 @@ function AddAccountSlotModal({ isOpen, onClose, action, initialData }) {
         } else {
             initData = data;
         }
-        console.log("Account Slot Init Data: ", initData)
         return {
             accountSlotRenter: initData.account ? initData.renter : null,
             accountStatus: initData.status || '',

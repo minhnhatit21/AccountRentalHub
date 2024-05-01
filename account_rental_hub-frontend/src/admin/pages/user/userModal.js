@@ -56,7 +56,6 @@ function UserModal({isOpen, onClose, action, initialData}) {
         else if (action === "view") return "Xem chi tiết thông tin tài khoản"
     }
 
-
     return ( 
         <>
          {isOpen ? (
