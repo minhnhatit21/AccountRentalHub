@@ -1,6 +1,8 @@
 import { Fragment } from 'react'
 import { forwardRef } from 'react'
 import { Menu, Transition } from '@headlessui/react'
+import { Link, useNavigate } from 'react-router-dom'
+import AuthService from '../../../services/auth.service'
 
 let MyCustomButton = forwardRef(function (props, ref) {
     return <button className="inline-flex w-full justify-center border-none" ref={ref} {...props} />
@@ -11,6 +13,14 @@ function classNames(...classes) {
 }
 
 function ProfileMenuDropdown() {
+
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        AuthService.logout();
+        navigate('/admin/login', { replace: true });
+    };
+
     return (
         <>
             <Menu as="div" className="relative inline-block text-left">
@@ -30,8 +40,6 @@ function ProfileMenuDropdown() {
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
                                 <path fillRule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
                             </svg>
-
-
                         </div>
 
                     </Menu.Button>
@@ -57,91 +65,21 @@ function ProfileMenuDropdown() {
                                             'block px-4 py-2 text-sm'
                                         )}
                                     >
-                                        Edit
+                                        Thông tin
                                     </a>
                                 )}
                             </Menu.Item>
                             <Menu.Item>
                                 {({ active }) => (
                                     <a
-                                        href="#"
+                                        // href="#"
                                         className={classNames(
                                             active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
                                             'block px-4 py-2 text-sm'
                                         )}
+                                        onClick={handleLogout}
                                     >
-                                        Duplicate
-                                    </a>
-                                )}
-                            </Menu.Item>
-                        </div>
-                        <div className="py-1">
-                            <Menu.Item>
-                                {({ active }) => (
-                                    <a
-                                        href="#"
-                                        className={classNames(
-                                            active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                                            'block px-4 py-2 text-sm'
-                                        )}
-                                    >
-                                        Archive
-                                    </a>
-                                )}
-                            </Menu.Item>
-                            <Menu.Item>
-                                {({ active }) => (
-                                    <a
-                                        href="#"
-                                        className={classNames(
-                                            active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                                            'block px-4 py-2 text-sm'
-                                        )}
-                                    >
-                                        Move
-                                    </a>
-                                )}
-                            </Menu.Item>
-                        </div>
-                        <div className="py-1">
-                            <Menu.Item>
-                                {({ active }) => (
-                                    <a
-                                        href="#"
-                                        className={classNames(
-                                            active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                                            'block px-4 py-2 text-sm'
-                                        )}
-                                    >
-                                        Share
-                                    </a>
-                                )}
-                            </Menu.Item>
-                            <Menu.Item>
-                                {({ active }) => (
-                                    <a
-                                        href="#"
-                                        className={classNames(
-                                            active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                                            'block px-4 py-2 text-sm'
-                                        )}
-                                    >
-                                        Add to favorites
-                                    </a>
-                                )}
-                            </Menu.Item>
-                        </div>
-                        <div className="py-1">
-                            <Menu.Item>
-                                {({ active }) => (
-                                    <a
-                                        href="#"
-                                        className={classNames(
-                                            active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                                            'block px-4 py-2 text-sm'
-                                        )}
-                                    >
-                                        Delete
+                                        Đăng xuất
                                     </a>
                                 )}
                             </Menu.Item>

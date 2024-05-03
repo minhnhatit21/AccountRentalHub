@@ -1,35 +1,38 @@
 package com.AccountRentalHub.controllers;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.AccountRentalHub.models.ERole;
 import com.AccountRentalHub.models.Role;
 import com.AccountRentalHub.models.User;
+import com.AccountRentalHub.payload.request.ForgotPasswordRequest;
 import com.AccountRentalHub.payload.request.LoginRequest;
+import com.AccountRentalHub.payload.request.ResetPasswordRequest;
 import com.AccountRentalHub.payload.request.SignupRequest;
 import com.AccountRentalHub.payload.response.JwtResponse;
 import com.AccountRentalHub.payload.response.MessageResponse;
 import com.AccountRentalHub.repository.RoleRepository;
 import com.AccountRentalHub.repository.UserRepository;
 import com.AccountRentalHub.security.jwt.JwtUtils;
+import com.AccountRentalHub.security.services.EmailService;
+import com.AccountRentalHub.security.services.ResetTokenService;
+import com.AccountRentalHub.security.services.ResetTokenServiceImpl;
 import com.AccountRentalHub.security.services.UserDetailsImpl;
 
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -45,10 +48,16 @@ public class AuthController {
     RoleRepository roleRepository;
 
     @Autowired
+    private ResetTokenServiceImpl resetTokenService;
+
+    @Autowired
     PasswordEncoder encoder;
 
     @Autowired
     JwtUtils jwtUtils;
+
+    @Autowired
+    EmailService emailService;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -124,5 +133,59 @@ public class AuthController {
         userRepository.save(user);
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+    }
+
+    @PutMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
+        String token = resetPasswordRequest.getToken();
+        String newPassword = resetPasswordRequest.getNewPassword();
+        String confirmPassword = resetPasswordRequest.getConfirmPassword(); // Thêm mật khẩu xác nhận
+
+        if (!newPassword.equals(confirmPassword)) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: Passwords do not match!"));
+        }
+
+        Optional<Long> userId = resetTokenService.getUserIdFromResetToken(token);
+        if (userId.isEmpty()) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: Invalid reset token!"));
+        }
+
+        User user = userRepository.findById(userId.get())
+                .orElseThrow(() -> new RuntimeException("Error: User not found!"));
+        user.setPassword(encoder.encode(newPassword));
+        userRepository.save(user);
+
+        resetTokenService.deleteResetToken(token);
+
+        return ResponseEntity.ok(new MessageResponse("Password reset successfully!"));
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest forgotPasswordRequest) {
+
+
+        if(forgotPasswordRequest.getEmail().isEmpty()) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: Not Valid Email!"));
+        }
+
+        String email = forgotPasswordRequest.getEmail();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Error: Email not found!"));
+
+        String username = user.getUsername();
+
+        String resetToken = UUID.randomUUID().toString();
+        resetTokenService.saveResetToken(user.getId(), resetToken);
+
+        String resetUrl = "http://localhost:3006/reset-password?token=" + resetToken;
+        try {
+            emailService.sendResetPasswordEmail(email, resetUrl, username);
+        } catch (MessagingException | IOException | GeneralSecurityException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new MessageResponse("Error: Unable to send reset password email"));
+        }
+
+        return ResponseEntity.ok(new MessageResponse("Password reset instructions have been sent to your email."));
     }
 }

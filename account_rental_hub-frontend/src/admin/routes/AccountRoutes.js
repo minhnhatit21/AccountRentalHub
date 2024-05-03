@@ -5,14 +5,15 @@ import Accounts from '../pages/account/Accounts';
 import AccountPackage from '../pages/accountPackage/AccountPackage';
 import Services from '../pages/service/Services';
 import { AccountProvider } from '../context/AccountContext';
+import AdminRoute from './AdminRoute';
 
 
 const AccountRoutes = () => (
   <AccountProvider>
     <Routes>
-      <Route path="/admin/account/list" element={<DefaultLayout><Accounts /></DefaultLayout>} />
-      <Route path="/admin/account/accountPackage" element={<DefaultLayout><AccountPackage /></DefaultLayout>} />
-      <Route path="/admin/account/service" element={<DefaultLayout> <AccountProvider><Services /></AccountProvider></DefaultLayout>} />
+      <Route path="/admin/account/list" element={<AdminRoute><DefaultLayout><Accounts /></DefaultLayout></AdminRoute>} />
+      <Route path="/admin/account/accountPackage" element={<AdminRoute><DefaultLayout><AccountPackage /></DefaultLayout></AdminRoute>} />
+      <Route path="/admin/account/service" element={<AdminRoute><DefaultLayout><Services /></DefaultLayout></AdminRoute>} />
     </Routes>
   </AccountProvider>
 );
