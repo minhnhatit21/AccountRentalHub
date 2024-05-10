@@ -59,13 +59,13 @@ public class EmailService {
 
     private Message createMessageWithEmail(String toEmail, String resetUrl, String username) throws MessagingException, IOException {
         MimeMessage mimeMessage = new MimeMessage(Session.getDefaultInstance(new Properties(), null));
-        mimeMessage.setFrom(new InternetAddress("nhmnhat2101.it@gmail.com"));
+        mimeMessage.setFrom(new InternetAddress("NhatShop"));
         mimeMessage.addRecipient(jakarta.mail.Message.RecipientType.TO, new InternetAddress(toEmail));
         mimeMessage.setSubject("Reset Password");
 
         String htmlContent = "<html><body>" +
-                "<p>Your username is <strong>" + username + "<strong/>.</p>" +
-                "<p>To reset your password, click the link below:</p>" +
+                "<p>Tên tài khoản của bạn là: <strong>" + username + "<strong/>.</p>" +
+                "<p>Để thay đổi mật khẩu, nhấn vào link bên dưới:</p>" +
                 "<p><a href=\"" + resetUrl + "\">Reset Password</a></p>" +
                 "</body></html>";
 

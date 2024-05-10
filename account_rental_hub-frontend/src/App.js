@@ -12,21 +12,24 @@ import 'react-toastify/dist/ReactToastify.css';
 import AdminRoute from './admin/routes/AdminRoute';
 import LoginForm from './admin/pages/Login';
 import HomePage from './user/pages/Homepage';
-import UserRoute from './user/routes/UserRoute';
 import ForgotPasswordPage from './auth/pages/ForgotPasswordPage';
 import ResetPasswordPage from './auth/pages/ResetPasswordPage';
+import UserSearchPage from './user/pages/UserSearchPage';
+import AuthProvider from './user/context/AuthContext';
+import UserProfile from './user/pages/UserProfilePage';
+import { UserDefaultLayout, UserHomeDefaultLayout } from './user/pages/layout/DefaultLayout';
 
 function App() {
-
-  const logOut = () => {
-    AuthService.logout();
-  };
-
   return (
     <div className="App">
       <Router>
         <Routes>
-          <Route path='/homepage' element={<UserRoute><HomePage/></UserRoute> }/>
+          <Route path='/homepage' element={<AuthProvider><UserHomeDefaultLayout><HomePage/></UserHomeDefaultLayout></AuthProvider>}/>
+          <Route path='/search' element={<AuthProvider><UserHomeDefaultLayout><UserSearchPage/></UserHomeDefaultLayout></AuthProvider> }/>
+          <Route path='/user/profile' element={<AuthProvider><UserDefaultLayout><UserProfile/></UserDefaultLayout></AuthProvider> }/>
+          <Route path='/user/orders' element={<AuthProvider><UserDefaultLayout><UserProfile/></UserDefaultLayout></AuthProvider> }/>
+          <Route path='/user/transactions' element={<AuthProvider><UserDefaultLayout><UserProfile/></UserDefaultLayout></AuthProvider> }/>
+          <Route path='/user/wishlist' element={<AuthProvider><UserDefaultLayout><UserProfile/></UserDefaultLayout></AuthProvider> }/>
           <Route path='/forgotPassword' element={<ForgotPasswordPage/>} />
           <Route path='/reset-password' element={<ResetPasswordPage/>} />
           <Route path="/admin/login" element={<LoginForm />} />

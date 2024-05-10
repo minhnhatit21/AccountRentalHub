@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import AuthService from '../../services/auth.service';
+import LoadingPage from '../pages/LoadingPage';
 
 const UserRoute = ({ children }) => {
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isUser, setIsUser] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -11,11 +12,11 @@ const UserRoute = ({ children }) => {
       try {
         const currentUser = await AuthService.getCurrentUser();
         if (currentUser && currentUser.roles && currentUser.roles.includes("ROLE_USER")) {
-          setIsAdmin(true);
+          setIsUser(true);
         }
         setLoading(false);
       } catch (error) {
-        setIsAdmin(false);
+        setIsUser(false);
         setLoading(false);
       }
     };
@@ -24,10 +25,10 @@ const UserRoute = ({ children }) => {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <LoadingPage/>;
   }
 
-  return isAdmin ? children : <Navigate to="/admin/login" replace />;
+  return isUser ? children : <Navigate to="/homepage" replace />;
 };
 
 export default UserRoute;
