@@ -1,52 +1,117 @@
-import { useState, useEffect} from "react";
+import { useState, useEffect, useContext } from "react";
+import { AccountContext } from "../../context/AccountContext";
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import ImageService from "../../../services/image.service";
+
 
 function AddServiceModal({ isOpen, onClose, action, initialData }) {
+
+    const { createData, updateData } = useContext(AccountContext);
+
+    const validationSchema = yup.object().shape({
+        serviceName: yup.string().required('Tên dịch vụ là bắt buộc'),
+        description: yup.string().required('Mô tả là bắt buộc'),
+        description: yup.string().test('len', 'Must be exactly 5 characters', val => val.length <= 255),
+        website: yup.string().url('Vui lòng nhập một URL hợp lệ'),
+        website: yup.string().required("URL website là bắt buộc"),
+        imageUrl: yup.string().url('Vui lòng nhập một URL hợp lệ'),
+    });
+
     const initFormData = (data) => {
-        let initData;
+        let initialData;
         if (Array.isArray(data) && data.length > 0) {
-            initData = data[0];
+            initialData = data[0];
         } else {
-            initData = data;
+            initialData = data;
         }
-        console.log("Init Data: ", initData)
         return {
-            image: initData.image || null,
-            serviceName: initData.name || '',
-            description: initData.description || '',
-            serviceType: initData.category || '',
-            website: initData.website || '',
-            pricingInfo: initData.pricing_info || '',
+            image: initialData.image ? initialData.image : null,
+            serviceID: initialData.id || 0,
+            serviceName: initialData.name || '',
+            description: initialData.description || '',
+            serviceType: initialData.category || '',
+            website: initialData.website || '',
+            imageUrl: initialData.image || '',
+            imagePreview: initialData.image ? initialData.image : null,
         };
     };
 
-    const [formData, setFormData] = useState(initFormData(initialData || {}));
+    const { register, handleSubmit, formState: { errors }, reset } = useForm({
+        resolver: yupResolver(validationSchema),
+        defaultValues: initFormData(initialData || {}),
+    });
 
     useEffect(() => {
         if (initialData) {
-            setFormData(initFormData(initialData));
+            const initialFormData = initFormData(initialData);
+            setFormData(initialFormData);
+            reset(initialFormData);
         }
-    }, [initialData]);
+    }, [initialData, reset]);
 
-
+    const [formData, setFormData] = useState(initFormData(initialData || {}));
 
     const handleInputChange = (e) => {
         const { name, value, files } = e.target;
         if (name === 'image') {
-            setFormData((prevState) => ({ ...prevState, [name]: files[0] || null }));
+            if (files && files[0]) {
+                setFormData((prevState) => ({
+                    ...prevState,
+                    [name]: files[0],
+                    imagePreview: URL.createObjectURL(files[0]),
+                    imageUrl: '',
+                }));
+            } else {
+                setFormData((prevState) => ({ ...prevState, [name]: null, imagePreview: null, imageUrl: '' }));
+            }
+        } else if (name === 'imageUrl') {
+            setFormData((prevState) => ({
+                ...prevState,
+                [name]: value,
+                imagePreview: value ? value : null,
+                image: null,
+            }));
         } else {
             setFormData((prevState) => ({ ...prevState, [name]: value }));
         }
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Xử lý logic lưu dữ liệu dịch vụ mới
-        console.log(formData);
-        onClose();
-    };
+    const onUploadImage = async (file) => {
+        const response = await ImageService.uploadImage(file);
+        console.log("responseUploadImage", response);
+
+        return response;
+      }
+      
+      const onSubmit = async (data) => {
+        const imageData = data.image instanceof File ? data.image : (data.imageUrl ? data.imageUrl : formData.imagePreview);
+        const serviceTypeValue = data.serviceType || '';
+        const serviceData = {
+          image: imageData,
+          name: data.serviceName,
+          description: data.description,
+          category: serviceTypeValue,
+          website: data.website,
+        };
+      
+        const responseUploadImage = formData.image ? await onUploadImage(formData.image) : null;
+      
+        if (responseUploadImage !== null || responseUploadImage !== undefined || imageData !== null) {
+          serviceData.image = responseUploadImage;
+          if (action === "add") {
+            createData(serviceData);
+          } else if (action === "edit") {
+            updateData(formData.serviceID, serviceData)
+          } else {
+            return null;
+          }
+          onClose();
+        }
+      };
 
     const titleModal = (action) => {
-        console.log("Actions: ", action)
         if (action === "add") return "Thêm dịch vụ"
         else if (action === "edit") return "Chỉnh sửa dịch vụ"
         else if (action === "view") return "Xem chi tiết dịch vụ"
@@ -68,19 +133,49 @@ function AddServiceModal({ isOpen, onClose, action, initialData }) {
                                 <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                                     <h3 className="text-lg leading-6 font-medium text-gray-900">{titleModal(action)}</h3>
                                     <div className="mt-2">
-                                        <form onSubmit={handleSubmit}>
+                                        <form onSubmit={handleSubmit(onSubmit)}>
                                             <div className="mb-4">
                                                 <label htmlFor="image" className="block text-sm font-medium text-gray-700">
                                                     Hình ảnh
                                                 </label>
-                                                <input
-                                                    type="file"
-                                                    id="image"
-                                                    name="image"
-                                                    className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                    onChange={handleInputChange}
-                                                    disabled={action === "view"}
-                                                />
+                                                <div className="flex items-center">
+                                                    <div className="relative w-32 h-32 mr-4">
+                                                        {formData.imagePreview && (
+                                                            <img
+                                                                src={formData.imagePreview}
+                                                                alt="Image Preview"
+                                                                className="object-cover w-full h-full rounded-md"
+                                                            />
+                                                        )}
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <div className="mb-2">
+                                                            <input
+                                                                type="file"
+                                                                id="image"
+                                                                name="image"
+                                                                className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                                onChange={handleInputChange}
+                                                                disabled={action === "view"}
+                                                            />
+                                                        </div>
+                                                        <div className="mb-4">
+                                                            <label htmlFor="imageUrl" className="block text-sm font-medium text-gray-700">
+                                                                Hoặc nhập URL ảnh
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                id="imageUrl"
+                                                                name="imageUrl"
+                                                                // {...register('imageUrl')}
+                                                                value={formData.imageUrl || ''}
+                                                                className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                                onChange={handleInputChange}
+                                                                disabled={action === "view"}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div className="mb-4">
                                                 <label htmlFor="serviceName" className="block text-sm font-medium text-gray-700">
@@ -90,11 +185,14 @@ function AddServiceModal({ isOpen, onClose, action, initialData }) {
                                                     type="text"
                                                     id="serviceName"
                                                     name="serviceName"
-                                                    value={action === "add" ? "" : formData.serviceName}
+                                                    {...register('serviceName')}
                                                     className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                     onChange={handleInputChange}
                                                     disabled={action === "view"}
                                                 />
+                                                {errors.serviceName && (
+                                                    <p className="mt-2 text-sm text-red-600">{errors.serviceName.message}</p>
+                                                )}
                                             </div>
                                             <div className="mb-4">
                                                 <label htmlFor="description" className="block text-sm font-medium text-gray-700">
@@ -103,40 +201,34 @@ function AddServiceModal({ isOpen, onClose, action, initialData }) {
                                                 <textarea
                                                     id="description"
                                                     name="description"
-                                                    value={action === "add" ? "" : formData.description}
-                                                    className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                    {...register('description')}
+                                                    className={`mt-1 block w-full py-2 px-3 border rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm ${errors.description ? 'border-red-500' : 'border-gray-300'
+                                                        }`}
                                                     onChange={handleInputChange}
                                                     disabled={action === "view"}
+                                                    maxLength={255}
                                                 ></textarea>
+                                                {errors.description && <p className="mt-2 text-sm text-red-600">{errors.description.message}</p>}
                                             </div>
                                             <div className="mb-4">
                                                 <label htmlFor="serviceType" className="block text-sm font-medium text-gray-700">
                                                     Loại dịch vụ
                                                 </label>
-                                                {/* <input
-                                                    type="text"
-                                                    id="serviceType"
-                                                    name="serviceType"
-                                                    value={formData.serviceType}
-                                                    className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                    onChange={handleInputChange}
-                                                /> */}
                                                 <div className="relative">
                                                     <select
                                                         id="serviceType"
                                                         name="serviceType"
                                                         className="block w-full rounded-md border-gray-300 border-2 py-2 pl-3 pr-8 text-base focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm appearance-none bg-white"
-                                                        defaultValue=""
+                                                        onChange={handleInputChange}
+                                                        {...register('serviceType', { required: 'Loại dịch vụ là bắt buộc' })}
                                                     >
                                                         <option value="" disabled className="text-gray-500">
                                                             Chọn loại dịch vụ
                                                         </option>
-                                                        <option className="hover:bg-gray-100">
-                                                            Giải trí
-                                                        </option>
-                                                        <option className="hover:bg-gray-100">Học tập</option>
-                                                        <option className="hover:bg-gray-100">Làm việc</option>
-                                                        <option className="hover:bg-gray-100">Dịch vụ khác</option>
+                                                        <option value="study">Học tập</option>
+                                                        <option value="work">Làm việc</option>
+                                                        <option value="movie">Xem phim</option>
+                                                        <option value="music">Nghe nhạc</option>
                                                     </select>
                                                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                                                         <svg
@@ -154,6 +246,7 @@ function AddServiceModal({ isOpen, onClose, action, initialData }) {
                                                         </svg>
                                                     </div>
                                                 </div>
+                                                {errors.serviceType && <p className="mt-2 text-sm text-red-600">{errors.serviceType.message}</p>}
                                             </div>
                                             <div className="mb-4">
                                                 <label htmlFor="website" className="block text-sm font-medium text-gray-700">
@@ -163,24 +256,12 @@ function AddServiceModal({ isOpen, onClose, action, initialData }) {
                                                     type="text"
                                                     id="website"
                                                     name="website"
-                                                    value={action === "add" ? "" : formData.website}
-                                                    className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                    onChange={handleInputChange}
+                                                    {...register('website')}
+                                                    className={`mt-1 block w-full py-2 px-3 border rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm ${errors.website ? 'border-red-500' : 'border-gray-300'
+                                                        }`}
                                                     disabled={action === "view"}
                                                 />
-                                            </div>
-                                            <div className="mb-4">
-                                                <label htmlFor="pricingInfo" className="block text-sm font-medium text-gray-700">
-                                                    Thông tin giá dịch vụ
-                                                </label>
-                                                <textarea
-                                                    id="pricingInfo"
-                                                    name="pricingInfo"
-                                                    value={action === "add" ? "" : formData.pricingInfo}
-                                                    className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                    onChange={handleInputChange}
-                                                    disabled={action === "view"}
-                                                ></textarea>
+                                                {errors.website && <p className="mt-2 text-sm text-red-600">{errors.website.message}</p>}
                                             </div>
                                             <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                                                 {action !== "view" && (

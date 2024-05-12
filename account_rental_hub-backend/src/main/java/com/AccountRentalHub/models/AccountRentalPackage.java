@@ -19,6 +19,8 @@ public class AccountRentalPackage extends BaseEntity{
     private String description;
     @Column(name = "img_url")
     private String imgURL;
+    @Column(name = "amount")
+    private Long amount;
 
     @OneToMany(mappedBy = "accountRentalPackage", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<AccountRental> accountRentals;
@@ -73,6 +75,14 @@ public class AccountRentalPackage extends BaseEntity{
 
     public void setImgURL(String imgURL) {
         this.imgURL = imgURL;
+    }
+
+    public Long getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Long amount) {
+        this.amount = amount;
     }
 
     public AccountRentalServices getAccountRentalService() {

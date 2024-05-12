@@ -2,14 +2,13 @@ package com.AccountRentalHub.services.impl;
 
 import com.AccountRentalHub.models.AccountRentalServices;
 import com.AccountRentalHub.repository.AccountRentalServiceRepository;
-import com.AccountRentalHub.models.AccountRentalServices;
-import com.AccountRentalHub.services.AccountRentalService;
 import com.AccountRentalHub.services.AccountRentalServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,7 +22,11 @@ public class AccountRentalServiceServiceImpl implements AccountRentalServiceServ
     }
 
     @Override
-    public AccountRentalServices createAccountRentalService(AccountRentalServices accountRentalService) {
+    public AccountRentalServices createAccountRentalService(AccountRentalServices accountRentalService) throws Exception {
+        // Kiểm tra xem name đã tồn tại chưa
+        if (accountRentalServiceRepository.existsByName(accountRentalService.getName())) {
+            throw new Exception("Tên đã tồn tại: " + accountRentalService.getName());
+        }
         return accountRentalServiceRepository.save(accountRentalService);
     }
 
@@ -37,6 +40,7 @@ public class AccountRentalServiceServiceImpl implements AccountRentalServiceServ
             existingAccountRentalService.setImage(newAccountRentalServiceData.getImage());
             existingAccountRentalService.setDescription(newAccountRentalServiceData.getDescription());
             existingAccountRentalService.setWebsite(newAccountRentalServiceData.getWebsite());
+            existingAccountRentalService.setCategory(newAccountRentalServiceData.getCategory());
             // Cập nhật createdAt và updatedAt không cần thiết vì chúng sẽ được tự động cập nhật
             return accountRentalServiceRepository.save(existingAccountRentalService);
         } else {
@@ -53,5 +57,20 @@ public class AccountRentalServiceServiceImpl implements AccountRentalServiceServ
     @Override
     public Page<AccountRentalServices> getAllAccountRentalServices(Pageable pageable) {
         return accountRentalServiceRepository.findAll(pageable);
+    }
+
+    @Override
+    public List<AccountRentalServices> searchAccountRentalServicesByCategory(String category) {
+        return accountRentalServiceRepository.findByCategory(category);
+    }
+
+    @Override
+    public Page<AccountRentalServices> searchAccountRentalServicesByCategoryPageable(Pageable pageable, String category) {
+        return accountRentalServiceRepository.findByCategory(category, pageable);
+    }
+
+    @Override
+    public Page<AccountRentalServices> searchAccountRentalServicesByCategoryAndNamePageable(Pageable pageable, String category, String name) {
+        return accountRentalServiceRepository.findByCategoryAndName(category,name, pageable);
     }
 }

@@ -4,11 +4,21 @@ import { AccountContext } from "../../context/AccountContext";
 
 function Services() {
 
-    const {action, setAction, actions, serviceAccounts} = useContext(AccountContext);
+    const { action, setAction, actions, serviceAccounts, setPage, setCategorySearch,  deleteData, serviceAccountsPageable, changePage, searchData } = useContext(AccountContext);
 
     const [showModal, setShowModal] = useState(false);
     const [showDeteteModal, setShowDeleteModal] = useState(false);
     const dataModalRef = useRef(null);
+
+    // Handle change pagination
+    const handlePageChange = (newPage) => {
+        changePage(newPage);
+      };
+
+    const handleSearchData = (category, name) => {
+        console.log(`name: ${name}, category: ${category}`);
+        searchData(category, name);
+    }
 
     // Hanldle Add Services
     const handleAddServiceClick = () => {
@@ -50,7 +60,7 @@ function Services() {
     }
 
     const handleDeleteService = (serviceId) => {
-        console.log(`Xóa dịch vụ có id ${serviceId}`);
+        deleteData(serviceId)
         setShowDeleteModal(false);
         dataModalRef.current = null
     };
@@ -71,6 +81,9 @@ function Services() {
                 handleDeleteServiceClick={handleDeteteServiceClick}
                 handleDeleteModalClose={handleDeleteModalClose}
                 handleDeleteService={handleDeleteService}
+                pageable={serviceAccountsPageable}
+                onPageChange={handlePageChange} // Truyền hàm xử lý khi chuyển trang
+                onSearchData={handleSearchData}
             />
 
         </>

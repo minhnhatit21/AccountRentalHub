@@ -18,6 +18,7 @@ import UserSearchPage from './user/pages/UserSearchPage';
 import AuthProvider from './user/context/AuthContext';
 import UserProfile from './user/pages/UserProfilePage';
 import { UserDefaultLayout, UserHomeDefaultLayout } from './user/pages/layout/DefaultLayout';
+import TestAPI from './user/pages/Test';
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
           <Route path='/forgotPassword' element={<ForgotPasswordPage/>} />
           <Route path='/reset-password' element={<ResetPasswordPage/>} />
           <Route path="/admin/login" element={<LoginForm />} />
+          <Route path="/test" element={<TestAPI />} />
           <Route path="/admin/dashboard" element={<AdminRoute><DefaultLayout><Dashboard /></DefaultLayout></AdminRoute>} />
         </Routes>
         <UserRoutes/>

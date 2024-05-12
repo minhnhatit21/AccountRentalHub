@@ -1,6 +1,7 @@
 package com.AccountRentalHub.controllers;
 
 import com.AccountRentalHub.models.AccountRentalServices;
+import com.AccountRentalHub.payload.response.CustomPageResponse;
 import com.AccountRentalHub.services.AccountRentalServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 import java.util.Optional;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -24,9 +27,15 @@ public class AccountRentalServiceController {
 
     // Tạo mới một AccountRentalService
     @PostMapping
-    public ResponseEntity<AccountRentalServices> createAccountRentalService(@RequestBody AccountRentalServices accountRentalService) {
-        AccountRentalServices createdAccountRentalService = accountRentalServiceService.createAccountRentalService(accountRentalService);
-        return new ResponseEntity<>(createdAccountRentalService, HttpStatus.CREATED);
+    public ResponseEntity<?> createAccountRentalService(@RequestBody AccountRentalServices accountRentalService) {
+        try {
+            AccountRentalServices createdAccountRentalService = accountRentalServiceService.createAccountRentalService(accountRentalService);
+            return new ResponseEntity<>(createdAccountRentalService, HttpStatus.CREATED);
+        } catch (Exception e) {
+            // Nếu tên đã tồn tại, trả về thông báo lỗi
+            String errorMessage = "Tên đã tồn tại: " + accountRentalService.getName();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+        }
     }
 
     // Đọc thông tin của một AccountRentalService dựa trên id
@@ -47,6 +56,7 @@ public class AccountRentalServiceController {
         if (updatedAccountRentalService != null) {
             return new ResponseEntity<>(updatedAccountRentalService, HttpStatus.OK);
         } else {
+            String errorMessage = "Không tìm thấy";
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
@@ -60,8 +70,59 @@ public class AccountRentalServiceController {
 
     // Lấy danh sách tất cả các AccountRentalService với phân trang
     @GetMapping
-    public ResponseEntity<Page<AccountRentalServices>> getAllAccountRentalServices(Pageable pageable) {
+    public ResponseEntity<CustomPageResponse<AccountRentalServices>> getAllAccountRentalServices(Pageable pageable) {
         Page<AccountRentalServices> accountRentalServices = accountRentalServiceService.getAllAccountRentalServices(pageable);
-        return new ResponseEntity<>(accountRentalServices, HttpStatus.OK);
+        CustomPageResponse<AccountRentalServices> response = new CustomPageResponse<>(
+                accountRentalServices.getContent(),
+                accountRentalServices.getNumber(),
+                accountRentalServices.getSize(),
+                accountRentalServices.getTotalElements(),
+                accountRentalServices.getTotalPages()
+        );
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+//    @GetMapping("/search")
+//    public ResponseEntity<List<AccountRentalServices>> searchAccountRentalServicesByCategory(@RequestParam(required = false) String cat) {
+//        List<AccountRentalServices> searchResult = accountRentalServiceService.searchAccountRentalServicesByCategory(cat);
+//        if (searchResult.isEmpty()) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        } else {
+//            return new ResponseEntity<>(searchResult, HttpStatus.OK);
+//        }
+//    }
+
+//    @GetMapping("/search")
+//    public ResponseEntity<CustomPageResponse<AccountRentalServices>> searchAccountRentalServicesByCategory(@RequestParam(required = false) String cat, Pageable pageable) {
+//        Page<AccountRentalServices> searchResult = accountRentalServiceService.searchAccountRentalServicesByCategoryPageable(pageable, cat);
+//        if (searchResult.isEmpty()) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        } else {
+//            CustomPageResponse<AccountRentalServices> response = new CustomPageResponse<>(
+//                    searchResult.getContent(),
+//                    searchResult.getNumber(),
+//                    searchResult.getSize(),
+//                    searchResult.getTotalElements(),
+//                    searchResult.getTotalPages()
+//            );
+//            return new ResponseEntity<>(response, HttpStatus.OK);
+//        }
+//    }
+
+    @GetMapping("/search")
+    public ResponseEntity<CustomPageResponse<AccountRentalServices>> searchAccountRentalServicesByCategoryAndPage(@RequestParam(required = false) String cat, @RequestParam(required = false) String name, Pageable pageable) {
+        Page<AccountRentalServices> searchResult = accountRentalServiceService.searchAccountRentalServicesByCategoryAndNamePageable(pageable, cat, name);
+        if (searchResult.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else {
+            CustomPageResponse<AccountRentalServices> response = new CustomPageResponse<>(
+                    searchResult.getContent(),
+                    searchResult.getNumber(),
+                    searchResult.getSize(),
+                    searchResult.getTotalElements(),
+                    searchResult.getTotalPages()
+            );
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
     }
 }

@@ -16,6 +16,9 @@ public class AccountRentalServices extends BaseEntity{
     @Column(name = "service_link_website")
     private String website;
 
+    @Column(name = "service_catergory")
+    private String category;
+
     @OneToOne(mappedBy = "accountRentalService")
     private AccountRentalPackage accountRentalPackage;
 
@@ -49,6 +52,14 @@ public class AccountRentalServices extends BaseEntity{
 
     public void setWebsite(String website) {
         this.website = website;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public AccountRentalPackage getAccountRentalPackage() {

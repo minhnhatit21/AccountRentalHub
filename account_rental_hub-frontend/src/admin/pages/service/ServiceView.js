@@ -1,8 +1,10 @@
 import AddServiceModal from "./AddModal";
 import Pagination from "../../components/partials/pagination";
 import DeleteServiceModal from "./DeleteModal";
+import { useState } from "react";
 
 function ServicesComponent({
+    pageable,
     serviceAccounts,
     action,
     showModal,
@@ -15,8 +17,22 @@ function ServicesComponent({
     handleDeleteServiceClick,
     handleDeleteModalClose,
     handleDeleteService,
+    onPageChange,
+    onSearchData
 }) {
-    
+
+    const [formData, setFormData] = useState({});
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        onSearchData(formData.category, formData.name);
+    }
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prevState) => ({ ...prevState, [name]: value }));
+    };
+
     const onDeleteServiceClick = (id) => {
         handleDeleteServiceClick(id);
     }
@@ -28,56 +44,58 @@ function ServicesComponent({
     const onEditServiceClick = (id) => {
         handleEditServiceClick(id);
     }
-    
+
     return (
         <>
             <h1 class="font-bold mb-8 text-2xl">Quản lý dịch vụ</h1>
             <div className="rounded-xl border border-stroke bg-white px-5 py-6 m-4 shadow-default sm:px-7.5 xl:pb-1" >
                 <div className="flex flex-col mb-4 md:flex-row items-center justify-center md:space-x-4">
-                    <div className="w-full md:w-64 mb-6 md:mb-0">
-                        {/* <label htmlFor="serviceType" className="block text-md font-medium text-gray-700">
-                            Loại dịch vụ
-                        </label> */}
-                        <div className="relative">
-                            <select
-                                id="serviceType"
-                                name="serviceType"
-                                className="block w-full rounded-md border-gray-300 border-2 py-2 pl-3 pr-8 text-base focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm appearance-none bg-white"
-                                defaultValue=""
-                            >
-                                <option value="" disabled className="text-gray-500">
-                                    Chọn loại dịch vụ
-                                </option>
-                                <option className="hover:bg-gray-100">
-                                    Giải trí
-                                </option>
-                                <option className="hover:bg-gray-100">Học tập</option>
-                                <option className="hover:bg-gray-100">Làm việc</option>
-                                <option className="hover:bg-gray-100">Dịch vụ khác</option>
-                            </select>
-                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                                <svg
-                                    className="h-5 w-5 text-gray-400"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20"
-                                    fill="currentColor"
-                                    aria-hidden="true"
+                    <form 
+                        onSubmit={handleSearch}
+                        className="flex flex-col md:flex-row items-center justify-center md:space-x-4 space-y-4 md:space-y-0 w-full">
+                        <div className="w-full md:w-64 mb-6 md:mb-0">
+                            <div className="relative">
+                                <select
+                                    id="category"
+                                    name="category"
+                                    className="block w-full rounded-md border-gray-300 border-2 py-2 pl-3 pr-8 text-base focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm appearance-none bg-white"
+                                    onChange={handleInputChange}
+                                    value={formData.category || ''}
                                 >
-                                    <path
-                                        fillRule="evenodd"
-                                        d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
+                                    <option value="" className="text-gray-500">
+                                        Chọn loại dịch vụ
+                                    </option>
+                                    <option value="study">Học tập</option>
+                                    <option value="work">Làm việc</option>
+                                    <option value="movie">Xem phim</option>
+                                    <option value="music">Nghe nhạc</option>
+                                </select>
+                                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                                    <svg
+                                        className="h-5 w-5 text-gray-400"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                        aria-hidden="true"
+                                    >
+                                        <path
+                                            fillRule="evenodd"
+                                            d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                                            clipRule="evenodd"
+                                        />
+                                    </svg>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <form className="flex flex-col md:flex-row items-center justify-center md:space-x-4 space-y-4 md:space-y-0 w-full">
+
                         <div className="flex-grow">
                             <input
                                 type="text"
+                                name="name"
+                                id="name"
                                 placeholder="Nhập tên dịch vụ cần tìm kiếm..."
                                 className="w-full px-4 py-2 rounded-md border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                onChange={handleInputChange}
                             />
                         </div>
                         <button
@@ -175,15 +193,6 @@ function ServicesComponent({
                                         Website
                                     </p>
                                 </th>
-                                <th
-                                    className="min-w-[120px] px-4 py-4 font-medium text-black"
-                                >
-                                    <p
-                                        className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-md font-medium text-success"
-                                    >
-                                        Thông tin giá dịch vụ
-                                    </p>
-                                </th>
                                 <th className="px-4 py-4 font-medium text-black">
                                     <p
                                         className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-md font-medium text-success"
@@ -230,13 +239,6 @@ function ServicesComponent({
                                             className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
                                         >
                                             {service.website}
-                                        </p>
-                                    </td>
-                                    <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                                        <p
-                                            className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
-                                        >
-                                            {service.pricing_info}
                                         </p>
                                     </td>
                                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
@@ -311,7 +313,12 @@ function ServicesComponent({
                         </tbody>
                     </table>
                 </div>
-                <Pagination />
+                {pageable && (
+                    <Pagination
+                        pageable={pageable}
+                        onPageChange={onPageChange}
+                    />
+                )}
             </div>
         </>
     );
