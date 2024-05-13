@@ -30,6 +30,7 @@ public class AccountRentalPackageServiceImpl implements AccountRentalPackageServ
         Optional<AccountRentalPackage> existingAccountRentalPackageOptional = accountRentalPackageRepository.findById(id);
         if (existingAccountRentalPackageOptional.isPresent()) {
             AccountRentalPackage existingAccountRentalPackage = existingAccountRentalPackageOptional.get();
+            existingAccountRentalPackage.setName(newAccountRentalPackageData.getName());
             existingAccountRentalPackage.setDuration(newAccountRentalPackageData.getDuration());
             existingAccountRentalPackage.setDiscount(newAccountRentalPackageData.getDiscount());
             existingAccountRentalPackage.setPrice(newAccountRentalPackageData.getPrice());
@@ -50,5 +51,10 @@ public class AccountRentalPackageServiceImpl implements AccountRentalPackageServ
     @Override
     public Page<AccountRentalPackage> getAllAccountRentalPackages(Pageable pageable) {
         return accountRentalPackageRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<AccountRentalPackage> searchAccountRentalPackagesPageable(Pageable pageable, String serviceName, String name) {
+        return accountRentalPackageRepository.findByServiceAndServiceName(serviceName, name, pageable);
     }
 }

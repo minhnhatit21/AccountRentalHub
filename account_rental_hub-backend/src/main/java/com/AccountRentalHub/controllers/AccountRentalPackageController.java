@@ -2,6 +2,7 @@ package com.AccountRentalHub.controllers;
 
 import com.AccountRentalHub.models.AccountRentalPackage;
 import com.AccountRentalHub.models.AccountRentalServices;
+import com.AccountRentalHub.payload.response.CustomPageResponse;
 import com.AccountRentalHub.services.AccountRentalPackageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -50,9 +51,20 @@ public class AccountRentalPackageController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping
-    public ResponseEntity<Page<AccountRentalPackage>> getAllAccountRentalServices(Pageable pageable) {
-        Page<AccountRentalPackage> accountRentalPackage = accountRentalPackageService.getAllAccountRentalPackages(pageable);
-        return new ResponseEntity<>(accountRentalPackage, HttpStatus.OK);
+    @GetMapping("/search")
+    public ResponseEntity<CustomPageResponse<AccountRentalPackage>> searchAccountRentalServicesByServiceNameAndPage(@RequestParam(required = false) String service, @RequestParam(required = false) String name, Pageable pageable) {
+        Page<AccountRentalPackage> searchResult = accountRentalPackageService.searchAccountRentalPackagesPageable(pageable,service,name);
+        if (searchResult.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else {
+            CustomPageResponse<AccountRentalPackage> response = new CustomPageResponse<>(
+                    searchResult.getContent(),
+                    searchResult.getNumber(),
+                    searchResult.getSize(),
+                    searchResult.getTotalElements(),
+                    searchResult.getTotalPages()
+            );
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
     }
 }

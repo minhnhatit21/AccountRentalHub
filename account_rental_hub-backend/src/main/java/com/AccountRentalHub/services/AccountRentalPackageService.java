@@ -42,4 +42,9 @@ public interface AccountRentalPackageService {
      * @return
      */
     Page<AccountRentalPackage> getAllAccountRentalPackages(Pageable pageable);
+
+    /**
+     * Search list AccountRentalPackage with service name and account package name
+     */
+    Page<AccountRentalPackage> searchAccountRentalPackagesPageable(Pageable pageable, String serviceName, String name);
 }

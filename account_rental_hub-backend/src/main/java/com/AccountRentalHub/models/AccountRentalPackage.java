@@ -7,6 +7,9 @@ import java.util.List;
 @Entity
 @Table(name = "account_rental_package")
 public class AccountRentalPackage extends BaseEntity{
+
+    @Column(name = "account_package_name")
+    private String name;
     @Column(name = "duration")
     private Integer duration;
     @Column(name = "price")
@@ -22,8 +25,8 @@ public class AccountRentalPackage extends BaseEntity{
     @Column(name = "amount")
     private Long amount;
 
-    @OneToMany(mappedBy = "accountRentalPackage", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<AccountRental> accountRentals;
+//    @OneToMany(mappedBy = "accountRentalPackage", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    private List<AccountRental> accountRentals;
 
     @OneToOne
     @JoinColumn(name = "service_id", referencedColumnName = "id")
@@ -77,6 +80,14 @@ public class AccountRentalPackage extends BaseEntity{
         this.imgURL = imgURL;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public Long getAmount() {
         return amount;
     }
@@ -93,11 +104,11 @@ public class AccountRentalPackage extends BaseEntity{
         this.accountRentalService = accountRentalService;
     }
 
-    public List<AccountRental> getAccountRentals() {
-        return accountRentals;
-    }
-
-    public void setAccountRentals(List<AccountRental> accountRentals) {
-        this.accountRentals = accountRentals;
-    }
+//    public List<AccountRental> getAccountRentals() {
+//        return accountRentals;
+//    }
+//
+//    public void setAccountRentals(List<AccountRental> accountRentals) {
+//        this.accountRentals = accountRentals;
+//    }
 }

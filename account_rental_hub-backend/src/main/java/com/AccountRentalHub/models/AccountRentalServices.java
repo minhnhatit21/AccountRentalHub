@@ -19,8 +19,8 @@ public class AccountRentalServices extends BaseEntity{
     @Column(name = "service_catergory")
     private String category;
 
-    @OneToOne(mappedBy = "accountRentalService")
-    private AccountRentalPackage accountRentalPackage;
+//    @OneToOne(mappedBy = "accountRentalService")
+//    private AccountRentalPackage accountRentalPackage;
 
     public String getName() {
         return name;
@@ -62,11 +62,11 @@ public class AccountRentalServices extends BaseEntity{
         this.category = category;
     }
 
-    public AccountRentalPackage getAccountRentalPackage() {
-        return accountRentalPackage;
-    }
-
-    public void setAccountRentalPackage(AccountRentalPackage accountRentalPackage) {
-        this.accountRentalPackage = accountRentalPackage;
-    }
+//    public AccountRentalPackage getAccountRentalPackage() {
+//        return accountRentalPackage;
+//    }
+//
+//    public void setAccountRentalPackage(AccountRentalPackage accountRentalPackage) {
+//        this.accountRentalPackage = accountRentalPackage;
+//    }
 }
