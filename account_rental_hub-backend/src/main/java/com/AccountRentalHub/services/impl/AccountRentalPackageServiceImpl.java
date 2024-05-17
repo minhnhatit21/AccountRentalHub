@@ -1,22 +1,41 @@
 package com.AccountRentalHub.services.impl;
 
 import com.AccountRentalHub.models.AccountRentalPackage;
+import com.AccountRentalHub.models.AccountRentalServices;
 import com.AccountRentalHub.repository.AccountRentalPackageRepository;
+import com.AccountRentalHub.repository.AccountRentalServiceRepository;
 import com.AccountRentalHub.services.AccountRentalPackageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AccountRentalPackageServiceImpl implements AccountRentalPackageService {
 
     @Autowired
     private AccountRentalPackageRepository accountRentalPackageRepository;
+
+    @Autowired
+    private AccountRentalServiceRepository accountRentalServiceRepository;
     @Override
-    public AccountRentalPackage createAccountRentalPackage(AccountRentalPackage accountRentalPackage) {
+    public AccountRentalPackage createAccountRentalPackage(AccountRentalPackage accountRentalPackage) throws Exception {
+        // Kiểm tra tên gói đã tồn tại hay chưa
+        if (accountRentalPackageRepository.existsByName(accountRentalPackage.getName())) {
+            throw new Exception("Tên đã tồn tại: " + accountRentalPackage.getName());
+        }
+
+        // Tính toán giá trị discount dựa trên giá gốc và giá đã giảm
+        if (accountRentalPackage.getPrice() != null && accountRentalPackage.getDiscountedPrice() != null) {
+            double discountPercentage = 100 - (accountRentalPackage.getDiscountedPrice() / accountRentalPackage.getPrice()) * 100;
+            accountRentalPackage.setDiscount((int) Math.ceil(discountPercentage));
+        }
+
         return accountRentalPackageRepository.save(accountRentalPackage);
     }
 
@@ -49,12 +68,17 @@ public class AccountRentalPackageServiceImpl implements AccountRentalPackageServ
     }
 
     @Override
+    public List<AccountRentalPackage> getAllAccountRentalPackages() {
+        return accountRentalPackageRepository.findAllAccountRentalPackages();
+    }
+
+    @Override
     public Page<AccountRentalPackage> getAllAccountRentalPackages(Pageable pageable) {
         return accountRentalPackageRepository.findAll(pageable);
     }
 
     @Override
-    public Page<AccountRentalPackage> searchAccountRentalPackagesPageable(Pageable pageable, String serviceName, String name) {
-        return accountRentalPackageRepository.findByServiceAndServiceName(serviceName, name, pageable);
+    public Page<AccountRentalPackage> searchAccountRentalPackagesPageable(Pageable pageable,Long serviceId, String name) {
+        return accountRentalPackageRepository.findByServiceIDAndPackageName(serviceId, name, pageable);
     }
 }

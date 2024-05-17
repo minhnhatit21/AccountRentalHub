@@ -8,11 +8,16 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface AccountRentalPackageRepository extends JpaRepository<AccountRentalPackage, Long> {
     @Query("SELECT arp FROM AccountRentalPackage arp WHERE " +
-            "(:serviceName IS NULL OR arp.accountRentalService.name = :serviceName OR :serviceName = '') " +
+            "(:serviceId IS NULL OR arp.accountRentalServices.id = :serviceId) " +
             "AND (:name IS NULL OR arp.name LIKE CONCAT('%', :name, '%'))")
-    Page<AccountRentalPackage> findByServiceAndServiceName(@Param("serviceName") String serviceName, @Param("name") String name, Pageable pageable);
+    Page<AccountRentalPackage> findByServiceIDAndPackageName(@Param("serviceId") Long serviceId, @Param("name") String name, Pageable pageable);
+    Boolean existsByName(String name);
 
+    @Query("SELECT s FROM AccountRentalPackage s ORDER BY s.name ASC")
+    List<AccountRentalPackage> findAllAccountRentalPackages();
 }

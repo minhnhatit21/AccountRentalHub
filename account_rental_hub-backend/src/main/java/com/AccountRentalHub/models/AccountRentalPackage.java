@@ -25,12 +25,9 @@ public class AccountRentalPackage extends BaseEntity{
     @Column(name = "amount")
     private Long amount;
 
-//    @OneToMany(mappedBy = "accountRentalPackage", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    private List<AccountRental> accountRentals;
-
-    @OneToOne
-    @JoinColumn(name = "service_id", referencedColumnName = "id")
-    private AccountRentalServices accountRentalService;
+    @ManyToOne
+    @JoinColumn(name = "service_id", referencedColumnName = "id", unique = false)
+    private AccountRentalServices accountRentalServices;
 
     public Integer getDuration() {
         return duration;
@@ -96,19 +93,11 @@ public class AccountRentalPackage extends BaseEntity{
         this.amount = amount;
     }
 
-    public AccountRentalServices getAccountRentalService() {
-        return accountRentalService;
+    public AccountRentalServices getAccountRentalServices() {
+        return accountRentalServices;
     }
 
-    public void setAccountRentalService(AccountRentalServices accountRentalService) {
-        this.accountRentalService = accountRentalService;
+    public void setAccountRentalServices(AccountRentalServices accountRentalServices) {
+        this.accountRentalServices = accountRentalServices;
     }
-
-//    public List<AccountRental> getAccountRentals() {
-//        return accountRentals;
-//    }
-//
-//    public void setAccountRentals(List<AccountRental> accountRentals) {
-//        this.accountRentals = accountRentals;
-//    }
 }

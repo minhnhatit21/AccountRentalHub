@@ -12,4 +12,5 @@ public interface AccountRentalService {
     AccountRental updateAccountRental(Long id, AccountRental newAccountRentalData);
     void deleteAccountRental(Long id);
     Page<AccountRental> getAllAccountRentals(Pageable pageable);
+    Page<AccountRental> getAllAccountRentalsPageable(Pageable pageable, String status, Long packageID, String username);
 }

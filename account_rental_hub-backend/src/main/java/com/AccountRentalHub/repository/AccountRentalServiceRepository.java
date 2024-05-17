@@ -1,6 +1,7 @@
 package com.AccountRentalHub.repository;
 
 import com.AccountRentalHub.models.AccountRentalServices;
+import com.AccountRentalHub.payload.response.ServiceResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,5 +23,7 @@ public interface AccountRentalServiceRepository extends JpaRepository<AccountRen
             "AND (:name IS NULL OR ars.name LIKE CONCAT('%', :name, '%'))")
     Page<AccountRentalServices> findByCategoryAndName(@Param("category") String category, @Param("name") String name, Pageable pageable);
 
+    @Query("SELECT ars FROM AccountRentalServices ars ORDER BY ars.name ASC")
+    List<AccountRentalServices> findAllServiceResponses();
     Boolean existsByName(String name);
 }

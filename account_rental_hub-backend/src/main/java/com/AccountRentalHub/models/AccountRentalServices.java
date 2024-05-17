@@ -2,6 +2,8 @@ package com.AccountRentalHub.models;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "account_rental_service")
 public class AccountRentalServices extends BaseEntity{
@@ -19,8 +21,8 @@ public class AccountRentalServices extends BaseEntity{
     @Column(name = "service_catergory")
     private String category;
 
-//    @OneToOne(mappedBy = "accountRentalService")
-//    private AccountRentalPackage accountRentalPackage;
+//    @OneToMany(mappedBy = "accountRentalServices", fetch = FetchType.LAZY)
+//    private List<AccountRentalPackage> accountRentalPackages;
 
     public String getName() {
         return name;
@@ -62,11 +64,11 @@ public class AccountRentalServices extends BaseEntity{
         this.category = category;
     }
 
-//    public AccountRentalPackage getAccountRentalPackage() {
-//        return accountRentalPackage;
+//    public List<AccountRentalPackage> getAccountRentalPackages() {
+//        return accountRentalPackages;
 //    }
 //
-//    public void setAccountRentalPackage(AccountRentalPackage accountRentalPackage) {
-//        this.accountRentalPackage = accountRentalPackage;
+//    public void setAccountRentalPackages(List<AccountRentalPackage> accountRentalPackages) {
+//        this.accountRentalPackages = accountRentalPackages;
 //    }
 }

@@ -2,6 +2,7 @@ package com.AccountRentalHub.controllers;
 
 import com.AccountRentalHub.models.AccountRentalServices;
 import com.AccountRentalHub.payload.response.CustomPageResponse;
+import com.AccountRentalHub.payload.response.ServiceResponse;
 import com.AccountRentalHub.services.AccountRentalServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -82,32 +83,11 @@ public class AccountRentalServiceController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-//    @GetMapping("/search")
-//    public ResponseEntity<List<AccountRentalServices>> searchAccountRentalServicesByCategory(@RequestParam(required = false) String cat) {
-//        List<AccountRentalServices> searchResult = accountRentalServiceService.searchAccountRentalServicesByCategory(cat);
-//        if (searchResult.isEmpty()) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        } else {
-//            return new ResponseEntity<>(searchResult, HttpStatus.OK);
-//        }
-//    }
-
-//    @GetMapping("/search")
-//    public ResponseEntity<CustomPageResponse<AccountRentalServices>> searchAccountRentalServicesByCategory(@RequestParam(required = false) String cat, Pageable pageable) {
-//        Page<AccountRentalServices> searchResult = accountRentalServiceService.searchAccountRentalServicesByCategoryPageable(pageable, cat);
-//        if (searchResult.isEmpty()) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        } else {
-//            CustomPageResponse<AccountRentalServices> response = new CustomPageResponse<>(
-//                    searchResult.getContent(),
-//                    searchResult.getNumber(),
-//                    searchResult.getSize(),
-//                    searchResult.getTotalElements(),
-//                    searchResult.getTotalPages()
-//            );
-//            return new ResponseEntity<>(response, HttpStatus.OK);
-//        }
-//    }
+    @GetMapping("/list")
+    public ResponseEntity<List<AccountRentalServices>> getAllServices() {
+        List<AccountRentalServices> services = accountRentalServiceService.getAllServiceResponses();
+        return new ResponseEntity<>(services, HttpStatus.OK);
+    }
 
     @GetMapping("/search")
     public ResponseEntity<CustomPageResponse<AccountRentalServices>> searchAccountRentalServicesByCategoryAndPage(@RequestParam(required = false) String cat, @RequestParam(required = false) String name, Pageable pageable) {

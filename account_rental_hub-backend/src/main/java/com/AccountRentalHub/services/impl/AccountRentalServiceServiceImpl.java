@@ -1,6 +1,7 @@
 package com.AccountRentalHub.services.impl;
 
 import com.AccountRentalHub.models.AccountRentalServices;
+import com.AccountRentalHub.payload.response.ServiceResponse;
 import com.AccountRentalHub.repository.AccountRentalServiceRepository;
 import com.AccountRentalHub.services.AccountRentalServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,12 @@ public class AccountRentalServiceServiceImpl implements AccountRentalServiceServ
     public void deleteAccountRentalService(Long id) {
         accountRentalServiceRepository.deleteById(id);
     }
+
+    @Override
+    public List<AccountRentalServices> getAllServiceResponses() {
+        return accountRentalServiceRepository.findAllServiceResponses();
+    }
+
 
     @Override
     public Page<AccountRentalServices> getAllAccountRentalServices(Pageable pageable) {

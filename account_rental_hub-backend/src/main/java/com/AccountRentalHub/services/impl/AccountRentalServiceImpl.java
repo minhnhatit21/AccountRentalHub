@@ -35,6 +35,8 @@ public class AccountRentalServiceImpl implements AccountRentalService {
             existingAccountRental.setEmail(newAccountRentalData.getEmail());
             existingAccountRental.setPassword(newAccountRentalData.getPassword());
             existingAccountRental.setStatus(newAccountRentalData.getStatus());
+            existingAccountRental.setRenewStartDate(newAccountRentalData.getRenewStartDate());
+            existingAccountRental.setRenewEndDate(newAccountRentalData.getRenewEndDate());
             return accountRentalRepository.save(existingAccountRental);
         } else {
             // Xử lý khi không tìm thấy AccountRental
@@ -51,4 +53,10 @@ public class AccountRentalServiceImpl implements AccountRentalService {
     public Page<AccountRental> getAllAccountRentals(Pageable pageable) {
         return accountRentalRepository.findAll(pageable);
     }
+
+    @Override
+    public Page<AccountRental> getAllAccountRentalsPageable(Pageable pageable, String status, Long packageID, String username) {
+        return accountRentalRepository.findByStatusUsernameAndPackageId(status,username,packageID,pageable);
+    }
+
 }

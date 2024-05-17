@@ -5,6 +5,7 @@ import com.AccountRentalHub.models.AccountRentalPackage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface AccountRentalPackageService {
@@ -13,7 +14,7 @@ public interface AccountRentalPackageService {
      * @param accountRentalPackage
      * @return AccountRentalPackage
      */
-    AccountRentalPackage createAccountRentalPackage(AccountRentalPackage accountRentalPackage);
+    AccountRentalPackage createAccountRentalPackage(AccountRentalPackage accountRentalPackage) throws Exception;
 
     /**
      * Get AccountRentalPackage by ID
@@ -37,6 +38,12 @@ public interface AccountRentalPackageService {
     void deleteAccountRentalPackage(Long id);
 
     /**
+     * Get all list AccountRentalPackages without pagination
+     * @return
+     */
+    List<AccountRentalPackage> getAllAccountRentalPackages();
+
+    /**
      * Get list AccountRentalPackages with pagination
      * @param pageable
      * @return
@@ -46,5 +53,5 @@ public interface AccountRentalPackageService {
     /**
      * Search list AccountRentalPackage with service name and account package name
      */
-    Page<AccountRentalPackage> searchAccountRentalPackagesPageable(Pageable pageable, String serviceName, String name);
+    Page<AccountRentalPackage> searchAccountRentalPackagesPageable(Pageable pageable, Long serviceId, String name);
 }
