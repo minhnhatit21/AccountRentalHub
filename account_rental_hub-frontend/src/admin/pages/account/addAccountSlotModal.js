@@ -355,8 +355,7 @@ function AddAccountSlotModal({ isOpen, onClose, action, initialData }) {
                 }));
             }
         } else {
-            // Xử lý trường hợp e không có target
-            // Ví dụ: khi cập nhật giá trị từ DatePicker
+
             const { name, value } = e;
             setFormData((prevState) => ({
                 ...prevState,

@@ -1,30 +1,31 @@
 import { useEffect, useState } from "react";
 
 function DeleteAccountPackageModal({ isOpen, onClose, serviceDataToDelete, onDeleteService }) {
-    const [isDeleting, setIsDeleting] = useState(false);
-    
+    const [formData, setFormData] = useState({ packageName: '' });
+    const [idData, setIdData] = useState(0);
+
     const deleteData = (data) => {
         let initData;
         if (Array.isArray(data) && data.length > 0) {
             initData = data[0];
+            setIdData(data[0].id);
         } else {
             initData = data;
+            setIdData(data.id);
         }
-        console.log("Delete Data: ", initData)
         return {
-            serviceName: initData.name || '',
+            packageName: initData.name || '',
         };
     };
-    const [formData, setFormData] = useState(deleteData(serviceDataToDelete || {}));
-    
+
     const handleDelete = () => {
-        setIsDeleting(true);
-        onDeleteService(serviceDataToDelete.id);
+        onDeleteService(idData);
     };
 
     useEffect(() => {
         if (serviceDataToDelete) {
-            setFormData(deleteData(serviceDataToDelete));
+            const newFormData = deleteData(serviceDataToDelete);
+            setFormData(newFormData);
         }
     }, [serviceDataToDelete]);
 
@@ -41,11 +42,11 @@ function DeleteAccountPackageModal({ isOpen, onClose, serviceDataToDelete, onDel
                             <div>
                                 <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                                     <h3 className="text-lg leading-6 font-medium text-gray-900">
-                                        Xóa gói tài khoản "{formData.serviceName}"
+                                        Xóa gói tài khoản "{formData.packageName}"
                                     </h3>
                                     <div className="mt-2">
                                         <p className="text-sm text-gray-500">
-                                            Bạn có chắc chắn muốn xóa gói tài khoản "{formData.serviceName}"? Hành động này sẽ không thể hoàn tác.
+                                            Bạn có chắc chắn muốn xóa gói tài khoản "{formData.packageName}"? Hành động này sẽ không thể hoàn tác.
                                         </p>
                                     </div>
                                 </div>
@@ -53,10 +54,8 @@ function DeleteAccountPackageModal({ isOpen, onClose, serviceDataToDelete, onDel
                             <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                                 <button
                                     type="button"
-                                    className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''
-                                        }`}
+                                    className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
                                     onClick={handleDelete}
-
                                 >
                                     Xóa
                                 </button>

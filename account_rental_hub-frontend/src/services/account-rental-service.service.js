@@ -17,6 +17,15 @@ const getAccountServiceRental = (page, size) => {
   return axios.get(API_URL + `?page=${page}&size=${size}`);
 }
 
+const getListServiceName = async () => {
+  try {
+    const response = await axios.get(API_URL + `/list`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
 const searchAccountServiceRental = async (page, size, category, name) => {
   try {
 
@@ -64,7 +73,8 @@ const AccountServiceRentalService = {
   updateAccountServiceRetal,
   deleteAccountServiceRental,
   searchAccountServiceRental,
-  testSearchAccountService
+  testSearchAccountService,
+  getListServiceName
 }
 
 export default AccountServiceRentalService;

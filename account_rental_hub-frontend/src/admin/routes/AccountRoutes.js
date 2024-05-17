@@ -12,10 +12,9 @@ const AccountRoutes = () => (
   <AccountProvider>
     <Routes>
       <Route path="/admin/account/list" element={<AdminRoute><DefaultLayout><Accounts /></DefaultLayout></AdminRoute>} />
-      <Route path="/admin/account/accountPackage" element={<AdminRoute><DefaultLayout><AccountPackage /></DefaultLayout></AdminRoute>} />
-      <Route path="/admin/account/service" element={<AdminRoute><DefaultLayout><Services /></DefaultLayout></AdminRoute>} />
     </Routes>
   </AccountProvider>
+
 );
 
 export default AccountRoutes;

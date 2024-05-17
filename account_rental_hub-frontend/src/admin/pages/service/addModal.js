@@ -4,11 +4,12 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import ImageService from "../../../services/image.service";
+import { AccountServiceContext } from "../../context/AccountServiceContext";
 
 
 function AddServiceModal({ isOpen, onClose, action, initialData }) {
 
-    const { createData, updateData } = useContext(AccountContext);
+    const { createData, updateData } = useContext(AccountServiceContext);
 
     const validationSchema = yup.object().shape({
         serviceName: yup.string().required('Tên dịch vụ là bắt buộc'),

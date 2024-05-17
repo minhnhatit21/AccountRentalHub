@@ -1,10 +1,34 @@
+import { useState } from "react";
 import Pagination from "../../components/partials/pagination";
 
 import AddAccountPackageModal from "./AddAccountPackageModal"
 import DeleteAccountPackageModal from "./DeleteAccountPackageModal";
 
+const serviceDropdown = (services, defaultValue, handleInputChange) => {
+    return (
+        <div>
+            <select
+                id="serviceName"
+                name="serviceName"
+                className="block w-full rounded-md border-gray-300 border-2 py-2 pl-3 pr-8 text-base focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm appearance-none bg-white"
+                value={defaultValue || ''}
+                onChange={handleInputChange}
+            >
+                <option value="">--Chọn một loại dịch vụ--</option>
+                {services.map(service => (
+                    <option key={service.id} value={service.id}>
+                        {service.name}
+                    </option>
+                ))}
+            </select>
+        </div>
+    );
+}
+
 function AccountPackageView({
     accountPackageList,
+    pageable,
+    serviceData,
     action,
     showAddAccountPackageModal,
     showDeteteAccountPackageModal,
@@ -16,13 +40,29 @@ function AccountPackageView({
     handleDeteteAccountPackageClick,
     handleDeleteAccountPackageClose,
     handleDeleteAccountPackage,
+    onSearchData,
+    onPageChange
 }) {
+
+    const [formData, setFormData] = useState({});
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        onSearchData(formData.serviceName, formData.name);
+        // console.log(`Form Data: ${formData.serviceName}, ${formData.name}`);
+    }
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prevState) => ({ ...prevState, [name]: value }));
+    };
 
     const onDeleteClick = (id) => {
         handleDeteteAccountPackageClick(id);
     }
 
     const onViewClick = (id) => {
+        console.log("Package ID", id);
         handleViewAccountPackageClick(id);
     }
 
@@ -34,46 +74,37 @@ function AccountPackageView({
         <>
             <div className="rounded-xl border border-stroke bg-white px-5 py-6 m-4 shadow-default sm:px-7.5 xl:pb-1">
                 <div className="flex flex-col mb-4 md:flex-row items-center justify-center md:space-x-4">
-                    <div className="w-full md:w-64 mb-6 md:mb-0">
-                        <div className="relative">
-                            <select
-                                id="serviceType"
-                                name="serviceType"
-                                className="block w-full rounded-md border-gray-300 border-2 py-2 pl-3 pr-8 text-base focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm appearance-none bg-white"
-                                defaultValue=""
-                            >
-                                <option value="" disabled className="text-gray-500">
-                                    Chọn loại dịch vụ
-                                </option>
-                                <option className="hover:bg-gray-100">
-                                    Netflix
-                                </option>
-                                <option className="hover:bg-gray-100">Spotify</option>
-                                <option className="hover:bg-gray-100">YouTube Premium</option>
-                            </select>
-                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                                <svg
-                                    className="h-5 w-5 text-gray-400"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20"
-                                    fill="currentColor"
-                                    aria-hidden="true"
-                                >
-                                    <path
-                                        fillRule="evenodd"
-                                        d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
+                    <form
+                        onSubmit={handleSearch}
+                        className="flex flex-col md:flex-row items-center justify-center md:space-x-4 space-y-4 md:space-y-0 w-full">
+                        <div className="w-full md:w-64 mb-6 md:mb-0">
+                            <div className="relative">
+                                {serviceDropdown(serviceData, formData.serviceName, handleInputChange)}
+                                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                                    <svg
+                                        className="h-5 w-5 text-gray-400"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                        aria-hidden="true"
+                                    >
+                                        <path
+                                            fillRule="evenodd"
+                                            d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                                            clipRule="evenodd"
+                                        />
+                                    </svg>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <form className="flex flex-col md:flex-row items-center justify-center md:space-x-4 space-y-4 md:space-y-0 w-full">
                         <div className="flex-grow">
                             <input
+                                name="name"
+                                id="name"
                                 type="text"
                                 placeholder="Nhập tên gói dịch vụ cần tìm kiếm..."
                                 className="w-full px-4 py-2 rounded-md border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                onChange={handleInputChange}
                             />
                         </div>
                         <button
@@ -111,6 +142,7 @@ function AccountPackageView({
                             onClose={handleAccountPackageModalClose}
                             action={action}
                             initialData={dataAccountPackageModalRef.current}
+                            seriveData={serviceData}
                         />
                         <DeleteAccountPackageModal
                             isOpen={showDeteteAccountPackageModal}
@@ -125,6 +157,15 @@ function AccountPackageView({
                     <table className="w-full table-auto">
                         <thead>
                             <tr className="bg-gray-2 text-left bg-[#F2F2F2]">
+                                <th
+                                    className="min-w-[130px] px-4 py-4 font-medium text-black"
+                                >
+                                    <p
+                                        className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-md font-medium text-success"
+                                    >
+                                        Hình ảnh
+                                    </p>
+                                </th>
                                 <th
                                     className="min-w-[130px] px-4 py-4 font-medium text-black"
                                 >
@@ -159,7 +200,25 @@ function AccountPackageView({
                                     <p
                                         className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-md font-medium text-success"
                                     >
-                                        Giá (VNĐ)
+                                        Giá gốc(VNĐ)
+                                    </p>
+                                </th>
+                                <th
+                                    className="min-w-[120px] px-4 py-4 font-medium text-black"
+                                >
+                                    <p
+                                        className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-md font-medium text-success"
+                                    >
+                                        Giá bán (VNĐ)
+                                    </p>
+                                </th>
+                                <th
+                                    className="min-w-[120px] px-4 py-4 font-medium text-black"
+                                >
+                                    <p
+                                        className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-md font-medium text-success"
+                                    >
+                                        Số lượng
                                     </p>
                                 </th>
                                 <th
@@ -183,6 +242,14 @@ function AccountPackageView({
                         <tbody>
                             {accountPackageList.map(accountPackage => (
                                 <tr key={accountPackage.id}>
+                                    <td
+                                        className="border-b border-[#eee] px-4 py-5 pl-9 dark:border-strokedark"
+                                    >
+                                        <img
+                                            className="w-16 h-16"
+                                            src={accountPackage.imgURL}
+                                        ></img>
+                                    </td>
                                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                                         <p
                                             className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
@@ -197,25 +264,38 @@ function AccountPackageView({
                                             {accountPackage.duration}
                                         </p>
                                     </td>
-                                    <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                                        <p
-                                            className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
-                                        >
+                                    <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark overflow-hidden">
+                                        <p className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success break-words overflow-auto max-h-20">
                                             {accountPackage.description}
                                         </p>
                                     </td>
+
                                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                                         <p
                                             className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
                                         >
-                                            {accountPackage.pricing}
+                                            {accountPackage.price}
                                         </p>
                                     </td>
                                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                                         <p
                                             className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
                                         >
-                                            {accountPackage.service}
+                                            {accountPackage.discountedPrice}
+                                        </p>
+                                    </td>
+                                    <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
+                                        <p
+                                            className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
+                                        >
+                                            {accountPackage.amount}
+                                        </p>
+                                    </td>
+                                    <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
+                                        <p
+                                            className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
+                                        >
+                                            {accountPackage.accountRentalServices.name}
                                         </p>
                                     </td>
                                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
@@ -290,7 +370,12 @@ function AccountPackageView({
                         </tbody>
                     </table>
                 </div>
-                <Pagination />
+                {pageable && (
+                    <Pagination
+                        pageable={pageable}
+                        onPageChange={onPageChange}
+                    />
+                )}
             </div>
         </>
     );

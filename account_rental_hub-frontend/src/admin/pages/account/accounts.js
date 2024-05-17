@@ -6,7 +6,7 @@ import { AccountContext } from "../../context/AccountContext";
 
 function Accounts() {
 
-     const { accountList, accountSlots, action, setAction, actions, setActions } = useContext(AccountContext);
+     const { accountList, accountSlots, action, setAction, actions, packageData, searchData, deleteData } = useContext(AccountContext);
 
      // Account Modal
      const [showModal, setShowModal] = useState(false);
@@ -79,9 +79,18 @@ function Accounts() {
      */
      const handleDeleteAccount = (accountId) => {
           console.log(`Xóa dịch vụ có id ${accountId}`);
+          deleteData(accountId);
           setShowDeleteModal(false);
           dataModalRef.current = null
      };
+
+     /**
+      * Search Data
+      */
+     const handleSearchAccountRentalData = (status, username, packageID) => {
+          searchData(status, username, packageID);
+
+     }
 
 
      /**
@@ -156,6 +165,8 @@ function Accounts() {
                     <h1 class="font-bold mb-8 text-2xl">Quản lý tài khoản </h1>
                     <Account
                          accountList={accountList}
+                         packageData = {packageData}
+                         onSearchData= {handleSearchAccountRentalData}
                          dataAccountModalRef={dataModalRef}
                          handleAddAccountClick={handleAddAccountClick}
                          handleEditAccountClick={handleEditAccountClick}

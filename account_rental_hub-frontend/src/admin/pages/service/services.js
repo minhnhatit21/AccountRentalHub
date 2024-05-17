@@ -1,10 +1,11 @@
 import { useRef, useState, useContext } from "react";
 import ServicesComponent from "./ServiceView";
 import { AccountContext } from "../../context/AccountContext";
+import { AccountServiceContext } from "../../context/AccountServiceContext";
 
 function Services() {
 
-    const { action, setAction, actions, serviceAccounts, setPage, setCategorySearch,  deleteData, serviceAccountsPageable, changePage, searchData } = useContext(AccountContext);
+    const { action, setAction, actions, serviceAccounts, setPage, setCategorySearch, deleteData, serviceAccountsPageable, changePage, searchData } = useContext(AccountServiceContext);
 
     const [showModal, setShowModal] = useState(false);
     const [showDeteteModal, setShowDeleteModal] = useState(false);
@@ -13,7 +14,7 @@ function Services() {
     // Handle change pagination
     const handlePageChange = (newPage) => {
         changePage(newPage);
-      };
+    };
 
     const handleSearchData = (category, name) => {
         console.log(`name: ${name}, category: ${category}`);

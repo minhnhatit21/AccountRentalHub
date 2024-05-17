@@ -1,9 +1,33 @@
+import { useState } from "react";
 import Pagination from "../../components/partials/pagination";
 import AddAccountModal from "./AddAccountModal";
 import DeleteAccountModal from "./DeleteAccountModal";
+import { isValid, parseISO, format } from 'date-fns';
+
+const packageDropdown = (packages, defaultValue, handleInputChange) => {
+    return (
+        <div>
+            <select
+                id="packageID"
+                name="packageID"
+                className="block w-full rounded-md border-gray-300 border-2 py-2 pl-3 pr-8 text-base focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm appearance-none bg-white"
+                value={defaultValue || ''}
+                onChange={handleInputChange}
+            >
+                <option value="">--Chọn một gói tài khoản--</option>
+                {packages.map(pack => (
+                    <option key={pack.id} value={pack.id}>
+                        {pack.name}
+                    </option>
+                ))}
+            </select>
+        </div>
+    );
+}
 
 function Account({
     accountList,
+    packageData,
     dataAccountModalRef,
     action,
     handleAddAccountClick,
@@ -14,11 +38,23 @@ function Account({
     showDeteteModal,
     handleAccountModalClose,
     handleDeleteAccountClose,
-    handleDeleteAccount
+    handleDeleteAccount,
+    onSearchData
 
 }) {
-    
-    console.log("Account: ", accountList)
+
+    const [formData, setFormData] = useState({});
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        onSearchData(formData.accountStatus, formData.accountUsername, formData.packageID);
+        //  console.log(`Form Data: ${formData.accountStatus}, ${formData.accountUsername}, ${formData.packageID}`);
+    }
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prevState) => ({ ...prevState, [name]: value }));
+    };
 
     const onDeleteClick = (id) => {
         handleDeteteAccountClick(id);
@@ -32,31 +68,45 @@ function Account({
         handleEditAccountClick(id);
     }
 
+    const formatDate = (dateString) => {
+        if (!dateString || typeof dateString !== 'string') return '';
+
+        const dateObj = parseISO(dateString);
+        if (isValid(dateObj)) {
+            return format(dateObj, 'yyyy-MM-dd');
+        } else {
+            return 'Invalid Date';
+        }
+    };
+
     return (
         <>
             <div className="rounded-xl border border-stroke bg-white px-5 py-6 m-4 shadow-default sm:px-7.5 xl:pb-1">
                 <div className="flex flex-col mb-4 md:flex-row items-center justify-center md:space-x-4">
-                    <div className="w-full md:w-64 mb-6 md:mb-0">
+                    <form
+                        onSubmit={handleSearch}
+                        className="flex flex-col md:flex-row items-center justify-center md:space-x-4 space-y-4 md:space-y-0 w-full">
                         <div className="relative">
                             <select
                                 id="accountStatus"
                                 name="accountStatus"
                                 className="block w-full rounded-md border-gray-300 border-2 py-2 pl-3 pr-8 text-base focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm appearance-none bg-white"
                                 defaultValue=""
+                                onChange={handleInputChange}
                             >
                                 <option value="" disabled className="text-gray-500">
                                     Trạng thái tài khoản
                                 </option>
-                                <option className="hover:bg-gray-100">
+                                <option value="active">
                                     Đang hoạt động
                                 </option>
-                                <option className="hover:bg-gray-100">
+                                <option value="lock">
                                     Tài khoản bị tạm khóa
-                                    </option>
-                                <option className="hover:bg-gray-100">
+                                </option>
+                                <option value="expired" >
                                     Tài khoản đã hết hạn
                                 </option>
-                                <option className="hover:bg-gray-100">
+                                <option value="canceled">
                                     Tài khoản đã bị hủy
                                 </option>
                             </select>
@@ -76,31 +126,8 @@ function Account({
                                 </svg>
                             </div>
                         </div>
-                    </div>
-                    <div className="w-full md:w-64 mb-6 md:mb-0">
                         <div className="relative">
-                            <select
-                                id="serviceType"
-                                name="serviceType"
-                                className="block w-full rounded-md border-gray-300 border-2 py-2 pl-3 pr-8 text-base focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm appearance-none bg-white"
-                                defaultValue=""
-                            >
-                                <option value="" disabled className="text-gray-500">
-                                    Dịch vụ tài khoản
-                                </option>
-                                <option className="hover:bg-gray-100">
-                                    Netflix
-                                </option>
-                                <option className="hover:bg-gray-100">
-                                    Spotify
-                                    </option>
-                                <option className="hover:bg-gray-100">
-                                    Hulu
-                                </option>
-                                <option className="hover:bg-gray-100">
-                                    Amazon Price
-                                </option>
-                            </select>
+                            {packageDropdown(packageData, formData.packageID, handleInputChange)}
                             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                                 <svg
                                     className="h-5 w-5 text-gray-400"
@@ -117,13 +144,14 @@ function Account({
                                 </svg>
                             </div>
                         </div>
-                    </div>
-                    <form className="flex flex-col md:flex-row items-center justify-center md:space-x-4 space-y-4 md:space-y-0 w-full">
                         <div className="flex-grow">
                             <input
+                                id="accountUsername"
+                                name="accountUsername"
                                 type="text"
                                 placeholder="Nhập tên tài khoản cần tìm kiếm..."
                                 className="w-full px-4 py-2 rounded-md border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                onChange={handleInputChange}
                             />
                         </div>
                         <button
@@ -161,6 +189,7 @@ function Account({
                             onClose={handleAccountModalClose}
                             action={action}
                             initialData={dataAccountModalRef.current}
+                            packageData={packageData}
                         />
                         <DeleteAccountModal
                             isOpen={showDeteteModal}
@@ -168,12 +197,6 @@ function Account({
                             accountDataToDelete={dataAccountModalRef.current}
                             onDeleteAccount={handleDeleteAccount}
                         />
-                        {/* <DeleteServiceModal
-                            isOpen={showDeteteModal}
-                            onClose={handleDeleteModalClose}
-                            serviceDataToDelete={dataModalRef.current}
-                            onDeleteService={handleDeleteAccount}
-                        /> */}
                     </div>
                 </div>
 
@@ -300,14 +323,14 @@ function Account({
                                         <p
                                             className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
                                         >
-                                            {account.account_package}
+                                            {account.accountRentalPackage.name}
                                         </p>
                                     </td>
-                                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
+                                    <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                                         <p
                                             className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
                                         >
-                                            {account.service.service_name}
+                                            {account.accountRentalPackage.accountRentalServices.name}
                                         </p>
                                     </td>
                                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
@@ -321,21 +344,21 @@ function Account({
                                         <p
                                             className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
                                         >
-                                            {account.supcription_date}
+                                            {formatDate(account.createdAt)}
                                         </p>
                                     </td>
                                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                                         <p
                                             className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
                                         >
-                                            {account.renew_start_date}
+                                            {formatDate(account.renewStartDate)}
                                         </p>
                                     </td>
                                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                                         <p
                                             className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
                                         >
-                                            {account.renew_end_date}
+                                            {formatDate(account.renewEndDate)}
                                         </p>
                                     </td>
                                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
@@ -404,7 +427,7 @@ function Account({
                         </tbody>
                     </table>
                 </div>
-                <Pagination />
+                {/* <Pagination /> */}
             </div>
         </>
     );

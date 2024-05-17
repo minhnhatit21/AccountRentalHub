@@ -345,7 +345,7 @@ function AccountSlotView({
                         </tbody>
                     </table>
                 </div>
-                <Pagination />
+                {/* <Pagination /> */}
             </div>
         </>
     );

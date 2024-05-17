@@ -1,32 +1,28 @@
 import { useEffect, useState } from "react";
 
 function DeleteAccountModal({ isOpen, onClose, accountDataToDelete, onDeleteAccount }) {
-    const [isDeleting, setIsDeleting] = useState(false);
-    
-    const deleteData = (data) => {
-        let initData;
-        if (Array.isArray(data) && data.length > 0) {
-            initData = data[0];
-        } else {
-            initData = data;
-        }
-        console.log("Delete Data: ", initData)
-        return {
-            accountUsername: initData.username || '',
-        };
-    };
-    const [formData, setFormData] = useState(deleteData(accountDataToDelete || {}));
-    
-    const handleDelete = () => {
-        setIsDeleting(true);
-        onDeleteAccount(accountDataToDelete.id);
-    };
+    const [formData, setFormData] = useState({ accountUsername: '' });
 
     useEffect(() => {
         if (accountDataToDelete) {
             setFormData(deleteData(accountDataToDelete));
         }
     }, [accountDataToDelete]);
+
+    const handleDelete = () => {
+        onDeleteAccount(formData.id);
+    };
+
+    const deleteData = (data) => {
+        let initData;
+        if (Array.isArray(data) && data.length > 0) {
+            initData = data[0];
+            return { accountUsername: initData.username || '', id: initData.id };
+        } else {
+            initData = data;
+            return { accountUsername: initData.username || '', id: initData.id };
+        }
+    };
 
     return (
         <>
@@ -53,8 +49,7 @@ function DeleteAccountModal({ isOpen, onClose, accountDataToDelete, onDeleteAcco
                             <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                                 <button
                                     type="button"
-                                    className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''
-                                        }`}
+                                    className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm  }`}
                                     onClick={handleDelete}
 
                                 >

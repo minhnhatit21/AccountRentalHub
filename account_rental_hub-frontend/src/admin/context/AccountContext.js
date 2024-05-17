@@ -1,6 +1,8 @@
 import { createContext, useEffect, useState, useCallback } from "react";
 import AccountServiceRentalService from "../../services/account-rental-service.service";
 import { toast } from "react-toastify";
+import AccountRentalService from "../../services/account-rental.service";
+import AccountPackageService from "../../services/account-rental-package.service";
 
 export const AccountContext = createContext("");
 
@@ -477,52 +479,17 @@ const accountPackageList = [
     },
 ]
 
-const serviceList = [
-    {
-        "id": "1",
-        "name": "Netflix",
-        "image": "https://i.ibb.co/L6MDz9X/HD-wallpaper-netflix-logo-black-logo-minimal-netflix.jpg",
-        "description": "Dịch vụ xem phim trực tuyến phổ biến nhất hiện nay",
-        "pricing_info": "Từ $8.99/tháng",
-        "website": "netflix.com",
-        "category": "Giải trí"
-    },
-    {
-        "id": "2",
-        "name": "Spotify",
-        "image": "https://i.ibb.co/3TKMSxn/spotify.png",
-        "description": "Dịch vụ nghe nhạc trực tuyến với hàng triệu bài hát và podcast",
-        "pricing_info": "Miễn phí với quảng cáo hoặc Premium từ $9.99/tháng",
-        "website": "spotify.com",
-        "category": "Giải trí"
-    },
-    {
-        "id": "3",
-        "name": "Amazon Prime",
-        "image": "https://i.ibb.co/xCFY6mW/amazon-prime.jpg",
-        "description": "Dịch vụ giao hàng miễn phí, xem phim và nhiều ưu đãi khác",
-        "pricing_info": "$119/năm hoặc $12.99/tháng",
-        "website": "amazon.com/prime",
-        "category": "Mua sắm"
-    },
-    {
-        "id": "4",
-        "name": "YouTube Premium",
-        "image": "https://i.ibb.co/6WshX41/youtube-premium.png",
-        "description": "Truy cập YouTube không quảng cáo, xem video ngoại tuyến",
-        "pricing_info": "$11.99/tháng",
-        "website": "youtube.com/premium",
-        "category": "Giải trí"
-    }
-]
-
 const actionList = ["add", "edit", "view", "delete"];
 
 export const AccountProvider = ({ children }) => {
-    const [accountList, setAccountList] = useState(accountRentals);
+    const [accountList, setAccountList] = useState([]);
     const [accountSlots, setAccountSlots] = useState(subscriptionAccounts);
-    const [servicePlanOptions, setServicePlantOptions] = useState(accountPackageList);
-    const [serviceAccounts, setServiceAccounts] = useState([]);
+    const [packageData, setPackageData] = useState([]);
+
+    const [pageable, setPageable] = useState(null);
+
+
+
     const [action, setAction] = useState('add');
     const [actions, setActions] = useState(actionList);
     const [update, setUpdate] = useState(false);
@@ -530,22 +497,39 @@ export const AccountProvider = ({ children }) => {
     const [page, setPage] = useState(0);
     const [size, setSize] = useState(5);
 
-    const [nameSearch, setNameSearch] = useState("");
-    const [categorySearch, setCategorySearch] = useState("");
+    const [usernameSearch, setUsernameSearch] = useState("");
+    const [statusSearch, setStatusSearch] = useState("");
+    const [packageIDSearch, setPackageIDSearch] = useState("");
 
+    useEffect(() => {
+        const fetchAccounPackage = async () => {
+            try {
+                const response = await AccountPackageService.getAllAccountRentalPackages();
+                if (response != null) {
+                    setPackageData(response);
+                } else {
+                    setPackageData([]);
+                    console.error("Not Found Data");
+                }
+            } catch (error) {
+                toast.error("Đã xảy ra lỗi khi tải dữ liệu ban đầu");
+            }
+        };
 
-    const [serviceAccountsPageable, setServiceAccountsPageable] = useState(null);
+        fetchAccounPackage();
+    }, []);
+
 
     useEffect(() => {
         const fetchInitialData = async () => {
             try {
-                const response = await AccountServiceRentalService.searchAccountServiceRental(page, size, categorySearch, nameSearch);
+                const response = await AccountRentalService.searchAccountRental(page, size, statusSearch, usernameSearch, packageIDSearch)
                 if (response?.content) {
-                    setServiceAccounts(response.content);
-                    setServiceAccountsPageable(response.pageable);
+                    setAccountList(response.content);
+                    setPageable(response.pageable);
                 } else {
-                    setServiceAccounts([]);
-                    setServiceAccountsPageable(null);
+                    setAccountList([]);
+                    setPageable(null);
                     console.error("Not Found Data");
                 }
             } catch (error) {
@@ -559,34 +543,33 @@ export const AccountProvider = ({ children }) => {
     const changePage = (newPage) => {
 
         setPage(newPage);
-        searchData(categorySearch, nameSearch); // Gọi hàm searchData khi page thay đổi
+        searchData(statusSearch, usernameSearch, packageIDSearch)
     };
 
-    const searchData = async (category, name) => {
-        let nameValue = name !== undefined ? name : "";
-        let categoryValue = category !== undefined ? category : "";
-        
-        if (nameValue !== nameSearch || categoryValue !== categorySearch) {
-            setPage(0);
-            console.log("Page number:", page);
-            try {
-                const response = await AccountServiceRentalService.searchAccountServiceRental(page , size, categoryValue, nameValue);
+    const searchData = useCallback(async (status, username, packageID) => {
+        let usernameValue = username !== undefined ? username : "";
+        let statusValue = status !== undefined ? status : "";
+        let packageIDValue = packageID !== undefined ? packageID : "";
 
+        if (usernameValue !== usernameSearch || statusValue !== statusSearch || packageIDValue !== packageIDSearch) {
+            setPage(0);
+            try {
+                const response = await AccountRentalService.searchAccountRental(page, size, statusValue, usernameValue, packageIDValue);
                 if (response?.content) {
-                    setServiceAccounts(response.content);
-                    setServiceAccountsPageable(response.pageable);
-                    setNameSearch(nameValue);
-                    setCategorySearch(categoryValue);
-                    // setUpdate(!update);
+                    setAccountList(response.content);
+                    setPageable(response.pageable);
+                    setUsernameSearch(usernameValue);
+                    setStatusSearch(statusValue);
+                    setPackageIDSearch(packageIDValue);
                 } else {
-                    setServiceAccounts([]);
-                    setServiceAccountsPageable(null);
+                    setAccountList([]);
+                    setPageable(null);
                     console.error("Not Found Data");
                 }
             } catch (error) {
                 if (error.response && error.response.status === 404) {
-                    setServiceAccounts([]);
-                    setServiceAccountsPageable(null);
+                    setAccountList([]);
+                    setPageable(null);
                     console.error("Not Found Data");
                     toast.warning("Không tìm thấy dữ liệu");
                 } else {
@@ -595,34 +578,35 @@ export const AccountProvider = ({ children }) => {
                 }
             }
         }
-    };
+    }, [page, size, usernameSearch, statusSearch, packageIDSearch]);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                await searchData(categorySearch, nameSearch);
+                await searchData(statusSearch, usernameSearch, packageIDSearch);
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
         };
 
         fetchData();
-    }, [searchData, categorySearch, nameSearch, page, update]);
+    }, [searchData, statusSearch, usernameSearch, packageIDSearch, page, update]);
 
-    const createData = async (serviceData) => {
+
+    const createData = async (accountData) => {
         try {
-            await AccountServiceRentalService.createAccountServiceRetal(serviceData);
+            await AccountRentalService.createAccountRental(accountData);
             toast.success("Thêm dữ liệu thành công");
             setUpdate(!update)
         } catch (error) {
             //console.error("Lỗi khi thêm dữ liệu:", error.response.data);
-            toast.error(error.response.data + ". Vui lòng thử lại!");
+            toast.error(error.response.data.message + ". Vui lòng thử lại!");
         }
     };
 
-    const updateData = async (id, serviceData) => {
+    const updateData = async (id, accountData) => {
         try {
-            await AccountServiceRentalService.updateAccountServiceRetal(id, serviceData);
+            await AccountRentalService.updateAccountRental(id, accountData);
             toast.success("Cập nhật dữ liệu thành công");
             setUpdate(!update)
         } catch (error) {
@@ -633,7 +617,7 @@ export const AccountProvider = ({ children }) => {
 
     const deleteData = async (id) => {
         try {
-            await AccountServiceRentalService.deleteAccountServiceRental(id);
+            await AccountRentalService.deleteAccountRental(id);
             toast.success("Xóa liệu thành công");
             setUpdate(!update)
         } catch (error) {
@@ -645,17 +629,14 @@ export const AccountProvider = ({ children }) => {
     const value = {
         accountList,
         accountSlots,
-        serviceAccounts,
-        servicePlanOptions,
+        packageData,
         action,
         actions,
+        pageable,
         setAccountList,
         setAccountSlots,
-        setServiceAccounts,
-        setServicePlantOptions,
         setAction,
         setActions,
-        serviceAccountsPageable,
         update,
         setUpdate,
         createData,
@@ -663,8 +644,10 @@ export const AccountProvider = ({ children }) => {
         updateData,
         changePage,
         searchData,
-        setNameSearch,
-        setCategorySearch
+        setUsernameSearch,
+        setStatusSearch,
+        setPackageIDSearch,
+        createData
         // Các phương thức xử lý khác
     };
 

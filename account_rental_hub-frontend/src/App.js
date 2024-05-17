@@ -19,6 +19,10 @@ import AuthProvider from './user/context/AuthContext';
 import UserProfile from './user/pages/UserProfilePage';
 import { UserDefaultLayout, UserHomeDefaultLayout } from './user/pages/layout/DefaultLayout';
 import TestAPI from './user/pages/Test';
+import { AccountPackageProvider } from './admin/context/AccountPackageContext';
+import AccountPackage from './admin/pages/accountPackage/AccountPackage';
+import { AccountServiceProvider } from './admin/context/AccountServiceContext';
+import Services from './admin/pages/service/Services';
 
 function App() {
   return (
@@ -36,6 +40,8 @@ function App() {
           <Route path="/admin/login" element={<LoginForm />} />
           <Route path="/test" element={<TestAPI />} />
           <Route path="/admin/dashboard" element={<AdminRoute><DefaultLayout><Dashboard /></DefaultLayout></AdminRoute>} />
+          <Route path='/admin/account/accountPackage' element={<AdminRoute><AccountPackageProvider><DefaultLayout><AccountPackage/></DefaultLayout></AccountPackageProvider></AdminRoute>}/>
+          <Route path="/admin/account/service" element={<AdminRoute><AccountServiceProvider><DefaultLayout><Services /></DefaultLayout></AccountServiceProvider></AdminRoute>} />
         </Routes>
         <UserRoutes/>
         <CustomerRoutes/>

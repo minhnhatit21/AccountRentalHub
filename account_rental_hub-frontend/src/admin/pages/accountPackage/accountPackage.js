@@ -1,16 +1,22 @@
 import { useContext, useRef, useState } from "react";
 import AccountPackageView from "./AccountPackageView";
-import { AccountContext } from "../../context/AccountContext";
+import { AccountPackageContext } from "../../context/AccountPackageContext";
 
 
 function AccountPackage() {
 
-    const {action, setAction, actions, servicePlanOptions} = useContext(AccountContext);
+    const {action, setAction, actions, data, serviceData, searchData, deleteData, changePage, pageable} = useContext(AccountPackageContext);
     // Account Package Modal
     const [showAddAccountPackageModal, setShowAddAccountPackageModal] = useState(false);
     const [showDeteteAccountPackageModal, setShowDeteteAccountPackageModal] = useState(false);
     const dataAccountPackageModalRef = useRef(null);
 
+    // Handle change pagination
+    const handlePageChange = (newPage) => {
+        changePage(newPage);
+      };
+
+    
     /**
       * Add Account Package
       */
@@ -25,8 +31,8 @@ function AccountPackage() {
     */
     const handleEditAccountPackageClick = (id) => {
         setAction(actions[1]);
-        const data = servicePlanOptions.filter(service => service.id === id);
-        dataAccountPackageModalRef.current = data;
+        const response = data.filter(pack => pack.id === id);
+        dataAccountPackageModalRef.current = response;
         setShowAddAccountPackageModal(true);
     };
 
@@ -35,9 +41,17 @@ function AccountPackage() {
      */
     const handleViewAccountPackageClick = (id) => {
         setAction(actions[2]);
-        const data = servicePlanOptions.filter(service => service.id === id);
-        dataAccountPackageModalRef.current = data;
+        const response = data.filter(pack => pack.id === id);
+        dataAccountPackageModalRef.current = response;
         setShowAddAccountPackageModal(true);
+    }
+
+    /**
+     * Search Data
+     */
+
+    const handleSearchData = (service, name) => {
+        searchData(service, name);
     }
 
     /***
@@ -54,8 +68,8 @@ function AccountPackage() {
 
     const handleDeteteAccountPackageClick = (id) => {
         setAction(actions[3]);
-        const data = servicePlanOptions.filter(service => service.id === id);
-        dataAccountPackageModalRef.current = data;
+        const response = data.filter(pack => pack.id === id);
+        dataAccountPackageModalRef.current = response;
         setShowDeteteAccountPackageModal(true);
     }
 
@@ -74,6 +88,7 @@ function AccountPackage() {
     */
     const handleDeleteAccountPackage = (Id) => {
         console.log(`Xóa gói tài khoản có id ${Id}`);
+        deleteData(Id);
         setShowDeteteAccountPackageModal(false);
         dataAccountPackageModalRef.current = null
     };
@@ -82,7 +97,9 @@ function AccountPackage() {
         <>
             <h1 class="font-bold mb-8 text-2xl">Quản lý gói tài khoản</h1>
             <AccountPackageView
-                accountPackageList={servicePlanOptions}
+                accountPackageList={data}
+                serviceData={serviceData}
+                pageable={pageable}
                 action={action}
                 showAddAccountPackageModal={showAddAccountPackageModal}
                 showDeteteAccountPackageModal={showDeteteAccountPackageModal}
@@ -94,6 +111,8 @@ function AccountPackage() {
                 handleDeteteAccountPackageClick={handleDeteteAccountPackageClick}
                 handleDeleteAccountPackageClose={handleDeleteAccountPackageClose}
                 handleDeleteAccountPackage={handleDeleteAccountPackage}
+                onSearchData={handleSearchData}
+                onPageChange={handlePageChange}
             />
         </>
     );

@@ -1,47 +1,139 @@
-import { useState, useEffect} from "react";
+import { useState, useEffect, useContext } from "react";
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import ImageService from "../../../services/image.service";
+import { AccountPackageContext } from "../../context/AccountPackageContext";
 
-function AddAccountPackageModal({ isOpen, onClose, action, initialData }) {
+const serviceSelection = (services, defaultValue, handleInputChange) => {
+    return (
+        <div>
+            <select
+                id="serviceID"
+                name="serviceID"
+                className="block w-full rounded-md border-gray-300 border-2 py-2 pl-3 pr-8 text-base focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm appearance-none bg-white"
+                value={defaultValue || ''}
+                onChange={handleInputChange}
+            >
+                <option value="">--Chọn một loại dịch vụ--</option>
+                {services.map(service => (
+                    <option key={service.id} value={service.id}>
+                        {service.name}
+                    </option>
+                ))}
+            </select>
+        </div>
+    );
+}
+
+function AddAccountPackageModal({ isOpen, onClose, action, initialData, seriveData }) {
+    const { createData, updateData } = useContext(AccountPackageContext);
+
+    const validationSchema = yup.object().shape({
+        packageName: yup.string().required('Tên dịch vụ là bắt buộc'),
+        description: yup.string().required('Mô tả là bắt buộc'),
+        imageUrl: yup.string().url('Vui lòng nhập một URL hợp lệ'),
+        duration: yup.number().positive('Thời gian phải là một số dương').required('Thời gian là bắt buộc'),
+        price: yup.number().positive('Giá gốc phải là một số dương').required('Giá gốc là bắt buộc'),
+        discountPrice: yup.number().positive('Giá bán phải là một số dương').required('Giá bán là bắt buộc'),
+        amount: yup.number().positive('Số lượng phải là một số dương').required('Số lượng là bắt buộc')
+    });
+
     const initFormData = (data) => {
-        let initData;
+        let initialData;
         if (Array.isArray(data) && data.length > 0) {
-            initData = data[0];
+            initialData = data[0];
         } else {
-            initData = data;
+            initialData = data;
         }
-        console.log("Init Data: ", initData)
         return {
-            image: initData.image || null,
-            accountPackageName: initData.name || '',
-            description: initData.description || '',
-            serviceType: initData.service || '',
-            price: initData.pricing || '',
-            duration: initData.duration || '',
+            image: initialData.imgURL ? initialData.imgURL : null,
+            packageID: initialData.id || 0,
+            packageName: initialData.name || '',
+            duration: initialData.duration || 0,
+            description: initialData.description || '',
+            price: initialData.price || 0.0,
+            discountPrice: initialData.discountedPrice || 0.0,
+            amount: initialData.amount || 0,
+            imageUrl: initialData.imgURL || '',
+            imagePreview: initialData.imgURL ? initialData.imgURL : null,
+            serviceID: initialData.accountRentalServices ? initialData.accountRentalServices.id : null
         };
     };
 
-    const [formData, setFormData] = useState(initFormData(initialData || {}));
+    const { register, handleSubmit, formState: { errors }, reset } = useForm({
+        resolver: yupResolver(validationSchema),
+        defaultValues: initFormData(initialData || {}),
+    });
 
     useEffect(() => {
         if (initialData) {
-            setFormData(initFormData(initialData));
+            const initialFormData = initFormData(initialData);
+            setFormData(initialFormData);
+            reset(initialFormData);
         }
-    }, [initialData]);
+    }, [initialData, reset]);
 
-
+    const [formData, setFormData] = useState(initFormData(initialData || {}));
 
     const handleInputChange = (e) => {
         const { name, value, files } = e.target;
         if (name === 'image') {
-            setFormData((prevState) => ({ ...prevState, [name]: files[0] || null }));
+            if (files && files[0]) {
+                setFormData((prevState) => ({
+                    ...prevState,
+                    [name]: files[0],
+                    imagePreview: URL.createObjectURL(files[0]),
+                    imageUrl: '',
+                }));
+            } else {
+                setFormData((prevState) => ({ ...prevState, [name]: null, imagePreview: null, imageUrl: '' }));
+            }
+        } else if (name === 'imageUrl') {
+            setFormData((prevState) => ({
+                ...prevState,
+                [name]: value,
+                imagePreview: value ? value : null,
+                image: null,
+            }));
         } else {
             setFormData((prevState) => ({ ...prevState, [name]: value }));
         }
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Xử lý logic lưu dữ liệu dịch vụ mới
-        console.log(formData);
+    const onUploadImage = async (file) => {
+        const response = await ImageService.uploadImage(file);
+        console.log("responseUploadImage", response);
+
+        return response;
+    }
+
+    const onSubmit = async (data) => {
+        const imageData = data.image instanceof File ? data.image : (data.imageUrl ? data.imageUrl : formData.imagePreview);
+        const packageData = {
+            imgURL: imageData,
+            name: data.packageName,
+            description: data.description,
+            price: data.price,
+            discountedPrice: data.discountPrice,
+            amount: data.amount,
+            duration: data.duration,
+            accountRentalServices: {
+                id: formData.serviceID,
+            }
+        };
+
+        if (formData.image) {
+            const responseUploadImage = await onUploadImage(formData.image);
+            packageData.imgURL = responseUploadImage;
+        }
+
+        if (action === "add") {
+            createData(packageData);
+        } else if (action === "edit") {
+            updateData(formData.packageID, packageData);
+        }
+
         onClose();
     };
 
@@ -70,33 +162,67 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData }) {
                                 <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                                     <h3 className="text-lg leading-6 font-medium text-gray-900">{titleModal(action)}</h3>
                                     <div className="mt-2">
-                                        <form onSubmit={handleSubmit}>
+                                        <form onSubmit={handleSubmit(onSubmit)}>
                                             <div className="mb-4">
                                                 <label htmlFor="image" className="block text-sm font-medium text-gray-700">
                                                     Hình ảnh
                                                 </label>
-                                                <input
-                                                    type="file"
-                                                    id="image"
-                                                    name="image"
-                                                    className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                    onChange={handleInputChange}
-                                                    disabled={action === "view"}
-                                                />
+                                                <div className="flex items-center">
+                                                    <div className="relative w-32 h-32 mr-4">
+                                                        {formData.imagePreview && (
+                                                            <img
+                                                                src={formData.imagePreview}
+                                                                alt="Image Preview"
+                                                                className="object-cover w-full h-full rounded-md"
+                                                            />
+                                                        )}
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <div className="mb-2">
+                                                            <input
+                                                                type="file"
+                                                                id="image"
+                                                                name="image"
+                                                                className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                                onChange={handleInputChange}
+                                                                disabled={action === "view"}
+                                                            />
+                                                        </div>
+                                                        <div className="mb-4">
+                                                            <label htmlFor="imageUrl" className="block text-sm font-medium text-gray-700">
+                                                                Hoặc nhập URL ảnh
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                id="imageUrl"
+                                                                name="imageUrl"
+                                                                {...register('imageUrl')}
+                                                                value={formData.imageUrl || ''}
+                                                                className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                                onChange={handleInputChange}
+                                                                disabled={action === "view"}
+                                                            />
+                                                            {errors.imageUrl && <p className="text-red-500 text-xs mt-1">{errors.imageUrl.message}</p>}
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
+
                                             <div className="mb-4">
-                                                <label htmlFor="serviceName" className="block text-sm font-medium text-gray-700">
+                                                <label htmlFor="packageName" className="block text-sm font-medium text-gray-700">
                                                     Tên gói tài khoản
                                                 </label>
                                                 <input
                                                     type="text"
-                                                    id="accountPackageName"
-                                                    name="accountPackageName"
-                                                    value={action !== "add" ? formData.accountPackageName : ""}
+                                                    id="packageName"
+                                                    name="packageName"
+                                                    {...register('packageName')}
+                                                    value={formData.packageName}
                                                     className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                     onChange={handleInputChange}
                                                     disabled={action === "view"}
                                                 />
+                                                {errors.packageName && <p className="text-red-500 text-xs mt-1">{errors.packageName.message}</p>}
                                             </div>
 
                                             <div className="mb-4">
@@ -104,21 +230,7 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData }) {
                                                     Loại dịch vụ
                                                 </label>
                                                 <div className="relative">
-                                                    <select
-                                                        id="serviceType"
-                                                        name="serviceType"
-                                                        className="block w-full rounded-md border-gray-300 border-2 py-2 pl-3 pr-8 text-base focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm appearance-none bg-white"
-                                                        defaultValue=""
-                                                    >
-                                                        <option value="" disabled className="text-gray-500">
-                                                            Chọn loại dịch vụ
-                                                        </option>
-                                                        <option className="hover:bg-gray-100">
-                                                            Netflix
-                                                        </option>
-                                                        <option className="hover:bg-gray-100">Spotify</option>
-                                                        <option className="hover:bg-gray-100">YouTube Premium</option>
-                                                    </select>
+                                                    {serviceSelection(seriveData, formData.serviceID, handleInputChange)}
                                                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                                                         <svg
                                                             className="h-5 w-5 text-gray-400"
@@ -137,33 +249,71 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData }) {
                                                 </div>
                                             </div>
                                             <div className="mb-4">
-                                                <label htmlFor="website" className="block text-sm font-medium text-gray-700">
+                                                <label htmlFor="duration" className="block text-sm font-medium text-gray-700">
                                                     Thời gian
                                                 </label>
                                                 <input
                                                     type="text"
                                                     id="duration"
                                                     name="duration"
-                                                    value={action === "add" ? "" : formData.duration}
+                                                    {...register('duration')}
+                                                    value={formData.duration}
                                                     className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                     onChange={handleInputChange}
                                                     disabled={action === "view"}
                                                 />
+                                                {errors.duration && <p className="text-red-500 text-xs mt-1">{errors.duration.message}</p>}
                                             </div>
                                             <div className="mb-4">
-                                                <label htmlFor="pricingInfo" className="block text-sm font-medium text-gray-700">
-                                                    Giá gói tài khoản
+                                                <label htmlFor="price" className="block text-sm font-medium text-gray-700">
+                                                    Giá gốc tài khoản
                                                 </label>
                                                 <input
                                                     type="text"
                                                     id="price"
                                                     name="price"
-                                                    value={action === "add" ? "" : formData.price}
+                                                    {...register('price')}
+                                                    value={formData.price}
                                                     className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                     onChange={handleInputChange}
                                                     disabled={action === "view"}
                                                 />
+                                                {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price.message}</p>}
                                             </div>
+                                            <div className="mb-4">
+                                                <label htmlFor="discountPrice" className="block text-sm font-medium text-gray-700">
+                                                    Giá bán tài khoản
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    id="discountPrice"
+                                                    name="discountPrice"
+                                                    {...register('discountPrice')}
+                                                    value={formData.discountPrice}
+                                                    className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                    onChange={handleInputChange}
+                                                    disabled={action === "view"}
+                                                />
+                                                {errors.discountPrice && <p className="text-red-500 text-xs mt-1">{errors.discountPrice.message}</p>}
+                                            </div>
+
+                                            <div className="mb-4">
+                                                <label htmlFor="amount" className="block text-sm font-medium text-gray-700">
+                                                Số lượng
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    id="amount"
+                                                    name="amount"
+                                                    {...register('amount')}
+                                                    value={formData.amount}
+                                                    className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                    onChange={handleInputChange}
+                                                    disabled={action === "view"}
+                                                />
+                                                {errors.amount && <p className="text-red-500 text-xs mt-1">{errors.amount.message}</p>}
+                                            </div>
+                                            
                                             <div className="mb-4">
                                                 <label htmlFor="description" className="block text-sm font-medium text-gray-700">
                                                     Mô tả
@@ -171,11 +321,13 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData }) {
                                                 <textarea
                                                     id="description"
                                                     name="description"
-                                                    value={action === "add" ? "" : formData.description}
+                                                    {...register('description')}
+                                                    value={formData.description}
                                                     className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                     onChange={handleInputChange}
                                                     disabled={action === "view"}
                                                 ></textarea>
+                                                {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
                                             </div>
                                             <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                                                 {action !== "view" && (
