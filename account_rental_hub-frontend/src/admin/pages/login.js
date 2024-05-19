@@ -40,7 +40,7 @@ const LoginForm = () => {
             toast.success('Đăng nhập thành công!');
           }
           else if (isUser) {
-            navigate("/homepage");
+            navigate("/home");
             toast.success('Đăng nhập thành công!');
           }
           else {

@@ -237,7 +237,7 @@ function OrderListView({
                         </tbody>
                     </table>
                 </div>
-                <Pagination />
+                {/* <Pagination /> */}
             </div>
         </>
     );

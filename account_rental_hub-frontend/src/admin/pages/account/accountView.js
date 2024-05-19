@@ -47,7 +47,7 @@ function Account({
 
     const handleSearch = (e) => {
         e.preventDefault();
-        onSearchData(formData.accountStatus, formData.accountUsername, formData.packageID);
+        onSearchData(formData.accountViewStatus, formData.accountUsername, formData.packageID);
         //  console.log(`Form Data: ${formData.accountStatus}, ${formData.accountUsername}, ${formData.packageID}`);
     }
 
@@ -88,8 +88,8 @@ function Account({
                         className="flex flex-col md:flex-row items-center justify-center md:space-x-4 space-y-4 md:space-y-0 w-full">
                         <div className="relative">
                             <select
-                                id="accountStatus"
-                                name="accountStatus"
+                                id="accountViewStatus"
+                                name="accountViewStatus"
                                 className="block w-full rounded-md border-gray-300 border-2 py-2 pl-3 pr-8 text-base focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm appearance-none bg-white"
                                 defaultValue=""
                                 onChange={handleInputChange}
@@ -335,7 +335,14 @@ function Account({
                                     </td>
                                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                                         <p
-                                            className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
+                                            className={`inline-flex rounded-full text-sm font-medium text-white px-2 py-1 ${account.status === 'active'
+                                                    ? 'bg-green-500'
+                                                    : account.status === 'lock'
+                                                        ? 'bg-red-500'
+                                                        : account.status === 'expired'
+                                                            ? 'bg-orange-500'
+                                                            : 'bg-gray-500'
+                                                }`}
                                         >
                                             {account.status}
                                         </p>

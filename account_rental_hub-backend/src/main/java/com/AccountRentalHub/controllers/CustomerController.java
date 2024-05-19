@@ -1,8 +1,11 @@
 package com.AccountRentalHub.controllers;
 
 import com.AccountRentalHub.models.Customer;
+import com.AccountRentalHub.payload.response.CustomPageResponse;
 import com.AccountRentalHub.services.impl.CustomerServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,21 +31,13 @@ public class CustomerController {
     @GetMapping("/{id}")
     public ResponseEntity<Customer> getCustomerById(@PathVariable Long id) {
         Optional<Customer> customerOptional = customerService.getCustomerById(id);
-        if (customerOptional.isPresent()) {
-            return new ResponseEntity<>(customerOptional.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return customerOptional.map(customer -> new ResponseEntity<>(customer, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping("/account/{userid}")
     public ResponseEntity<Customer> getCustomerByUserId(@PathVariable Long userid) {
         Optional<Customer> customerOptional = customerService.getCustomerByUserId(userid);
-        if (customerOptional.isPresent()) {
-            return new ResponseEntity<>(customerOptional.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return customerOptional.map(customer -> new ResponseEntity<>(customer, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     // Cập nhật thông tin của một Customer
@@ -68,5 +63,26 @@ public class CustomerController {
     public ResponseEntity<List<Customer>> getAllCustomers() {
         List<Customer> customers = customerService.getAllCustomers();
         return new ResponseEntity<>(customers, HttpStatus.OK);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<CustomPageResponse<Customer>> searchCustomers(
+            @RequestParam(required = false) String fullname,
+            Pageable pageable) {
+
+        Page<Customer> searchResult = customerService.getCustomersByFullname(fullname, pageable);
+
+        if (searchResult.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else {
+            CustomPageResponse<Customer> response = new CustomPageResponse<>(
+                    searchResult.getContent(),
+                    searchResult.getNumber(),
+                    searchResult.getSize(),
+                    searchResult.getTotalElements(),
+                    searchResult.getTotalPages()
+            );
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
     }
 }

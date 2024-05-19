@@ -62,7 +62,6 @@ function AccountPackageView({
     }
 
     const onViewClick = (id) => {
-        console.log("Package ID", id);
         handleViewAccountPackageClick(id);
     }
 

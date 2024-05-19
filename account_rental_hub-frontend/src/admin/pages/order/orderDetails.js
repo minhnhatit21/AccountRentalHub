@@ -188,8 +188,7 @@ const OrderDetails = () => {
             <div className='flex mt-6 w-full flex-col'>
                 <p className="font-bold mb-2">Trạng thái đơn hàng:</p>
                 <p
-                    className={`px-2 py-1 rounded-full text-white ${order.orderStatus === 'Paid' ? 'bg-green-500 w-2/3' : 'bg-yellow-500 w-1/2'
-                        }`}
+                    className={`px-2 py-1 rounded-full text-white ${order.orderStatus === 'Paid' ? 'bg-green-500 w-2/3' : 'bg-yellow-500 w-1/2'}`}
                 >
                     {order.orderStatus}
                 </p>

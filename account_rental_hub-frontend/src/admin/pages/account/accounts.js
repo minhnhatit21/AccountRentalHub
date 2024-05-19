@@ -2,12 +2,13 @@ import { useRef, useState, useContext } from "react";
 import Account from "./AccountView";
 import AccountSlotView from "./AccountSlotView";
 import { AccountContext } from "../../context/AccountContext";
+import { AccountSlotContext } from "../../context/AccountSlotContext";
 
 
 function Accounts() {
 
-     const { accountList, accountSlots, action, setAction, actions, packageData, searchData, deleteData } = useContext(AccountContext);
-
+     const { accountList, action, setAction, actions, packageData, searchData, deleteData } = useContext(AccountContext);
+     const { accountSlots, searchSlotData} = useContext(AccountSlotContext);
      // Account Modal
      const [showModal, setShowModal] = useState(false);
      const [showDeteteModal, setShowDeleteModal] = useState(false);
@@ -187,6 +188,7 @@ function Accounts() {
                     <h1 class="font-bold mb-8 text-2xl">Quản lý slot tài khoản cho thuê </h1>
                     <AccountSlotView
                          accountSlots={accountSlots}
+                         packageData = {packageData}
                          action={action}
                          dataAccountSlotModalRef={dataAccountSlotModalRef}
                          showAccountSlotModal={showAccountSlotModal}

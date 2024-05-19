@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -26,20 +27,23 @@ public class AccountRentalServiceImpl implements AccountRentalService {
     }
 
     @Override
+    @Transactional
     public AccountRental updateAccountRental(Long id, AccountRental newAccountRentalData) {
         Optional<AccountRental> existingAccountRentalOptional = accountRentalRepository.findById(id);
         if (existingAccountRentalOptional.isPresent()) {
             AccountRental existingAccountRental = existingAccountRentalOptional.get();
-            // Cập nhật các trường mới
+
+            // Update fields with new data
             existingAccountRental.setUsername(newAccountRentalData.getUsername());
             existingAccountRental.setEmail(newAccountRentalData.getEmail());
             existingAccountRental.setPassword(newAccountRentalData.getPassword());
             existingAccountRental.setStatus(newAccountRentalData.getStatus());
             existingAccountRental.setRenewStartDate(newAccountRentalData.getRenewStartDate());
             existingAccountRental.setRenewEndDate(newAccountRentalData.getRenewEndDate());
+            existingAccountRental.setAccountRentalPackage(newAccountRentalData.getAccountRentalPackage());
+
             return accountRentalRepository.save(existingAccountRental);
         } else {
-            // Xử lý khi không tìm thấy AccountRental
             return null;
         }
     }

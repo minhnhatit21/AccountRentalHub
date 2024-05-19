@@ -16,6 +16,8 @@ public class SignupRequest {
     @NotBlank
     private String confirmPassword;
 
+    private String fullName;
+
     public String getUsername() {
         return username;
     }
@@ -54,5 +56,13 @@ public class SignupRequest {
 
     public void setRole(Set<String> role) {
         this.role = role;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 }

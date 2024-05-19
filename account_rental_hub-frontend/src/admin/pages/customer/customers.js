@@ -4,10 +4,20 @@ import { CustomerContext } from "../../context/CustomerContext";
 
 function Customers() {
 
-    const {customerList, action, setAction, actions} = useContext(CustomerContext);
+    const { customerList, action, setAction, actions, pageable, searchData, changePage } = useContext(CustomerContext);
     const [showCustomerModal, setShowCustomerModal] = useState(false);
     const [showDeteteCustomerModal, setShowDeleteCustomerModal] = useState(false);
     const dataModalRef = useRef(null);
+
+    // Handle Search Data
+    const handleSearchData = (name) => {
+        searchData(name);
+    }
+
+    // Handle change pagination
+    const handlePageChange = (newPage) => {
+        changePage(newPage);
+    };
 
     // Hanldle Add customers
     const handleAddCustomerClick = () => {
@@ -58,6 +68,7 @@ function Customers() {
         <>
             <CustomerView
                 customerList={customerList}
+                pageable={pageable}
                 action={action}
                 isOpenModal={showCustomerModal}
                 isOpenDeleteModal={showDeteteCustomerModal}
@@ -68,6 +79,8 @@ function Customers() {
                 handleDeleteCustomerClick={handleDeteteCustomerClick}
                 handleDeleteCustomerModalClose={handleDeleteCustomerModalClose}
                 handleDeleteCustomer={handleDeleteCustomer}
+                onSearchData={handleSearchData}
+                onPageChange={handlePageChange}
             />
         </>
     );

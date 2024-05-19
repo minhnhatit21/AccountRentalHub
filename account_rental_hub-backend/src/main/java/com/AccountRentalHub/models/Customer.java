@@ -6,11 +6,8 @@ import jakarta.persistence.*;
 @Table(name = "customer")
 public class Customer extends BaseEntity{
 
-    @Column(name = "user_id")
-    private Long userId;
-
     @Column(name = "fullname")
-    private String fullname;
+    private String fullName;
 
     @Column(name = "phone")
     private String phone;
@@ -20,23 +17,18 @@ public class Customer extends BaseEntity{
 
 
     @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public Customer() {
     }
 
     public String getFullname() {
-        return fullname;
+        return fullName;
     }
 
     public void setFullname(String fullname) {
-        this.fullname = fullname;
+        this.fullName = fullname;
     }
 
     public String getPhone() {

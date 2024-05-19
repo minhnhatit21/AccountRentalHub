@@ -1,4 +1,8 @@
+import { useContext } from "react";
+import { AuthContext } from "../../../context/AuthContext";
+
 function UserFooter() {
+    const { isLoggedIn, user } = useContext(AuthContext);
     return (
         <>
             <footer className="bg-gray-800 py-8 text-center text-gray-300">

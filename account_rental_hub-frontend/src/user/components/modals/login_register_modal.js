@@ -135,7 +135,7 @@ export function SignInModal({ showModal, onCloseModal, onLoginSuccess }) {
                                             </a>
                                         </div>
                                     </form>
-                                    <div className="mt-4 text-center">
+                                    {/* <div className="mt-4 text-center">
                                         <p className="text-gray-600">Hoặc đăng nhập bằng</p>
                                         <div className="flex justify-center mt-2">
                                             <a href="#" className="mx-2">
@@ -145,7 +145,7 @@ export function SignInModal({ showModal, onCloseModal, onLoginSuccess }) {
                                                 <img src="https://cdn.svgporn.com/logos/facebook.svg" alt="Facebook" className="h-8 w-8" />
                                             </a>
                                         </div>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                         </div>
@@ -180,7 +180,7 @@ export function SignUpModal({ showModal, onCloseModal }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        await register(formData.username, formData.email, formData.password, formData.confirmPassword );
+        await register(formData.username, formData.email, formData.password, formData.confirmPassword, formData.fullName );
     };
 
     const handleCloseModal = () => {
@@ -285,7 +285,7 @@ export function SignUpModal({ showModal, onCloseModal }) {
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                             />
                                         </div>
-                                        <div className="mb-4">
+                                        {/* <div className="mb-4">
                                             <input
                                                 type="tel"
                                                 name="phoneNumber"
@@ -294,7 +294,7 @@ export function SignUpModal({ showModal, onCloseModal }) {
                                                 onChange={handleChange}
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                             />
-                                        </div>
+                                        </div> */}
                                         <button
                                             type="submit"
                                             className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -302,7 +302,7 @@ export function SignUpModal({ showModal, onCloseModal }) {
                                             Tạo tài khoản
                                         </button>
                                     </form>
-                                    <div className="mt-4 text-center">
+                                    {/* <div className="mt-4 text-center">
                                         <p className="text-gray-600">Hoặc đăng nhập bằng</p>
                                         <div className="flex justify-center mt-2">
                                             <a href="#" className="mx-2">
@@ -312,7 +312,7 @@ export function SignUpModal({ showModal, onCloseModal }) {
                                                 <img src="https://cdn.svgporn.com/logos/facebook.svg" alt="Facebook" className="h-8 w-8" />
                                             </a>
                                         </div>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                         </div>

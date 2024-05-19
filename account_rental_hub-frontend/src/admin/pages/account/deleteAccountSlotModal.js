@@ -11,7 +11,7 @@ function DeleteAccountSlotModal({ isOpen, onClose, accountDataToDelete, onDelete
             initData = data;
         }
         return {
-            accountEmail:  Object.keys(initData).length > 0 ? initData.account.email : '',
+            accountEmail:  Object.keys(initData).length > 0 ? initData.rentalAccount?.email : '',
         };
     };
     const [formData, setFormData] = useState(deleteData(accountDataToDelete || {}));

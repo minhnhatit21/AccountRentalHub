@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -26,7 +26,6 @@ const PackageSelect = ({ packages, value, onChange }) => (
     </div>
 );
 
-
 function AddAccountModal({ isOpen, onClose, action, initialData, packageData }) {
     const { createData, updateData } = useContext(AccountContext);
 
@@ -50,22 +49,23 @@ function AddAccountModal({ isOpen, onClose, action, initialData, packageData }) 
         } else {
             initData = data;
         }
+
         return {
             accountID: initData.id || 0,
             accountUserName: initData.username || '',
             accountEmail: initData.email || '',
             accountPassword: initData.password || '',
             accountStatus: initData.status || '',
-            accountServiceWebsite: initData.service?.website_link || '',
             accountPackageID: initData.accountRentalPackage?.id || 0,
             accountSupcriptionDate: initData.createdAt ? new Date(initData.createdAt) : '',
             accountRenewStartDate: initData.renewStartDate ? new Date(initData.renewStartDate) : '',
             accountRenewEndDate: initData.renewEndDate ? new Date(initData.renewEndDate) : '',
+            accountServiceWebsite: initData.accountRentalPackage?.accountRentalServices.website || ''
         };
     };
 
     // Use react-hook-form for form management
-    const { register, handleSubmit, formState: { errors }, reset, control, setValue } = useForm({
+    const { register, handleSubmit, formState: { errors }, reset, control, watch } = useForm({
         resolver: yupResolver(validationSchema),
         defaultValues: initFormData(initialData || {}),
     });
@@ -77,10 +77,10 @@ function AddAccountModal({ isOpen, onClose, action, initialData, packageData }) 
         }
     }, [initialData, reset]);
 
+    const accountServiceWebsite = watch('accountServiceWebsite');
+
     // Handle form submission
     const onSubmit = async (data) => {
-
-        console.log("ID: ", data.accountID)
 
         const accountData = {
             username: data.accountUserName,
@@ -94,8 +94,6 @@ function AddAccountModal({ isOpen, onClose, action, initialData, packageData }) 
             }
         };
 
-        console.log("Data", accountData)
-
         if (accountData !== null || accountData !== undefined) {
             if (action === "add") {
                 await createData(accountData);
@@ -103,7 +101,6 @@ function AddAccountModal({ isOpen, onClose, action, initialData, packageData }) 
                 await updateData(data.accountID, accountData);
             }
         }
-
 
         onClose();
     };
@@ -277,14 +274,15 @@ function AddAccountModal({ isOpen, onClose, action, initialData, packageData }) 
                                                 Lưu
                                             </button>
                                         )}
-                                        {action === "edit" && (
-                                            <button
+                                        {action === "edit" && accountServiceWebsite && (
+                                            <a
+                                                href={accountServiceWebsite}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
                                                 className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#FD9A56] text-base font-medium text-white hover:bg-[#f1be9d] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
                                             >
-                                                <a href={initialData.service?.website_link} target="_blank" rel="noopener noreferrer">
-                                                    Gia hạn tài khoản
-                                                </a>
-                                            </button>
+                                                Gia hạn tài khoản
+                                            </a>
                                         )}
                                         <button
                                             type="button"

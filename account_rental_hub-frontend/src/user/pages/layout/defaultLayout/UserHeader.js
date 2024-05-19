@@ -43,7 +43,7 @@ function UserHeader() {
         <>
             <header className="bg-[#13112e] text-white shadow-md py-6 px-4 lg:px-32">
                 <div className="container mx-auto flex items-center justify-between">
-                    <Link to="/homepage">
+                    <Link to="/home">
                         <div className="lg:hidden">
                             <FaBars className="text-2xl text-white cursor-pointer" />
                         </div>
@@ -83,9 +83,11 @@ function UserHeader() {
                         ) : userProfile ? (
                             <UserProfileDropdown imageSrc={"https://via.placeholder.com/150"} username={userProfile.username} email={userProfile.email} />
                         ) : null}
-                        <a href="#" className="flex items-center px-4 py-2 rounded-md bg-[#474193] text-white hover:bg-[#424069]">
-                            <FaShoppingCart className="mr-2" /> <strong>Giỏ hàng</strong>
-                        </a>
+                        <Link to="/user/cart">
+                            <div className="flex items-center px-4 py-2 rounded-md bg-[#474193] text-white hover:bg-[#424069]">
+                                <FaShoppingCart className="mr-2" /> <strong>Giỏ hàng</strong>
+                            </div>
+                        </Link>
                     </div>
                 </div>
             </header>

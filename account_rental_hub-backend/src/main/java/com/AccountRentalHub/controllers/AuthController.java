@@ -5,6 +5,7 @@ import java.security.GeneralSecurityException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.AccountRentalHub.models.Customer;
 import com.AccountRentalHub.models.ERole;
 import com.AccountRentalHub.models.Role;
 import com.AccountRentalHub.models.User;
@@ -22,6 +23,7 @@ import com.AccountRentalHub.security.services.ResetTokenService;
 import com.AccountRentalHub.security.services.ResetTokenServiceImpl;
 import com.AccountRentalHub.security.services.UserDetailsImpl;
 
+import com.AccountRentalHub.services.CustomerService;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,9 @@ public class AuthController {
 
     @Autowired
     RoleRepository roleRepository;
+
+    @Autowired
+    CustomerService customerService;
 
     @Autowired
     private ResetTokenServiceImpl resetTokenService;
@@ -117,13 +122,11 @@ public class AuthController {
                         Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(adminRole);
-
                         break;
                     case "mod":
                         Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(modRole);
-
                         break;
                     default:
                         Role userRole = roleRepository.findByName(ERole.ROLE_USER)
@@ -134,10 +137,21 @@ public class AuthController {
         }
 
         user.setRoles(roles);
-        userRepository.save(user);
+
+        // Save user entity first to generate the ID
+        user = userRepository.save(user);
+
+        // Create new Customer and associate it with the saved User
+        Customer newCustomer = new Customer();
+        newCustomer.setFullname(signUpRequest.getFullName());
+        newCustomer.setUser(user);
+
+        // Save the Customer entity
+        customerService.createCustomer(newCustomer);
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
+
 
     @PutMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {

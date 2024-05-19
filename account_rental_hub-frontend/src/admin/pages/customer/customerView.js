@@ -1,10 +1,12 @@
 
+import { useState } from "react";
 import Pagination from "../../components/partials/pagination";
 import CustomerDeleteModal from "./CustomerDeleteModal";
 import CustomerModal from "./CustomerModal";
 
 function CustomerView({
     action,
+    pageable,
     customerList,
     handleEditCustomerClick,
     handleViewCustomerClick,
@@ -14,11 +16,24 @@ function CustomerView({
     dataModal,
     customerModalClose,
     handleDeleteCustomerModalClose,
-    handleDeleteCustomer
+    handleDeleteCustomer,
+    onSearchData,
+    onPageChange
 
 }) {
 
-    console.log("Customer List", customerList)
+    const [formData, setFormData] = useState({});
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        onSearchData(formData.fullName);
+        // console.log(`Form Data: ${formData.serviceName}, ${formData.name}`);
+    }
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prevState) => ({ ...prevState, [name]: value }));
+    };
 
     const onDeleteCustomerClick = (id) => {
         handleDeleteCustomerClick(id);
@@ -37,7 +52,7 @@ function CustomerView({
             <h1 class="font-bold mb-8 text-2xl">Quản lý khách hàng</h1>
             <div className="rounded-xl border border-stroke bg-white px-5 py-6 m-4 shadow-default sm:px-7.5 xl:pb-1">
                 <div className="flex flex-col mb-4 md:flex-row items-center justify-center md:space-x-4">
-                    <div className="w-full md:w-64 mb-6 md:mb-0">
+                    {/* <div className="w-full md:w-64 mb-6 md:mb-0">
                         <div className="relative">
                             <select
                                 id="serviceType"
@@ -71,12 +86,16 @@ function CustomerView({
                                 </svg>
                             </div>
                         </div>
-                    </div>
-                    <form className="flex flex-col md:flex-row items-center justify-center md:space-x-4 space-y-4 md:space-y-0 w-full">
+                    </div> */}
+                    <form 
+                         onSubmit={handleSearch}
+                        className="flex flex-col md:flex-row items-center justify-center md:space-x-4 space-y-4 md:space-y-0 w-full">
                         <div className="flex-grow">
                             <input
                                 type="text"
-                                placeholder="Nhập tên dịch vụ cần tìm kiếm..."
+                                name="fullName"
+                                onChange={handleInputChange}
+                                placeholder="Nhập tên khách hàng cần tìm kiếm..."
                                 className="w-full px-4 py-2 rounded-md border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         </div>
@@ -285,7 +304,12 @@ function CustomerView({
                         </tbody>
                     </table>
                 </div>
-                <Pagination />
+                {pageable && (
+                    <Pagination
+                        pageable={pageable}
+                        onPageChange={onPageChange}
+                    />
+                )}
             </div>
         </>
     );

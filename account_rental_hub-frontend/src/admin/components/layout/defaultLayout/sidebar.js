@@ -35,10 +35,11 @@ function Sidebar({ toggleSidebar, isOpen }) {
                 >
                     {/* ==== Sidebar Header ==== */}
                     <div className="flex items-center">
-                        <img
+                        {/* <img
                             className="object-cover h-16 w-64 p-2 my-2"
                             src={require('../../../../assets/images/logo/logo.png')}
-                        />
+                        /> */}
+                        <img src="https://i.ibb.co/mzSYdh5/Vutrukey-Text.png" className='object-cover h-16 w-56 p-2 my-2'></img>
                         <button onClick={() => toggleSidebar((prevState) => !prevState)} className="block lg:hidden pr-4">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#4880FF" className="w-6 h-6">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />

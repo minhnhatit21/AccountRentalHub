@@ -11,7 +11,6 @@ const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({});
 
-
     useEffect(() => {
         const checkAuthorization = async () => {
             try {
@@ -30,7 +29,7 @@ const AuthProvider = ({ children }) => {
 
     const login = async (username, password) => {
         setLoading(true);
-        console.log("Login Called")
+
         try {
             const validationSchema = object({
                 username: string().required(),
@@ -62,26 +61,26 @@ const AuthProvider = ({ children }) => {
         setLoading(false);
     };
 
-    const register = async (username, email, password, confirmPassword) => {
+    const register = async (username, email, password, confirmPassword, fullName) => {
         setLoading(true);
         console.log("Register Called");
 
-    
         try {
             const validationSchema = object({
                 username: string().required(),
-                email: string().required(),
+                email: string().required().email(),
                 password: string().required(),
-                confirmPassword: string().required(),
+                confirmPassword: string().oneOf([password], 'Passwords must match').required(),
             });
-            await validationSchema.validate({ username, password, email, confirmPassword }, { abortEarly: false });
+            await validationSchema.validate({ username, password, email, confirmPassword, fullName }, { abortEarly: false });
 
             const userData = {
                 username,
                 email,
                 role: ["user"],
                 password,
-                confirmPassword
+                confirmPassword,
+                fullName
             };
 
             const response = await AuthService.register(userData);
@@ -98,8 +97,9 @@ const AuthProvider = ({ children }) => {
                 (error.response && error.response.data && error.response.data.message) ||
                 error.message ||
                 error.toString();
+            console.log("Error:", resMessage);
             setErrors({ general: resMessage });
-            toast.error("Đăng ký không thành công");
+            toast.error(`Đăng ký không thành công! ${resMessage}`);
         }
         setLoading(false);
     };
