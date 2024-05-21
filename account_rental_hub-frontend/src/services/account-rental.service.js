@@ -2,6 +2,15 @@ import axios from "axios";
 
 const API_URL = "http://localhost:8080/api/accountRentals";
 
+const getAllAccountRental = async () => {
+  try {
+    const response = await axios.get(API_URL);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
 const searchAccountRental = async (page, size, status, username, packageID) => {
     try {
         const response = await axios.get(API_URL + `/search?page=${page}&size=${size}&status=${status}&username=${username}&packageId=${packageID}`);
@@ -47,7 +56,8 @@ const AccountRentalService = {
     searchAccountRental,
     createAccountRental,
     updateAccountRental,
-    deleteAccountRental
+    deleteAccountRental,
+    getAllAccountRental
 }
 
 export default AccountRentalService;

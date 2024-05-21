@@ -79,6 +79,32 @@ function Account({
         }
     };
 
+    const getStatusColor = (status) => {
+        switch (status) {
+            case 'active':
+                return 'bg-green-500';
+            case 'lock':
+                return 'bg-red-500';
+            case 'expired':
+                return 'bg-orange-500';
+            default:
+                return 'bg-gray-500';
+        }
+    };
+
+    const getStatusText = (status) => {
+        switch (status) {
+            case 'active':
+                return 'Có sẵn';
+            case 'lock':
+                return 'Bị khóa';
+            case 'expired':
+                return 'Hết hạn';
+            default:
+                return 'Không xác định';
+        }
+    };
+
     return (
         <>
             <div className="rounded-xl border border-stroke bg-white px-5 py-6 m-4 shadow-default sm:px-7.5 xl:pb-1">
@@ -335,16 +361,11 @@ function Account({
                                     </td>
                                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                                         <p
-                                            className={`inline-flex rounded-full text-sm font-medium text-white px-2 py-1 ${account.status === 'active'
-                                                    ? 'bg-green-500'
-                                                    : account.status === 'lock'
-                                                        ? 'bg-red-500'
-                                                        : account.status === 'expired'
-                                                            ? 'bg-orange-500'
-                                                            : 'bg-gray-500'
-                                                }`}
+                                            className={`inline-flex rounded-full text-sm font-medium text-white px-2 py-1 ${getStatusColor(
+                                                account.status
+                                            )}`}
                                         >
-                                            {account.status}
+                                            {getStatusText(account.status)}
                                         </p>
                                     </td>
                                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">

@@ -41,14 +41,18 @@ function AccountSlotView({
     handleDeteteAccountSlotClose,
     handleDeleteAccountSlot,
 }) {
-    const {searchSlotData} = useContext(AccountSlotContext)
+    const { searchSlotData, pageable, changePage, packageList } = useContext(AccountSlotContext)
 
     const [formData, setFormData] = useState({});
 
     const handleSearch = (e) => {
         e.preventDefault();
         searchSlotData(formData.accountSlotStatus, formData.accountSlotFullName, formData.packageSlotID);
-       // console.log(`Form Data: ${formData.accountSlotStatus}, ${formData.accountSlotFullName}, ${formData.packageSlotID}`);
+        // console.log(`Form Data: ${formData.accountSlotStatus}, ${formData.accountSlotFullName}, ${formData.packageSlotID}`);
+    }
+
+    const onPageChange = (newPage) => {
+        changePage(newPage);
     }
 
     const handleInputChange = (e) => {
@@ -79,11 +83,37 @@ function AccountSlotView({
         }
     };
 
+    const getSlotStatusColor = (status) => {
+        switch (status) {
+            case 'Active':
+                return 'bg-success bg-opacity-10 text-success';
+            case 'Error':
+                return 'bg-danger bg-opacity-10 text-danger';
+            case 'Expired':
+                return 'bg-warning bg-opacity-10 text-warning';
+            default:
+                return 'bg-gray-200 text-gray-600';
+        }
+    };
+
+    const getSlotStatusText = (status) => {
+        switch (status) {
+            case 'Active':
+                return 'Đang hoạt động';
+            case 'Error':
+                return 'Lỗi';
+            case 'Expired':
+                return 'Hết hạn';
+            default:
+                return 'Không xác định';
+        }
+    };
+
     return (
         <>
             <div className="rounded-xl border border-stroke bg-white px-5 py-6 m-4 shadow-default sm:px-7.5 xl:pb-1">
                 <div className="flex flex-col mb-4 md:flex-row items-center justify-center md:space-x-4">
-                    <form 
+                    <form
                         onSubmit={handleSearch}
                         className="flex flex-col md:flex-row items-center justify-center md:space-x-4 space-y-4 md:space-y-0 w-full">
                         <div className="relative">
@@ -127,7 +157,7 @@ function AccountSlotView({
                             </div>
                         </div>
                         <div className="relative">
-                            {packageDropdown(packageData, formData.packageID, handleInputChange)}
+                            {packageDropdown(packageList, formData.packageSlotID, handleInputChange)}
                             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                                 <svg
                                     className="h-5 w-5 text-gray-400"
@@ -323,9 +353,11 @@ function AccountSlotView({
                                     </td>
                                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                                         <p
-                                            className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
+                                            className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${getSlotStatusColor(
+                                                slot.status
+                                            )}`}
                                         >
-                                            {slot.status}
+                                            {getSlotStatusText(slot.status)}
                                         </p>
                                     </td>
                                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
@@ -394,7 +426,12 @@ function AccountSlotView({
                         </tbody>
                     </table>
                 </div>
-                {/* <Pagination /> */}
+                {pageable && (
+                    <Pagination
+                        pageable={pageable}
+                        onPageChange={onPageChange}
+                    />
+                )}
             </div>
         </>
     );

@@ -1,30 +1,26 @@
-import { createContext, useEffect, useState, useCallback } from "react";
-import { toast } from "react-toastify";
-import AccountRentalService from "../../services/account-rental.service";
-import AccountPackageService from "../../services/account-rental-package.service";
-import AccountSlotService from "../../services/acount-slot.service";
-import CustomerService from "../../services/customer.service";
+import React, { createContext, useState, useEffect, useCallback } from 'react';
+import { toast } from 'react-toastify';
+import AccountPackageService from '../../services/account-rental-package.service';
+import AccountRentalService from '../../services/account-rental.service';
+import AccountSlotService from '../../services/acount-slot.service';
+import CustomerService from '../../services/customer.service';
+
 
 export const AccountSlotContext = createContext("");
-
 
 const actionList = ["add", "edit", "view", "delete"];
 
 export const AccountSlotProvider = ({ children }) => {
     const [accountSlots, setAccountSlots] = useState([]);
     const [customerList, setCustomerList] = useState([]);
-
+    const [packageList, setPackageList] = useState([]);
+    const [accountList, setAccountList] = useState([]);
     const [pageable, setPageable] = useState(null);
-
-
-
     const [action, setAction] = useState('add');
     const [actions, setActions] = useState(actionList);
     const [update, setUpdate] = useState(false);
-
     const [page, setPage] = useState(0);
     const [size, setSize] = useState(5);
-
     const [fullnameSearch, setFullnameSearch] = useState("");
     const [statusSearch, setStatusSearch] = useState("");
     const [packageIDSearch, setPackageIDSearch] = useState("");
@@ -44,7 +40,37 @@ export const AccountSlotProvider = ({ children }) => {
             }
         };
 
+        const fetchPackage = async () => {
+            try {
+                const response = await AccountPackageService.getAllAccountRentalPackages();
+                if (response != null) {
+                    setPackageList(response);
+                } else {
+                    setPackageList([]);
+                    console.error("Not Found Data");
+                }
+            } catch (error) {
+                toast.error("Đã xảy ra lỗi khi tải dữ liệu ban đầu");
+            }
+        };
+
+        const fetchAccountRental = async () => {
+            try {
+                const response = await AccountRentalService.getAllAccountRental();
+                if (response.content != null) {
+                    setAccountList(response.content);
+                } else {
+                    setAccountList([]);
+                    console.error("Not Found Data");
+                }
+            } catch (error) {
+                toast.error("Đã xảy ra lỗi khi tải dữ liệu ban đầu");
+            }
+        };
+
         fetchCustomer();
+        fetchPackage();
+        fetchAccountRental();
     }, []);
 
     useEffect(() => {
@@ -68,9 +94,8 @@ export const AccountSlotProvider = ({ children }) => {
     },[])
 
     const changePage = (newPage) => {
-
         setPage(newPage);
-        searchSlotData(statusSearch, fullnameSearch, packageIDSearch)
+        searchSlotData(statusSearch, fullnameSearch, packageIDSearch);
     };
 
     const searchSlotData = useCallback(async (status, username, packageID) => {
@@ -80,29 +105,29 @@ export const AccountSlotProvider = ({ children }) => {
         console.log(`Form Data: ${status}, ${username}, ${packageID}`);
         if (usernameValue !== fullnameSearch || statusValue !== statusSearch || packageIDValue !== packageIDSearch) {
             setPage(0);
-            try {
-                const response = await  AccountSlotService.searchAccountSlots(page, size, statusValue, usernameValue, packageIDValue);
-                if (response?.content) {
-                    setAccountSlots(response.content);
-                    setPageable(response.pageable);
-                    setFullnameSearch(usernameValue);
-                    setStatusSearch(statusValue);
-                    setPackageIDSearch(packageIDValue);
-                } else {
-                    setAccountSlots([]);
-                    setPageable(null);
-                    console.error("Not Found Data");
-                }
-            } catch (error) {
-                if (error.response && error.response.status === 404) {
-                    setAccountSlots([]);
-                    setPageable(null);
-                    console.error("Not Found Data");
-                    toast.warning("Không tìm thấy dữ liệu");
-                } else {
-                    console.error("Error while searching data:", error);
-                    toast.error("Đã xảy ra lỗi khi search dữ liệu");
-                }
+        }
+        try {
+            const response = await AccountSlotService.searchAccountSlots(page, size, statusValue, usernameValue, packageIDValue);
+            if (response?.content) {
+                setAccountSlots(response.content);
+                setPageable(response.pageable);
+                setFullnameSearch(usernameValue);
+                setStatusSearch(statusValue);
+                setPackageIDSearch(packageIDValue);
+            } else {
+                setAccountSlots([]);
+                setPageable(null);
+                console.error("Not Found Data");
+            }
+        } catch (error) {
+            if (error.response && error.response.status === 404) {
+                setAccountSlots([]);
+                setPageable(null);
+                console.error("Not Found Data");
+                toast.warning("Không tìm thấy dữ liệu");
+            } else {
+                console.error("Error while searching data:", error);
+                toast.error("Đã xảy ra lỗi khi search dữ liệu");
             }
         }
     }, [page, size, fullnameSearch, statusSearch, packageIDSearch]);
@@ -119,23 +144,21 @@ export const AccountSlotProvider = ({ children }) => {
         fetchData();
     }, [searchSlotData, statusSearch, fullnameSearch, packageIDSearch, page, update]);
 
-
     const createData = async (accountData) => {
         try {
-            await AccountRentalService.createAccountRental(accountData);
+            await AccountSlotService.createAccountRentalSlot(accountData);
             toast.success("Thêm dữ liệu thành công");
-            setUpdate(!update)
+            setUpdate(prev => !prev); // Trigger re-render
         } catch (error) {
-            //console.error("Lỗi khi thêm dữ liệu:", error.response.data);
             toast.error(error.response.data.message + ". Vui lòng thử lại!");
         }
     };
 
     const updateData = async (id, accountData) => {
         try {
-            await AccountRentalService.updateAccountRental(id, accountData);
+            await AccountSlotService.updateAccountRentalSlot(id, accountData);
             toast.success("Cập nhật dữ liệu thành công");
-            setUpdate(!update)
+            setUpdate(prev => !prev); // Trigger re-render
         } catch (error) {
             console.error("Lỗi khi cập nhật dữ liệu:", error);
             toast.error("Đã xảy ra lỗi khi cập nhật dữ liệu");
@@ -144,18 +167,20 @@ export const AccountSlotProvider = ({ children }) => {
 
     const deleteData = async (id) => {
         try {
-            await AccountRentalService.deleteAccountRental(id);
+            await AccountSlotService.deleteAccountRentalSlot(id);
             toast.success("Xóa liệu thành công");
-            setUpdate(!update)
+            setUpdate(prev => !prev); // Trigger re-render
         } catch (error) {
             console.error("Lỗi khi xóa dữ liệu:", error);
             toast.error("Đã xảy ra lỗi khi xóa dữ liệu");
         }
-    }
+    };
 
     const value = {
         accountSlots,
         customerList,
+        packageList,
+        accountList,
         action,
         actions,
         pageable,
@@ -171,9 +196,7 @@ export const AccountSlotProvider = ({ children }) => {
         searchSlotData,
         setFullnameSearch,
         setStatusSearch,
-        setPackageIDSearch,
-        createData
-        // Các phương thức xử lý khác
+        setPackageIDSearch
     };
 
     return (
