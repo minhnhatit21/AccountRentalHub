@@ -6,13 +6,13 @@ import jakarta.persistence.*;
 @Table(name = "customer")
 public class Customer extends BaseEntity{
 
-    @Column(name = "fullname")
+    @Column(name = "fullame")
     private String fullName;
 
     @Column(name = "phone")
     private String phone;
 
-    @Column(name = "adress")
+    @Column(name = "address")
     private String address;
 
 

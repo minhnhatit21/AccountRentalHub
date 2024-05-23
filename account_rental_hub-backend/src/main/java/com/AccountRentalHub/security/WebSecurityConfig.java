@@ -98,6 +98,9 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
                                 .requestMatchers("/api/accountRentals/**").permitAll()
                                 .requestMatchers("/api/customer/**").permitAll()
                                 .requestMatchers("/api/rentalHistories/**").permitAll()
+                                .requestMatchers("/api/cart/**").permitAll()
+                                .requestMatchers("/api/payment/**").permitAll()
+                                .requestMatchers("/api/order/**").permitAll()
                                 .requestMatchers("/api/test/**").permitAll() // Cho phép truy cập mà không cần authorize
                                 .anyRequest().authenticated()
                 );

@@ -2,6 +2,7 @@ package com.AccountRentalHub.repository;
 
 import com.AccountRentalHub.models.AccountRental;
 import com.AccountRentalHub.models.Customer;
+import com.AccountRentalHub.models.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +17,5 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     Page<Customer> findByFullNameContainingIgnoreCase(String fullname, Pageable pageable);
 
+    Customer findByUser(User user);
 }

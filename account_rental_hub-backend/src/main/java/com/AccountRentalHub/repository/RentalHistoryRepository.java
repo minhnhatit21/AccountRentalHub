@@ -8,6 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
+import java.util.List;
+
 @Repository
 public interface RentalHistoryRepository extends JpaRepository<RentalHistory, Long> {
     @Query("SELECT rh FROM RentalHistory rh " +
@@ -21,4 +24,7 @@ public interface RentalHistoryRepository extends JpaRepository<RentalHistory, Lo
                                               @Param("status") String status,
                                               @Param("packageId") Long packageId,
                                               Pageable pageable);
+
+    @Query("SELECT rh FROM RentalHistory rh WHERE rh.endDate < :currentDate AND rh.status <> 'OVERDUE'")
+    List<RentalHistory> findAllOverdueRentals(@Param("currentDate") Date currentDate);
 }

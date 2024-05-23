@@ -13,5 +13,6 @@ public interface RentalHistoryService {
     RentalHistory updateRentalHistory(Long id, RentalHistory rentalHistory);
     void deleteRentalHistory(Long id);
     Page<RentalHistory> searchRentalHistories(String fullName, String status, Long packageId, Pageable pageable);
+    void checkAndMarkOverdueRentals();
 }
 
