@@ -1,6 +1,8 @@
 package com.AccountRentalHub.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.Date;
 import java.util.List;
@@ -8,13 +10,21 @@ import java.util.List;
 @Entity
 @Table(name = "orders")
 public class Order extends BaseEntity {
+    @Column(name = "order_code", unique = true, updatable = false, nullable = false)
+    private String orderCode;
 
     @ManyToOne
     @JoinColumn(name = "customer_id",referencedColumnName = "id")
     private Customer customer;
 
+    @NotNull
+    @Column(name = "order_date")
     private Date orderDate;
+    @NotNull
+    @Column(name = "total_amount")
     private Double totalAmount;
+    @NotNull
+    @Column(name = "order_status")
     private String status;
 
     @OneToMany(mappedBy = "order")
@@ -22,6 +32,14 @@ public class Order extends BaseEntity {
 
     @OneToMany(mappedBy = "order")
     private List<Transaction> transactions;
+
+    public String getOrderCode() {
+        return orderCode;
+    }
+
+    public void setOrderCode(String orderCode) {
+        this.orderCode = orderCode;
+    }
 
     public Customer getCustomer() {
         return customer;
@@ -63,12 +81,12 @@ public class Order extends BaseEntity {
         this.orderDetails = orderDetails;
     }
 
-//    public List<Transaction> getTransactions() {
-//        return transactions;
-//    }
-//
-//    public void setTransactions(List<Transaction> transactions) {
-//        this.transactions = transactions;
-//    }
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
+
+    public void setTransactions(List<Transaction> transactions) {
+        this.transactions = transactions;
+    }
 
 }

@@ -6,8 +6,10 @@ import com.AccountRentalHub.repository.*;
 import com.AccountRentalHub.services.CartService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -42,6 +44,9 @@ public class CartServiceImpl implements CartService {
 
     @Autowired
     private AccountRentalPackageRepository accountRentalPackageRepository;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Override
     public void addItemToCart(Long userId, Long accountRentalId, Integer quantity) {
@@ -84,11 +89,13 @@ public class CartServiceImpl implements CartService {
         order.setOrderDate(new Date());
         order.setStatus("PENDING");
 
+        // Generate unique order code
+        String orderCode = generateSequentialOrderCode();
+        order.setOrderCode(orderCode);
+
+
         List<OrderDetail> orderDetails = cart.getCartItems().stream().map(cartItem -> {
             OrderDetail orderDetail = new OrderDetail();
-            if(orderDetail.getRentalAccount().getAccountRentalPackage().getAmount() < 1) {
-                throw new RuntimeException("Package: " + orderDetail.getRentalAccount().getAccountRentalPackage().getName() +  " is out of stock");
-            }
             orderDetail.setOrder(order);
             orderDetail.setRentalAccount(cartItem.getAccountRental());
             orderDetail.setQuantity(cartItem.getQuantity());
@@ -106,5 +113,16 @@ public class CartServiceImpl implements CartService {
 
         // Clear the cart after checkout
         cartItemRepository.deleteAll(cart.getCartItems());
+    }
+
+    private String generateSequentialOrderCode() {
+        // Insert into the order_code_seq table to get the next sequence value
+        jdbcTemplate.update("INSERT INTO order_code_seq (id) VALUES (NULL)", new Object[]{});
+
+        // Retrieve the last inserted ID
+        Long seqId = jdbcTemplate.queryForObject("SELECT LAST_INSERT_ID()", Long.class);
+
+        // Format the order code with leading zeros to a width of 5 digits
+        return String.format("ORD%05d", seqId);
     }
 }

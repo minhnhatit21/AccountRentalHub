@@ -5,8 +5,11 @@ import com.AccountRentalHub.models.Order;
 import com.AccountRentalHub.repository.OrderRepository;
 import com.AccountRentalHub.services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -29,5 +32,15 @@ public class OrderServiceImpl implements OrderService {
             }
             orderRepository.save(exitingOrder);
         }
+    }
+
+    @Override
+    public Optional<Order> getOrdersByCode(String orderCode) {
+       return orderRepository.findByOrderCode(orderCode);
+    }
+
+    @Override
+    public Page<Order> searchOrdersByCriteria(String orderCode, Long userId, Date startDate, Date endDate,String status, Pageable pageable) {
+        return orderRepository.findOrdersByCriteria(orderCode, userId, startDate, endDate, status ,pageable);
     }
 }
