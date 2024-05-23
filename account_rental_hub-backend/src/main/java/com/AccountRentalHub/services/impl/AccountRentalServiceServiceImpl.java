@@ -4,6 +4,7 @@ import com.AccountRentalHub.models.AccountRentalServices;
 import com.AccountRentalHub.payload.response.ServiceResponse;
 import com.AccountRentalHub.repository.AccountRentalServiceRepository;
 import com.AccountRentalHub.services.AccountRentalServiceService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,7 @@ public class AccountRentalServiceServiceImpl implements AccountRentalServiceServ
     }
 
     @Override
+    @Transactional
     public AccountRentalServices createAccountRentalService(AccountRentalServices accountRentalService) throws Exception {
         // Kiểm tra xem name đã tồn tại chưa
         if (accountRentalServiceRepository.existsByName(accountRentalService.getName())) {
@@ -32,17 +34,27 @@ public class AccountRentalServiceServiceImpl implements AccountRentalServiceServ
     }
 
     @Override
+    @Transactional
     public AccountRentalServices updateAccountRentalService(Long id, AccountRentalServices newAccountRentalServiceData) {
         Optional<AccountRentalServices> existingAccountRentalServiceOptional = accountRentalServiceRepository.findById(id);
         if (existingAccountRentalServiceOptional.isPresent()) {
             AccountRentalServices existingAccountRentalService = existingAccountRentalServiceOptional.get();
-            // Cập nhật các trường mới
-            existingAccountRentalService.setName(newAccountRentalServiceData.getName());
-            existingAccountRentalService.setImage(newAccountRentalServiceData.getImage());
-            existingAccountRentalService.setDescription(newAccountRentalServiceData.getDescription());
-            existingAccountRentalService.setWebsite(newAccountRentalServiceData.getWebsite());
-            existingAccountRentalService.setCategory(newAccountRentalServiceData.getCategory());
-            // Cập nhật createdAt và updatedAt không cần thiết vì chúng sẽ được tự động cập nhật
+            // Kiểm tra các trường null và rỗng trước khi cập nhật
+            if (newAccountRentalServiceData.getName() != null && !newAccountRentalServiceData.getName().isEmpty()) {
+                existingAccountRentalService.setName(newAccountRentalServiceData.getName());
+            }
+            if (newAccountRentalServiceData.getImage() != null && !newAccountRentalServiceData.getImage().isEmpty()) {
+                existingAccountRentalService.setImage(newAccountRentalServiceData.getImage());
+            }
+            if (newAccountRentalServiceData.getDescription() != null && !newAccountRentalServiceData.getDescription().isEmpty()) {
+                existingAccountRentalService.setDescription(newAccountRentalServiceData.getDescription());
+            }
+            if (newAccountRentalServiceData.getWebsite() != null && !newAccountRentalServiceData.getWebsite().isEmpty()) {
+                existingAccountRentalService.setWebsite(newAccountRentalServiceData.getWebsite());
+            }
+            if (newAccountRentalServiceData.getCategory() != null) {
+                existingAccountRentalService.setCategory(newAccountRentalServiceData.getCategory());
+            }
             return accountRentalServiceRepository.save(existingAccountRentalService);
         } else {
             // Xử lý khi không tìm thấy AccountRentalService

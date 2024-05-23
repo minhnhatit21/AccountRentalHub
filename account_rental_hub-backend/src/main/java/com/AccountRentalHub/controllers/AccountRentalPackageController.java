@@ -25,14 +25,16 @@ public class AccountRentalPackageController {
 
     // Tạo mới một AccountRentalPackage
     @PostMapping
-    public ResponseEntity<?> createAccountRentalPackage(@RequestBody AccountRentalPackage accountRentalPackage) throws Exception {
-
+    public ResponseEntity<?> createAccountRentalPackage(@RequestBody AccountRentalPackage accountRentalPackage) {
         try {
             AccountRentalPackage createdAccountRentalPackage = accountRentalPackageService.createAccountRentalPackage(accountRentalPackage);
             return new ResponseEntity<>(createdAccountRentalPackage, HttpStatus.CREATED);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
-            // Nếu tên đã tồn tại, trả về thông báo lỗi
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
         }
     }
 
@@ -44,7 +46,7 @@ public class AccountRentalPackageController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AccountRentalPackage> updateAccountRentalPackage(@PathVariable Long id, @RequestBody AccountRentalPackage accountRentalPackage) {
+    public ResponseEntity<AccountRentalPackage> updateAccountRentalPackage(@PathVariable Long id, @RequestBody AccountRentalPackage accountRentalPackage) throws Exception {
         AccountRentalPackage updateAccountRentalPackage = accountRentalPackageService.updateAccountRentalPackage(id, accountRentalPackage);
         if(updateAccountRentalPackage != null) {
             return new ResponseEntity<>(updateAccountRentalPackage, HttpStatus.OK);

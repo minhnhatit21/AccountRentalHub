@@ -1,6 +1,8 @@
 package com.AccountRentalHub.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -32,6 +34,11 @@ public class AccountRental extends BaseEntity{
     @NotNull(message = "RenewEndDate account rental cannot be null")
     @Column(name = "renew_end_date")
     private Date renewEndDate;
+
+    @Column(name = "amount_user")
+    @Max(value = 4, message = "Maximum number of users is 4")
+    @Min(value = 1, message = "Miximim numver of users is 1")
+    private Integer amountUsers = 4;
 
     @ManyToOne
     @JoinColumn(name = "account_rental_package_id", referencedColumnName = "id")
@@ -83,6 +90,14 @@ public class AccountRental extends BaseEntity{
 
     public void setRenewEndDate(Date renewEndDate) {
         this.renewEndDate = renewEndDate;
+    }
+
+    public Integer getAmountUsers() {
+        return amountUsers;
+    }
+
+    public void setAmountUsers(Integer amountUsers) {
+        this.amountUsers = amountUsers;
     }
 
     public AccountRentalPackage getAccountRentalPackage() {

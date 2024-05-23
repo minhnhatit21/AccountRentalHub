@@ -29,7 +29,7 @@ public interface AccountRentalPackageService {
      * @param newAccountRentalPackageData
      * @return
      */
-    AccountRentalPackage updateAccountRentalPackage(Long id, AccountRentalPackage newAccountRentalPackageData);
+    AccountRentalPackage updateAccountRentalPackage(Long id, AccountRentalPackage newAccountRentalPackageData) throws Exception;
 
     /**
      * Delete a AccountRentalPackage by Id

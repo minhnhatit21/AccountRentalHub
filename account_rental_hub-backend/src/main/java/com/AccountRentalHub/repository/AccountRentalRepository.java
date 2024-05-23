@@ -1,12 +1,16 @@
 package com.AccountRentalHub.repository;
 
 import com.AccountRentalHub.models.AccountRental;
+import com.AccountRentalHub.models.RentalHistory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.Date;
+import java.util.List;
 
 @Repository
 public interface AccountRentalRepository extends JpaRepository<AccountRental, Long> {
@@ -19,4 +23,7 @@ public interface AccountRentalRepository extends JpaRepository<AccountRental, Lo
             @Param("username") String username,
             @Param("packageId") Long packageId,
             Pageable pageable);
+
+    @Query("SELECT ar FROM AccountRental ar WHERE ar.renewEndDate < :currentDate AND ar.status <> 'EXPIRED'")
+    List<AccountRental> findAllExpiredAccountRentals(@Param("currentDate") Date currentDate);
 }
