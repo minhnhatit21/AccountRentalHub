@@ -1,83 +1,121 @@
-import { createContext, useState } from "react";
+import React, { createContext, useState, useEffect, useCallback, useContext } from 'react';
+import { toast } from 'react-toastify';
+import { GlobalContext } from "./GlobalContext";
+import OrderService from '../../services/order.service';
 
 const actionList = ["add", "edit", "view", "delete"];
-const orders = [
-    {
-      "OrderID": 1001,
-      "CustomerName": "Nguyễn Văn A",
-      "Email": "nguyenvana@example.com",
-      "SubscriptionService": "Netflix",
-      "SubscriptionPlan": "Premium",
-      "StartDate": "2023-04-01",
-      "EndDate": "2023-09-30",
-      "TotalPrice": 99.99,
-      "OrderStatus": "Pending"
-    },
-    {
-      "OrderID": 1002,
-      "CustomerName": "Trần Thị B",
-      "Email": "tranthib@example.com",
-      "SubscriptionService": "Disney+",
-      "SubscriptionPlan": "Standard",
-      "StartDate": "2023-05-15",
-      "EndDate": "2023-11-14",
-      "TotalPrice": 79.99,
-      "OrderStatus": "Pending"
-    },
-    {
-      "OrderID": 1003,
-      "CustomerName": "Lê Công C",
-      "Email": "lecongc@example.com",
-      "SubscriptionService": "Hulu",
-      "SubscriptionPlan": "Basic",
-      "StartDate": "2023-06-01",
-      "EndDate": "2023-11-30",
-      "TotalPrice": 59.99,
-      "OrderStatus": "Paid"
-    },
-    {
-      "OrderID": 1004,
-      "CustomerName": "Phạm Thị D",
-      "Email": "phamthid@example.com",
-      "SubscriptionService": "HBO Max",
-      "SubscriptionPlan": "Ad-Free",
-      "StartDate": "2023-07-01",
-      "EndDate": "2024-06-30",
-      "TotalPrice": 149.99,
-      "OrderStatus": "Cancel"
-    },
-    {
-      "OrderID": 1005,
-      "CustomerName": "Hoàng Văn E",
-      "Email": "hoangvane@example.com",
-      "SubscriptionService": "Amazon Prime Video",
-      "SubscriptionPlan": "Annual",
-      "StartDate": "2023-08-15",
-      "EndDate": "2024-08-14",
-      "TotalPrice": 119.99,
-      "OrderStatus": "Finished"
-    }
-  ]
 
 export const OrderContext = createContext("");
 
-export const OrderProvider = ({children}) => {
-    const [orderList, setUserOrderList] = useState(orders)
-    const [action, setAction] = useState('add')
-    const [actions, setActions] = useState(actionList)
+export const OrderProvider = ({ children }) => {
+  const [orderList, setOrders] = useState([]);
+  const [pageable, setPageable] = useState(null);
+  const [action, setAction] = useState('add')
+  const [actions, setActions] = useState(actionList)
+  const [update, setUpdate] = useState(false);
+  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(5);
+  const [orderCodeSearch, setOrderCodeSearch] = useState("");
+  const [userIdSearch, setUserIdSearch] = useState("");
+  const [startDateSearch, setStartDateSearch] = useState("");
+  const [endDateSearch, setEndDateSearch] = useState("");
+  const [statusSearch, setStatusSearch] = useState("");
 
-    const value = {
-        orderList,
-        action,
-        actions,
-        setUserOrderList,
-        setAction,
-        setActions
+   // Global Context
+  const {globalUpdate, setGlobalUpdate} = useContext(GlobalContext);
+
+  useEffect(() => {
+    const fetchOrderInitialData = async () => {
+      try {
+        const response = await OrderService.searchOrders(page, size, orderCodeSearch, userIdSearch, startDateSearch, endDateSearch, statusSearch)
+        if (response?.content) {
+          setOrders(response.content);
+          setPageable(response.pageable);
+        } else {
+          setOrders([]);
+          setPageable(null);
+          console.error("Not Found Data");
+        }
+      } catch (error) {
+        toast.error("Đã xảy ra lỗi khi tải dữ liệu ban đầu");
+      }
     };
 
-    return (
-        <OrderContext.Provider value={value}>
-            {children}
-        </OrderContext.Provider>
-    )
+    fetchOrderInitialData();
+  }, [])
+
+  const changePage = (newPage) => {
+    setPage(newPage);
+    searchOrderData(orderCodeSearch, userIdSearch, startDateSearch, endDateSearch, statusSearch);
+  };
+
+  const searchOrderData = useCallback(async (orderCode, userId,startDate,endDate,status) => {
+    let orderCodeValue = orderCode !== undefined ? orderCode : "";
+    let userIdValue = userId !== undefined ? userId : "";
+    let startDateValue = startDate !== undefined ? startDate : "";
+    let endDateValue = endDate !== undefined ? endDate : "";
+    let statusValue = status !== undefined ? status : "";
+
+    if (orderCodeValue !== orderCodeSearch || userIdValue !== userIdSearch 
+        || startDateValue !== startDateSearch || endDateValue !== endDateSearch
+        || statusValue !== statusSearch) {
+      setPage(0);
+    }
+    try {
+      const response = await OrderService.searchOrders(page, size, orderCodeValue, userIdValue, startDateValue, endDateValue, statusValue);
+      if (response?.content) {
+        setOrders(response.content);
+        setPageable(response.pageable);
+        setOrderCodeSearch(orderCodeValue);
+        setUserIdSearch(userIdValue);
+        setStartDateSearch(startDateValue);
+        setEndDateSearch(endDateValue);
+        setStatusSearch(statusValue);
+      } else {
+        setOrders([]);
+        setPageable(null);
+        console.error("Not Found Data");
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        setOrders([]);
+        setPageable(null);
+        console.error("Not Found Data");
+        toast.warning("Không tìm thấy dữ liệu");
+      } else {
+        console.error("Error while searching data:", error);
+        toast.error("Đã xảy ra lỗi khi search dữ liệu");
+      }
+    }
+  }, [page, size, orderCodeSearch, userIdSearch, startDateSearch, endDateSearch,statusSearch]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await searchOrderData(orderCodeSearch, userIdSearch, startDateSearch, endDateSearch,statusSearch);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, [searchOrderData, orderCodeSearch, userIdSearch, startDateSearch, endDateSearch, statusSearch, page, update, globalUpdate]);
+
+  const value = {
+    orderList,
+    pageable,
+    action,
+    actions,
+    setOrders,
+    setAction,
+    setActions,
+    changePage,
+    searchOrderData
+  };
+
+  return (
+    <OrderContext.Provider value={value}>
+      {children}
+    </OrderContext.Provider>
+  )
 }

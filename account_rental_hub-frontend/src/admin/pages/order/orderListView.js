@@ -1,29 +1,33 @@
+import { useState } from "react";
 import Pagination from "../../components/partials/pagination";
+import { Link } from 'react-router-dom';
 
 function OrderListView({
     action,
+    pageable,
     orderList,
-    handleEditOrderClick,
     handleViewOrderClick,
-    handleDeleteOrderClick,
     isOpenModal,
-    isOpenDeleteModal,
     dataModal,
     orderModalClose,
-    handleDeleteOrderModalClose,
-    handleDeleteOrder
+    onSearchData,
+    onChagepage
 }) {
-    const onDeleteOrderClick = (id) => {
-        handleDeleteOrderClick(id);
+
+    const [formData, setFormData] = useState({});
+
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        // console.log("Form Data: ", formData.orderCode + "," + formData.userId + "," + formData.startDate + "," + formData.endDate + "," + formData.orderStatus );
+        onSearchData(formData.orderCode, formData.userId, formData.startDate, formData.endDate, formData.orderStatus);
     }
 
-    const onViewOrderClick = (id) => {
-        handleViewOrderClick(id);
-    }
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prevState) => ({ ...prevState, [name]: value }));
+    };
 
-    const onEditOrderClick = (id) => {
-        handleEditOrderClick(id);
-    }
 
     return (
         <>
@@ -32,20 +36,23 @@ function OrderListView({
                 className="rounded-xl border border-stroke bg-white px-5 py-6 m-4 shadow-default sm:px-7.5 xl:pb-1"
             >
                 <div className="flex flex-col mb-4 md:flex-row items-center justify-center md:space-x-4">
-                    <div className="w-full md:w-64 mb-6 md:mb-0">
+                    <form
+                        onSubmit={handleSearch}
+                        className="flex flex-col md:flex-row items-center justify-center md:space-x-4 space-y-4 md:space-y-0 w-full">
                         <div className="relative">
                             <select
-                                id="serviceType"
-                                name="serviceType"
+                                id="orderStatus"
+                                name="orderStatus"
                                 className="block w-full rounded-md border-gray-300 border-2 py-2 pl-3 pr-8 text-base focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm appearance-none bg-white"
-                                defaultValue=""
+                                onChange={handleInputChange}
                             >
-                                <option value="" disabled className="text-gray-500">
+                                <option value="" className="text-gray-500">
                                     Trạng thái đơn hàng
                                 </option>
-                                <option className="hover:bg-gray-100"> Hủy </option>
-                                <option className="hover:bg-gray-100">Chờ xác nhận</option>
-                                <option className="hover:bg-gray-100">Hoàn tất</option>
+                                <option className="hover:bg-gray-100" value="CANCELLED"> Hủy </option>
+                                <option className="hover:bg-gray-100" value="PENDING">Chờ xác nhận</option>
+                                <option className="hover:bg-gray-100" value="PAID">Đã thanh toán</option>
+                                <option className="hover:bg-gray-100" value="FINISHED">Hoàn tất</option>
                             </select>
                             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                                 <svg
@@ -63,13 +70,33 @@ function OrderListView({
                                 </svg>
                             </div>
                         </div>
-                    </div>
-                    <form className="flex flex-col md:flex-row items-center justify-center md:space-x-4 space-y-4 md:space-y-0 w-full">
+                        <div className="md:w-56">
+                            <input
+                                id="startDate"
+                                name="startDate"
+                                type="date"
+                                placeholder="Ngày bắt đầu..."
+                                className="w-full px-4 py-2 rounded-md border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                onChange={handleInputChange}
+                            />
+                        </div>
+                        <div className="md:w-56">
+                            <input
+                                id="endDate"
+                                name="endDate"
+                                type="date"
+                                placeholder="Ngày kết thúc..."
+                                className="w-full px-4 py-2 rounded-md border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                onChange={handleInputChange}
+                            />
+                        </div>
                         <div className="flex-grow">
                             <input
                                 type="text"
-                                placeholder="Nhập mã đơn hàng hoặc tên khách hàng cần tìm kiếm..."
+                                name="orderCode"
+                                placeholder="Nhập mã đơn hàng cần tìm kiếm..."
                                 className="w-full px-4 py-2 rounded-md border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                onChange={handleInputChange}
                             />
                         </div>
                         <button
@@ -93,19 +120,6 @@ function OrderListView({
                             <span>Tìm kiếm</span>
                         </button>
                     </form>
-                    {/* <OrderModal
-                        isOpen={isOpenModal}
-                        onClose={OrderModalClose}
-                        action={action}
-                        initialData={dataModal.current}
-                    />
-                    <OrderDeleteModal
-                        isOpen={isOpenDeleteModal}
-                        onClose={handleDeleteOrderModalClose}
-                        onDelete={handleDeleteOrder}
-                        dataToDelete={dataModal.current}
-
-                    /> */}
                 </div>
 
                 <div className="max-w-full overflow-x-auto rounded-xl border-solid border-2 border-[#F2F2F2]">
@@ -120,25 +134,6 @@ function OrderListView({
                                         className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-md font-medium text-success"
                                     >
                                         Mã đơn hàng
-                                    </p>
-                                </th>
-                                <th
-                                    className="min-w-[120px] px-4 py-4 font-medium text-black"
-                                >
-                                    <p
-                                        className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-md font-medium text-success"
-                                    >
-                                        Tên khách hàng
-                                    </p>
-
-                                </th>
-                                <th
-                                    className="min-w-[120px] px-4 py-4 font-medium text-black"
-                                >
-                                    <p
-                                        className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-md font-medium text-success"
-                                    >
-                                        Dịch vụ cho thuê
                                     </p>
                                 </th>
                                 <th
@@ -171,47 +166,33 @@ function OrderListView({
                         <tbody>
                             {orderList && orderList.map(order => (
                                 <>
-                                    <tr key={order.id}>
+                                    <tr key={order.orderCode}>
                                         <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                                             <p
                                                 className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
                                             >
-                                                {order.OrderID}
+                                                {order.orderCode}
                                             </p>
                                         </td>
                                         <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                                             <p
                                                 className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
                                             >
-                                                {order.CustomerName}
+                                                {order.status}
                                             </p>
                                         </td>
                                         <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                                             <p
                                                 className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
                                             >
-                                                {order.SubscriptionService}
-                                            </p>
-                                        </td>
-                                        <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                                            <p
-                                                className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
-                                            >
-                                                {order.OrderStatus}
-                                            </p>
-                                        </td>
-                                        <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                                            <p
-                                                className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
-                                            >
-                                                {order.StartDate}
+                                                {order.orderDate}
                                             </p>
                                         </td>
                                         <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                                             <div className="flex items-center justify-center space-x-3.5">
-                                                <button
-                                                    onClick={() => onViewOrderClick(order.id)}
-                                                    className="hover:text-primary">
+                                                <Link to={{
+                                                    pathname: `/admin/orderDetails?${order.orderCode}`,
+                                                }} className="hover:text-primary">
                                                     <svg
                                                         width="18"
                                                         height="18"
@@ -228,7 +209,8 @@ function OrderListView({
                                                             fill=""
                                                         />
                                                     </svg>
-                                                </button>
+                                                </Link>
+
                                             </div>
                                         </td>
                                     </tr>
@@ -237,7 +219,12 @@ function OrderListView({
                         </tbody>
                     </table>
                 </div>
-                {/* <Pagination /> */}
+                {pageable && (
+                    <Pagination
+                        pageable={pageable}
+                        onPageChange={onChagepage}
+                    />
+                )}
             </div>
         </>
     );

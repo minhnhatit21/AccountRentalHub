@@ -10,7 +10,7 @@ const OrderRoutes = () => (
     <OrderProvider>
         <Routes>
             <Route path="/admin/orderList" element={<AdminRoute><DefaultLayout><Orders /></DefaultLayout></AdminRoute> } />
-            <Route path="/admin/orderDetails" element={<AdminRoute><DefaultLayout><OrderDetails /></DefaultLayout></AdminRoute> } />
+            <Route path="/admin/orderDetails/:orderCode" element={<AdminRoute><DefaultLayout><OrderDetails /></DefaultLayout></AdminRoute> } />
         </Routes>
     </OrderProvider>
 );

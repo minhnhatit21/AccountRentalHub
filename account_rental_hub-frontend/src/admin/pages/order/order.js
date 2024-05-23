@@ -4,23 +4,20 @@ import { OrderContext } from "../../context/OrderContext";
 
 function Orders() {
 
-  const { orderList, action, setAction, actions } = useContext(OrderContext);
+  const { orderList, action, setAction, actions, searchOrderData, changePage, pageable } = useContext(OrderContext);
   const [showOrderModal, setShowOrderModal] = useState(false);
   const [showDeteteOrderModal, setShowDeleteOrderModal] = useState(false);
   const dataModalRef = useRef(null);
 
-  // Hanldle Add Orders
-  const handleAddOrderClick = () => {
-    setAction(actions[0]);
-    setShowOrderModal(true);
-  };
+   // Handle change pagination
+   const handlePageChange = (newPage) => {
+    changePage(newPage);
+};
 
-  const handleEditOrderClick = (id) => {
-    setAction(actions[1]);
-    const data = orderList.filter(Order => Order.id === id);
-    dataModalRef.current = data;
-    setShowOrderModal(true);
-  };
+const handleSearchData = (orderCode, userId, startDate, endDate, status) => {
+ // console.log("Form Data: ", orderCode + "," + userId + "," + startDate + "," + endDate + "," + status);
+  searchOrderData(orderCode, userId, startDate, endDate, status);
+}
 
   const handleViewOrderClick = (id) => {
     setAction(actions[2]);
@@ -34,40 +31,19 @@ function Orders() {
     dataModalRef.current = null;
   };
 
-  // Delete Order
-  const handleDeteteOrderClick = (id) => {
-    setAction(actions[3]);
-    const data = orderList.filter(Order => Order.id === id);
-    dataModalRef.current = data;
-    setShowDeleteOrderModal(true);
-  }
-
-  const handleDeleteOrderModalClose = () => {
-    console.log('Call close delete');
-    setShowDeleteOrderModal(false);
-    dataModalRef.current = null
-  }
-
-  const handleDeleteOrder = (OrderId) => {
-    console.log(`Xóa tài khoản khách hàng có id ${OrderId}`);
-    setShowDeleteOrderModal(false);
-    dataModalRef.current = null
-  };
-
   return (
     <>
       <OrderListView
         orderList={orderList}
         action={action}
+        pageable={pageable}
         isOpenModal={showOrderModal}
         isOpenDeleteModal={showDeteteOrderModal}
         dataModal={dataModalRef}
         orderModalClose={handleOrderModalClose}
         handleVieworderClick={handleViewOrderClick}
-        handleEditorderClick={handleEditOrderClick}
-        handleDeleteorderClick={handleDeteteOrderClick}
-        handleDeleteorderModalClose={handleDeleteOrderModalClose}
-        handleDeleteorder={handleDeleteOrder}
+        onSearchData={handleSearchData}
+        onChagepage={handlePageChange}
       />
     </>
   );

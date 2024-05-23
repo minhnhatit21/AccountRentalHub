@@ -10,13 +10,11 @@ import { GlobalProvider } from '../context/GlobalContext';
 
 
 const AccountRoutes = () => (
-  <GlobalProvider>
-    <AccountProvider>
-      <Routes>
-        <Route path="/admin/account/list" element={<AdminRoute><AccountSlotProvider><DefaultLayout><Accounts /></DefaultLayout></AccountSlotProvider> </AdminRoute>} />
-      </Routes>
-    </AccountProvider>
-  </GlobalProvider>
+  <AccountProvider>
+    <Routes>
+      <Route path="/admin/account/list" element={<AdminRoute><AccountSlotProvider><DefaultLayout><Accounts /></DefaultLayout></AccountSlotProvider> </AdminRoute>} />
+    </Routes>
+  </AccountProvider>
 
 );
 

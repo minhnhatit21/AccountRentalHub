@@ -1,31 +1,40 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import OrderService from '../../../services/order.service';
+import { toast } from 'react-toastify';
 
-const order = {
-    "orderID": 1001,
-    "customerName": "Nguyễn Văn A",
-    "email": "nguyenvana@example.com",
-    "subscriptionService": "Netflix",
-    "subscriptionPlan": "Premium",
-    "startDate": "2023-04-01",
-    "endDate": "2023-09-30",
-    "totalPrice": 100000,
-    "orderStatus": "Paid"
-}
-
-const orderDetails = [
-    {
-        "service": "Netflix",
-        "accountPackage": "Netfix 1 thàng",
-        "amount": 1,
-        "price": 80000,
-        "total_price": 80000,
-        "img": "https://i.ibb.co/L6MDz9X/HD-wallpaper-netflix-logo-black-logo-minimal-netflix.jpg"
-    }
-]
 
 const OrderDetails = () => {
 
     const [isConfirming, setIsConfirming] = useState(false);
+    const [order, setOrder] = useState({});
+    const [orderDetails, setOrderDetails] = useState([]);
+
+    const { orderCode } = useParams();
+
+    useEffect(() => {
+        const fetchOrderDetailsData = async () => {
+          try {
+            const response = await OrderService.getOrderByOrderCode(orderCode)
+            console.log("res orders: ", response);
+            if (response) {
+                setOrder(response);
+                setOrderDetails(response.orderDetails);
+            } else {
+                setOrder({});
+                setOrderDetails([]);
+              console.error("Not Found Data");
+            }
+          } catch (error) {
+            toast.error("Đã xảy ra lỗi khi tải dữ liệu ban đầu");
+          }
+        };
+        fetchOrderDetailsData();
+      }, [])
+
+    // Sử dụng giá trị của orderCode ở đây
+    console.log('Order Code:', orderCode);
+
 
     const handleCancelOrder = () => {
         // Implement logic to cancel the order
@@ -49,27 +58,19 @@ const OrderDetails = () => {
             <div className="grid grid-cols-2 gap-4">
                 <div>
                     <p className="font-bold">Order ID:</p>
-                    <p>{order.orderID}</p>
+                    <p>{order.orderCode}</p>
                 </div>
                 <div>
                     <p className="font-bold">Tên khách hàng:</p>
-                    <p>{order.customerName}</p>
+                    <p>{order.rentalCustomerName}</p>
                 </div>
                 <div>
                     <p className="font-bold">Email:</p>
-                    <p>{order.email}</p>
+                    <p>{order.rentalCustomerEmail}</p>
                 </div>
                 <div>
-                    <p className="font-bold">Dịch vụ đăng ký:</p>
-                    <p>{order.subscriptionService}</p>
-                </div>
-                <div>
-                    <p className="font-bold">Start Date:</p>
-                    <p>{order.startDate}</p>
-                </div>
-                <div>
-                    <p className="font-bold">End Date:</p>
-                    <p>{order.endDate}</p>
+                    <p className="font-bold">Order Date:</p>
+                    <p>{order.orderDate}</p>
                 </div>
             </div>
 
@@ -111,15 +112,6 @@ const OrderDetails = () => {
                                 <p
                                     className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-md font-medium text-success"
                                 >
-                                    Số lượng
-                                </p>
-                            </th>
-                            <th
-                                className="min-w-[120px] px-4 py-4 font-medium text-black"
-                            >
-                                <p
-                                    className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-md font-medium text-success"
-                                >
                                     Đơn giá
                                 </p>
                             </th>
@@ -135,48 +127,41 @@ const OrderDetails = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {orderDetails && orderDetails.map(order => (
-                            <tr key={order.id}>
+                        {orderDetails && orderDetails.map(od => (
+                            <tr key={od.id}>
                                 <td
                                     className="border-b border-[#eee] px-4 py-5 pl-9 dark:border-strokedark">
                                     <img
                                         className="w-16 h-16"
-                                        src={order.img}
+                                        src={od.accountRental.accountRentalPackage.imgURL || ""}
                                     ></img>
                                 </td>
                                 <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                                     <p
                                         className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
                                     >
-                                        {order.service}
+                                        {od.accountRental.accountRentalPackage.accountRentalServices.name || ""}
                                     </p>
                                 </td>
                                 <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                                     <p
                                         className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
                                     >
-                                        {order.accountPackage}
+                                        {od.accountRental.accountRentalPackage.name || ""}
                                     </p>
                                 </td>
                                 <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                                     <p
                                         className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
                                     >
-                                        {order.amount}
+                                        {od.accountRental.accountRentalPackage.discountedPrice || ""}
                                     </p>
                                 </td>
                                 <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                                     <p
                                         className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
                                     >
-                                        {order.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
-                                    </p>
-                                </td>
-                                <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                                    <p
-                                        className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
-                                    >
-                                        {order.total_price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                                        {od.accountRental.accountRentalPackage.discountedPrice || ""}
                                     </p>
                                 </td>
                             </tr>
@@ -240,7 +225,7 @@ const OrderDetails = () => {
                 </button>
             </div>
 
-            
+
         </div>
     );
 };
