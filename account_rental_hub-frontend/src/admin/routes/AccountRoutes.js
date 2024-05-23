@@ -6,14 +6,17 @@ import Accounts from '../pages/account/Accounts';
 import { AccountProvider } from '../context/AccountContext';
 import AdminRoute from './AdminRoute';
 import { AccountSlotProvider } from '../context/AccountSlotContext';
+import { GlobalProvider } from '../context/GlobalContext';
 
 
 const AccountRoutes = () => (
-  <AccountProvider>
-    <Routes>
-      <Route path="/admin/account/list" element={<AdminRoute><AccountSlotProvider><DefaultLayout><Accounts /></DefaultLayout></AccountSlotProvider> </AdminRoute>} />
-    </Routes>
-  </AccountProvider>
+  <GlobalProvider>
+    <AccountProvider>
+      <Routes>
+        <Route path="/admin/account/list" element={<AdminRoute><AccountSlotProvider><DefaultLayout><Accounts /></DefaultLayout></AccountSlotProvider> </AdminRoute>} />
+      </Routes>
+    </AccountProvider>
+  </GlobalProvider>
 
 );
 

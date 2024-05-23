@@ -206,7 +206,7 @@ function Sidebar({ toggleSidebar, isOpen }) {
                                     Quản lý khách hàng
                                 </NavLink>
 
-                                {/* ==== User ====*/}
+                                {/* ==== User ====
                                 <NavLink
                                     to="/admin/user"
                                     className={({ isActive }) =>
@@ -222,7 +222,7 @@ function Sidebar({ toggleSidebar, isOpen }) {
                                     </svg>
 
                                     Quản lý tài khoản người dùng
-                                </NavLink>
+                                </NavLink> */}
 
                                 {/* ==== Order ==== */}
                                 <MenuItem

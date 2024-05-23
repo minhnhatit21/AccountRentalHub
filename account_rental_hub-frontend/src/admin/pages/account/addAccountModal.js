@@ -6,15 +6,17 @@ import { AccountContext } from "../../context/AccountContext";
 import 'react-datepicker/dist/react-datepicker.css';
 import C_Datepicker from "../../components/partials/datepicker";
 
-// Package select component
 const PackageSelect = ({ packages, value, onChange }) => (
     <div>
         <select
             id="accountPackageID"
             name="accountPackageID"
             className="block w-full rounded-md border-gray-300 border-2 py-2 pl-3 pr-8 text-base focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm appearance-none bg-white"
-            value={value || ''}
-            onChange={e => onChange(e.target.value)}
+            value={value?.id || ''}
+            onChange={e => {
+                const selectedPackage = packages.find(pack => pack.id === parseInt(e.target.value, 10));
+                onChange(selectedPackage);
+            }}
         >
             <option value="">--Chọn một gói tài khoản--</option>
             {packages.map(pack => (
@@ -29,25 +31,53 @@ const PackageSelect = ({ packages, value, onChange }) => (
 function AddAccountModal({ isOpen, onClose, action, initialData, packageData }) {
     const { createData, updateData } = useContext(AccountContext);
 
-    // Define the validation schema
     const validationSchema = yup.object().shape({
         accountUserName: yup.string().required('Tên tài khoản đăng nhập là bắt buộc'),
         accountEmail: yup.string().email('Email không hợp lệ').required('Email là bắt buộc'),
         accountPassword: yup.string().required('Mật khẩu là bắt buộc'),
         accountStatus: yup.string().required('Trạng thái tài khoản là bắt buộc'),
-        accountPackageID: yup.string().required('Gói tài khoản là bắt buộc'),
+        accountPackageID: yup.object().required('Gói tài khoản là bắt buộc'),
         accountSupcriptionDate: yup.date().required('Ngày đăng ký dịch vụ là bắt buộc'),
         accountRenewStartDate: yup.date().required('Ngày bắt đầu gia hạn là bắt buộc'),
         accountRenewEndDate: yup.date().required('Ngày kết thúc gia hạn là bắt buộc'),
     });
 
-    // Initialize form data
     const initFormData = (data) => {
+        if (action === "add") {
+            return {
+                accountID: 0,
+                accountUserName: '',
+                accountEmail: '',
+                accountPassword: '',
+                accountStatus: '',
+                accountPackageID: 0,
+                accountSupcriptionDate: '',
+                accountRenewStartDate: '',
+                accountRenewEndDate: '',
+                accountServiceWebsite: ''
+            };
+        }
+
         let initData;
         if (Array.isArray(data) && data.length > 0) {
             initData = data[0];
         } else {
             initData = data;
+        }
+
+        if (action === "add") {
+            return {
+                accountID: 0,
+                accountUserName: '',
+                accountEmail: '',
+                accountPassword: '',
+                accountStatus: '',
+                accountPackageID: 0,
+                accountSupcriptionDate: '',
+                accountRenewStartDate: '',
+                accountRenewEndDate: '',
+                accountServiceWebsite: ''
+            };
         }
 
         return {
@@ -56,7 +86,7 @@ function AddAccountModal({ isOpen, onClose, action, initialData, packageData }) 
             accountEmail: initData.email || '',
             accountPassword: initData.password || '',
             accountStatus: initData.status || '',
-            accountPackageID: initData.accountRentalPackage?.id || 0,
+            accountPackageID: initData.accountRentalPackage || null,
             accountSupcriptionDate: initData.createdAt ? new Date(initData.createdAt) : '',
             accountRenewStartDate: initData.renewStartDate ? new Date(initData.renewStartDate) : '',
             accountRenewEndDate: initData.renewEndDate ? new Date(initData.renewEndDate) : '',
@@ -64,24 +94,35 @@ function AddAccountModal({ isOpen, onClose, action, initialData, packageData }) 
         };
     };
 
-    // Use react-hook-form for form management
-    const { register, handleSubmit, formState: { errors }, reset, control, watch } = useForm({
+    const { register, handleSubmit, formState: { errors }, reset, control, watch, setValue } = useForm({
         resolver: yupResolver(validationSchema),
         defaultValues: initFormData(initialData || {}),
     });
 
     useEffect(() => {
-        if (initialData) {
+        if (action === "add") {
+            reset(initFormData({}));
+        } else if (initialData) {
             const initialFormData = initFormData(initialData);
             reset(initialFormData);
         }
-    }, [initialData, reset]);
+    }, [initialData, reset, action]);
 
+    const accountRenewStartDate = watch('accountRenewStartDate');
+    const accountPackageID = watch('accountPackageID');
     const accountServiceWebsite = watch('accountServiceWebsite');
 
-    // Handle form submission
-    const onSubmit = async (data) => {
+    useEffect(() => {
+        if (accountRenewStartDate && accountPackageID?.duration) {
+            const endDate = new Date(accountRenewStartDate);
+            endDate.setDate(endDate.getDate() + accountPackageID.duration);
+            setValue('accountRenewEndDate', endDate);
+        }
+    }, [accountRenewStartDate, accountPackageID, setValue]);
 
+
+
+    const onSubmit = async (data) => {
         const accountData = {
             username: data.accountUserName,
             email: data.accountEmail,
@@ -90,11 +131,11 @@ function AddAccountModal({ isOpen, onClose, action, initialData, packageData }) 
             renewStartDate: data.accountRenewStartDate ? data.accountRenewStartDate.toISOString() : null,
             renewEndDate: data.accountRenewEndDate ? data.accountRenewEndDate.toISOString() : null,
             accountRentalPackage: {
-                id: data.accountPackageID,
+                id: data.accountPackageID.id,
             }
         };
 
-        if (accountData !== null || accountData !== undefined) {
+        if (accountData) {
             if (action === "add") {
                 await createData(accountData);
             } else if (action === "edit" && data.accountID !== 0) {
@@ -169,25 +210,6 @@ function AddAccountModal({ isOpen, onClose, action, initialData, packageData }) 
                                     </div>
 
                                     <div className="mb-4">
-                                        <label htmlFor="accountSupcriptionDate" className="block text-sm font-medium text-gray-700">
-                                            Ngày đăng ký dịch vụ
-                                        </label>
-                                        <Controller
-                                            control={control}
-                                            name="accountSupcriptionDate"
-                                            render={({ field }) => (
-                                                <C_Datepicker
-                                                    selected={field.value}
-                                                    value={field.value}
-                                                    onChange={(date) => field.onChange(date)}
-                                                    disabled={action === "view" || action === "edit"}
-                                                />
-                                            )}
-                                        />
-                                        {errors.accountSupcriptionDate && <span className="text-red-500">{errors.accountSupcriptionDate.message}</span>}
-                                    </div>
-
-                                    <div className="mb-4">
                                         <label htmlFor="accountRenewStartDate" className="block text-sm font-medium text-gray-700">
                                             Ngày bắt đầu gia hạn
                                         </label>
@@ -237,11 +259,11 @@ function AddAccountModal({ isOpen, onClose, action, initialData, packageData }) 
                                                 defaultValue=""
                                                 disabled={action === "view"}
                                             >
-                                                <option value="" disabled>Trạng thái tài khoản</option>
-                                                <option value="active">Đang hoạt động</option>
-                                                <option value="lock">Tài khoản bị tạm khóa</option>
-                                                <option value="expired">Tài khoản đã hết hạn</option>
-                                                <option value="canceled">Tài khoản đã bị hủy</option>
+                                                <option value="" className="text-gray-500">Trạng thái tài khoản</option>
+                                                <option value="ACTIVE"> Có sẵn</option>
+                                                {/* <option value="RENTED"> Đang cho thuê</option> */}
+                                                <option value="LOCK">Tài khoản bị tạm khóa</option>
+                                                {/* <option value="EXPIRED" >Tài khoản đã hết hạn</option> */}
                                             </select>
                                             {errors.accountStatus && <span className="text-red-500">{errors.accountStatus.message}</span>}
                                         </div>

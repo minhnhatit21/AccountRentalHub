@@ -7,7 +7,7 @@ import { AccountSlotContext } from "../../context/AccountSlotContext";
 
 function Accounts() {
 
-     const { accountList, action, setAction, actions, packageData, searchData, deleteData } = useContext(AccountContext);
+     const { accountList, action, setAction, actions, packageData, searchData, deleteData, pageable, changePage } = useContext(AccountContext);
      const { accountSlots, searchSlotData} = useContext(AccountSlotContext);
      // Account Modal
      const [showModal, setShowModal] = useState(false);
@@ -160,6 +160,10 @@ function Accounts() {
           dataAccountSlotModalRef.current = null
      };
 
+     const handlePageChange = (newPage) => {
+          changePage(newPage);
+        };
+
      return (
           <>
                <div className="mb-10">
@@ -167,6 +171,7 @@ function Accounts() {
                     <Account
                          accountList={accountList}
                          packageData = {packageData}
+                         pageable= {pageable}
                          onSearchData= {handleSearchAccountRentalData}
                          dataAccountModalRef={dataModalRef}
                          handleAddAccountClick={handleAddAccountClick}
@@ -179,6 +184,7 @@ function Accounts() {
                          handleDeleteAccountClose={handleDeleteModalClose}
                          handleDeleteAccount={handleDeleteAccount}
                          action={action}
+                         onPageChange={handlePageChange}
                     />
 
                </div>

@@ -41,7 +41,7 @@ function AccountSlotView({
     handleDeteteAccountSlotClose,
     handleDeleteAccountSlot,
 }) {
-    const { searchSlotData, pageable, changePage, packageList } = useContext(AccountSlotContext)
+    const { searchSlotData, pageable, changePage, packageList, deletedata } = useContext(AccountSlotContext)
 
     const [formData, setFormData] = useState({});
 
@@ -85,12 +85,14 @@ function AccountSlotView({
 
     const getSlotStatusColor = (status) => {
         switch (status) {
-            case 'Active':
-                return 'bg-success bg-opacity-10 text-success';
-            case 'Error':
-                return 'bg-danger bg-opacity-10 text-danger';
-            case 'Expired':
-                return 'bg-warning bg-opacity-10 text-warning';
+            case 'ACTIVE':
+                return 'bg-success bg-opacity-10 text-green-400';
+            case 'PENDING':
+                return 'bg-danger bg-opacity-10 text-rose-400';
+            case 'OVERDUE':
+                return 'bg-warning bg-opacity-10 text-blue-400';
+            case 'CANCELLED':
+                return 'bg-warning bg-opacity-10 text-yellow-400';
             default:
                 return 'bg-gray-200 text-gray-600';
         }
@@ -98,12 +100,14 @@ function AccountSlotView({
 
     const getSlotStatusText = (status) => {
         switch (status) {
-            case 'Active':
+            case 'ACTIVE':
                 return 'Đang hoạt động';
-            case 'Error':
-                return 'Lỗi';
-            case 'Expired':
+            case 'PENDING':
+                return 'Đang chờ';
+            case 'OVERDUE':
                 return 'Hết hạn';
+            case 'CANCELLED':
+                return 'Bị hủy';
             default:
                 return 'Không xác định';
         }
@@ -124,19 +128,19 @@ function AccountSlotView({
                                 defaultValue=""
                                 onChange={handleInputChange}
                             >
-                                <option value="" disabled className="text-gray-500">
+                                <option value="" className="text-gray-500">
                                     Trạng thái tài khoản
                                 </option>
-                                <option value="Active">
+                                <option value="ACTIVE">
                                     Đang hoạt động
                                 </option>
-                                <option value="Pending">
+                                <option value="PENDING">
                                     Đang chờ
                                 </option>
-                                <option value="Overdue" >
+                                <option value="OVERDUE" >
                                     Tài khoản quá hạn
                                 </option>
-                                <option value="Cancelled">
+                                <option value="CANCELLED">
                                     Tài khoản đã bị hủy
                                 </option>
                             </select>

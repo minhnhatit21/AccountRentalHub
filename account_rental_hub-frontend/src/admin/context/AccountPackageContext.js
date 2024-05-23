@@ -7,7 +7,7 @@ export const AccountPackageContext = createContext("");
 
 const actionList = ["add", "edit", "view", "delete"];
 
-export const AccountPackageProvider = ({children}) => {
+export const AccountPackageProvider = ({ children }) => {
     const [data, setData] = useState([]);
     const [serviceData, setServiceData] = useState([]);
     const [pageable, setPageable] = useState(null);
@@ -25,8 +25,7 @@ export const AccountPackageProvider = ({children}) => {
         const fetchServiceNameData = async () => {
             try {
                 const response = await AccountServiceRentalService.getListServiceName();
-
-                if (response != null) {
+                if (response) {
                     setServiceData(response);
                 } else {
                     setServiceData([]);
@@ -35,86 +34,71 @@ export const AccountPackageProvider = ({children}) => {
             } catch (error) {
                 toast.error("Đã xảy ra lỗi khi tải dữ liệu ban đầu");
             }
-        }
+        };
         fetchServiceNameData();
-    }, [])
+    }, []);
+
+    const fetchInitialData = useCallback(async () => {
+        try {
+            const response = await AccountPackageService.searchAccountPackage(page, size, serviceSearch, nameSearch);
+            if (response?.content) {
+                setData(response.content);
+                setPageable(response.pageable);
+            } else {
+                setData([]);
+                setPageable(null);
+                console.error("Not Found Data");
+            }
+        } catch (error) {
+            toast.error("Đã xảy ra lỗi khi tải dữ liệu ban đầu");
+        }
+    }, [page, size, serviceSearch, nameSearch]);
 
     useEffect(() => {
-        const fetchInitialData = async () => {
+        fetchInitialData();
+    }, [fetchInitialData]);
+
+    const searchData = useCallback(
+        async (category, name) => {
+            let nameValue = name !== undefined ? name : "";
+            let serviceValue = category !== undefined ? category : "";
+            if (nameValue !== nameSearch || serviceValue !== serviceSearch) {
+                setPage(0); // Reset page to 0 for new search
+            }
             try {
-                const response = await AccountPackageService.searchAccountPackage(page, size, serviceSearch, nameSearch);
+                const response = await AccountPackageService.searchAccountPackage(0, size, serviceValue, nameValue);
                 if (response?.content) {
                     setData(response.content);
                     setPageable(response.pageable);
+                    setNameSearch(nameValue);
+                    setServiceSearch(serviceValue);
                 } else {
                     setData([]);
                     setPageable(null);
                     console.error("Not Found Data");
                 }
             } catch (error) {
-                toast.error("Đã xảy ra lỗi khi tải dữ liệu ban đầu");
-            }
-        };
-
-        fetchInitialData();
-    }, [page, update]);
-
-    const searchData = useCallback(
-        async (category, name) => {
-            let nameValue = name !== undefined ? name : "";
-            let serviceValue = category !== undefined ? category : "";
-            
-            if (nameValue !== nameSearch || serviceValue !== serviceSearch) {
-                setPage(0);
-                try {
-                    const response = await AccountPackageService.searchAccountPackage(page , size, serviceValue, nameValue);
-    
-                    if (response?.content) {
-                        setData(response.content);
-                        setPageable(response.pageable);
-                        setNameSearch(nameValue);
-                        setServiceSearch(serviceValue);
-                    } else {
-                        setData([]);
-                        setPageable(null);
-                        console.error("Not Found Data");
-                    }
-                } catch (error) {
-                    if (error.response && error.response.status === 404) {
-                        setData([]);
-                        setPageable(null);
-                        console.error("Not Found Data");
-                        toast.warning("Không tìm thấy dữ liệu");
-                    } else {
-                        console.error("Error while searching data:", error);
-                        toast.error("Đã xảy ra lỗi khi search dữ liệu");
-                    }
+                if (error.response && error.response.status === 404) {
+                    setData([]);
+                    setPageable(null);
+                    console.error("Not Found Data");
+                    toast.warning("Không tìm thấy dữ liệu");
+                } else {
+                    console.error("Error while searching data:", error);
+                    toast.error("Đã xảy ra lỗi khi search dữ liệu");
                 }
             }
         },
-        [nameSearch, page, serviceSearch]
+        [nameSearch, serviceSearch, size]
     );
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                await searchData(serviceSearch, nameSearch);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
-
-        fetchData();
-    }, [searchData, serviceSearch, nameSearch, page, update]);
 
     const createData = async (packageData) => {
         try {
             await AccountPackageService.createAccountPackage(packageData);
             toast.success("Thêm dữ liệu thành công");
-            setUpdate(!update)
+            setUpdate(!update);
         } catch (error) {
-            //console.error("Lỗi khi thêm dữ liệu:", error.response.data);
-            toast.error(error.response.data.message + ". Vui lòng thử lại!");
+            toast.error(error.response?.data?.message + ". Vui lòng thử lại!");
         }
     };
 
@@ -122,7 +106,7 @@ export const AccountPackageProvider = ({children}) => {
         try {
             await AccountPackageService.updateAccountPackage(id, packageData);
             toast.success("Cập nhật dữ liệu thành công");
-            setUpdate(!update)
+            setUpdate(!update);
         } catch (error) {
             console.error("Lỗi khi cập nhật dữ liệu:", error);
             toast.error("Đã xảy ra lỗi khi cập nhật dữ liệu");
@@ -133,18 +117,23 @@ export const AccountPackageProvider = ({children}) => {
         try {
             await AccountPackageService.deleteAccountPackage(id);
             toast.success("Xóa liệu thành công");
-            setUpdate(!update)
+            setUpdate(!update);
         } catch (error) {
             console.error("Lỗi khi xóa dữ liệu:", error);
             toast.error("Đã xảy ra lỗi khi xóa dữ liệu");
         }
-    }
+    };
 
     const changePage = (newPage) => {
-
         setPage(newPage);
-        searchData(serviceSearch, nameSearch); // Gọi hàm searchData khi page thay đổi
     };
+
+    useEffect(() => {
+        if (update) {
+            fetchInitialData();
+            setUpdate(false); // Reset update after fetching data
+        }
+    }, [update, fetchInitialData]);
 
     const value = {
         data,
@@ -163,12 +152,11 @@ export const AccountPackageProvider = ({children}) => {
         searchData,
         deleteData,
         changePage
-
-    }
+    };
 
     return (
         <AccountPackageContext.Provider value={value}>
             {children}
         </AccountPackageContext.Provider>
-    )
-}
+    );
+};

@@ -27,6 +27,7 @@ const packageDropdown = (packages, defaultValue, handleInputChange) => {
 
 function Account({
     accountList,
+    pageable,
     packageData,
     dataAccountModalRef,
     action,
@@ -39,7 +40,8 @@ function Account({
     handleAccountModalClose,
     handleDeleteAccountClose,
     handleDeleteAccount,
-    onSearchData
+    onSearchData,
+    onPageChange
 
 }) {
 
@@ -81,24 +83,28 @@ function Account({
 
     const getStatusColor = (status) => {
         switch (status) {
-            case 'active':
-                return 'bg-green-500';
-            case 'lock':
-                return 'bg-red-500';
-            case 'expired':
-                return 'bg-orange-500';
+            case 'ACTIVE':
+                return 'bg-success bg-opacity-10 text-green-400';
+            case 'LOCK':
+                return 'bg-danger bg-opacity-10 text-rose-400';
+            case 'FULL':
+                return 'bg-warning bg-opacity-10 text-blue-400';
+            case 'EXPIRED':
+                return 'bg-warning bg-opacity-10 text-yellow-400';
             default:
-                return 'bg-gray-500';
+                return 'bg-gray-200 text-gray-600';
         }
     };
 
     const getStatusText = (status) => {
         switch (status) {
-            case 'active':
+            case 'ACTIVE':
                 return 'Có sẵn';
-            case 'lock':
+            case 'FULL':
+                return 'Hết chỗ'
+            case 'LOCK':
                 return 'Bị khóa';
-            case 'expired':
+            case 'EXPIRED':
                 return 'Hết hạn';
             default:
                 return 'Không xác định';
@@ -120,20 +126,20 @@ function Account({
                                 defaultValue=""
                                 onChange={handleInputChange}
                             >
-                                <option value="" disabled className="text-gray-500">
+                                <option value="" className="text-gray-500">
                                     Trạng thái tài khoản
                                 </option>
-                                <option value="active">
-                                    Đang hoạt động
+                                <option value="ACTIVE">
+                                    Có sẵn
                                 </option>
-                                <option value="lock">
+                                <option value="RENTED">
+                                    Đang cho thuê
+                                </option>
+                                <option value="LOCK">
                                     Tài khoản bị tạm khóa
                                 </option>
-                                <option value="expired" >
+                                <option value="EXPIRED" >
                                     Tài khoản đã hết hạn
-                                </option>
-                                <option value="canceled">
-                                    Tài khoản đã bị hủy
                                 </option>
                             </select>
                             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -291,6 +297,15 @@ function Account({
                                     <p
                                         className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-md font-medium text-success"
                                     >
+                                        Số lượng slot còn trống
+                                    </p>
+                                </th>
+                                <th
+                                    className="min-w-[120px] px-4 py-4 font-medium text-black"
+                                >
+                                    <p
+                                        className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-md font-medium text-success"
+                                    >
                                         Ngày đăng ký dịch vụ
                                     </p>
                                 </th>
@@ -361,7 +376,7 @@ function Account({
                                     </td>
                                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                                         <p
-                                            className={`inline-flex rounded-full text-sm font-medium text-white px-2 py-1 ${getStatusColor(
+                                            className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${getStatusColor(
                                                 account.status
                                             )}`}
                                         >
@@ -372,9 +387,17 @@ function Account({
                                         <p
                                             className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
                                         >
+                                            {account.amountUsers}
+                                        </p>
+                                    </td>
+                                    <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
+                                        <p
+                                            className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
+                                        >
                                             {formatDate(account.createdAt)}
                                         </p>
                                     </td>
+
                                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                                         <p
                                             className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
@@ -455,7 +478,12 @@ function Account({
                         </tbody>
                     </table>
                 </div>
-                {/* <Pagination /> */}
+                {pageable && (
+                    <Pagination
+                        pageable={pageable}
+                        onPageChange={onPageChange}
+                    />
+                )}
             </div>
         </>
     );

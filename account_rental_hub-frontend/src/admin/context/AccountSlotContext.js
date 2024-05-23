@@ -1,9 +1,10 @@
-import React, { createContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useState, useEffect, useCallback, useContext } from 'react';
 import { toast } from 'react-toastify';
 import AccountPackageService from '../../services/account-rental-package.service';
 import AccountRentalService from '../../services/account-rental.service';
 import AccountSlotService from '../../services/acount-slot.service';
 import CustomerService from '../../services/customer.service';
+import { GlobalContext } from './GlobalContext';
 
 
 export const AccountSlotContext = createContext("");
@@ -24,6 +25,9 @@ export const AccountSlotProvider = ({ children }) => {
     const [fullnameSearch, setFullnameSearch] = useState("");
     const [statusSearch, setStatusSearch] = useState("");
     const [packageIDSearch, setPackageIDSearch] = useState("");
+
+    // Global Context
+    const {globalUpdate, setGlobalUpdate} = useContext(GlobalContext);
 
     useEffect(() => {
         const fetchCustomer = async () => {
@@ -142,13 +146,14 @@ export const AccountSlotProvider = ({ children }) => {
         };
 
         fetchData();
-    }, [searchSlotData, statusSearch, fullnameSearch, packageIDSearch, page, update]);
+    }, [searchSlotData, statusSearch, fullnameSearch, packageIDSearch, page, update, globalUpdate]);
 
     const createData = async (accountData) => {
         try {
             await AccountSlotService.createAccountRentalSlot(accountData);
             toast.success("Thêm dữ liệu thành công");
-            setUpdate(prev => !prev); // Trigger re-render
+            setUpdate(prev => !prev);
+            setGlobalUpdate(prev => !prev)
         } catch (error) {
             toast.error(error.response.data.message + ". Vui lòng thử lại!");
         }
@@ -158,7 +163,8 @@ export const AccountSlotProvider = ({ children }) => {
         try {
             await AccountSlotService.updateAccountRentalSlot(id, accountData);
             toast.success("Cập nhật dữ liệu thành công");
-            setUpdate(prev => !prev); // Trigger re-render
+            setUpdate(prev => !prev);
+            setGlobalUpdate(prev => !prev);
         } catch (error) {
             console.error("Lỗi khi cập nhật dữ liệu:", error);
             toast.error("Đã xảy ra lỗi khi cập nhật dữ liệu");
@@ -169,7 +175,8 @@ export const AccountSlotProvider = ({ children }) => {
         try {
             await AccountSlotService.deleteAccountRentalSlot(id);
             toast.success("Xóa liệu thành công");
-            setUpdate(prev => !prev); // Trigger re-render
+            setUpdate(prev => !prev);
+            setGlobalUpdate(prev => !prev)
         } catch (error) {
             console.error("Lỗi khi xóa dữ liệu:", error);
             toast.error("Đã xảy ra lỗi khi xóa dữ liệu");

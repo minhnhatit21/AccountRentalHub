@@ -47,6 +47,7 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData, seriveDa
             initialData = data;
         }
         return {
+            packageID: initialData.id || 0,
             image: initialData.imgURL ? initialData.imgURL : null,
             packageID: initialData.id || 0,
             packageName: initialData.name || '',
@@ -67,38 +68,52 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData, seriveDa
     });
 
     useEffect(() => {
-        if (initialData) {
+        if (action === "add") {
+            reset(initFormData({}));
+        } else if (initialData) {
             const initialFormData = initFormData(initialData);
-            setFormData(initialFormData);
             reset(initialFormData);
+            setFormData(initialFormData);
         }
-    }, [initialData, reset]);
+    }, [initialData, reset, action]);
 
     const [formData, setFormData] = useState(initFormData(initialData || {}));
 
     const handleInputChange = (e) => {
         const { name, value, files } = e.target;
-        if (name === 'image') {
-            if (files && files[0]) {
-                setFormData((prevState) => ({
+        setFormData(prevState => {
+            let updatedValue = value;
+            if (name === 'image') {
+                if (files && files[0]) {
+                    updatedValue = files[0];
+                    return {
+                        ...prevState,
+                        [name]: updatedValue,
+                        imagePreview: URL.createObjectURL(files[0]),
+                        imageUrl: '',
+                    };
+                } else {
+                    return {
+                        ...prevState,
+                        [name]: null,
+                        imagePreview: null,
+                        imageUrl: '',
+                    };
+                }
+            } else if (name === 'imageUrl') {
+                return {
                     ...prevState,
-                    [name]: files[0],
-                    imagePreview: URL.createObjectURL(files[0]),
-                    imageUrl: '',
-                }));
+                    [name]: value,
+                    imagePreview: value ? value : null,
+                    image: null,
+                };
             } else {
-                setFormData((prevState) => ({ ...prevState, [name]: null, imagePreview: null, imageUrl: '' }));
+                return {
+                    ...prevState,
+                    [name]: value
+                };
             }
-        } else if (name === 'imageUrl') {
-            setFormData((prevState) => ({
-                ...prevState,
-                [name]: value,
-                imagePreview: value ? value : null,
-                image: null,
-            }));
-        } else {
-            setFormData((prevState) => ({ ...prevState, [name]: value }));
-        }
+        });
     };
 
     const onUploadImage = async (file) => {
@@ -123,14 +138,15 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData, seriveDa
             }
         };
 
-        if (formData.image) {
+        if (formData.image && formData.image instanceof File) {
             const responseUploadImage = await onUploadImage(formData.image);
-            packageData.imgURL = responseUploadImage;
+            packageData.image = responseUploadImage;
         }
 
         if (action === "add") {
             createData(packageData);
-        } else if (action === "edit") {
+        } else if (action === "edit" && formData.packageID > 0) {
+            console.log("Service: ", packageData);
             updateData(formData.packageID, packageData);
         }
 
@@ -143,8 +159,6 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData, seriveDa
         else if (action === "edit") return "Chỉnh sửa gói tài khoản"
         else if (action === "view") return "Xem chi tiết tài khoản"
     }
-
-
 
     return (
         <>
@@ -169,13 +183,19 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData, seriveDa
                                                 </label>
                                                 <div className="flex items-center">
                                                     <div className="relative w-32 h-32 mr-4">
-                                                        {formData.imagePreview && (
-                                                            <img
-                                                                src={formData.imagePreview}
-                                                                alt="Image Preview"
-                                                                className="object-cover w-full h-full rounded-md"
-                                                            />
-                                                        )}
+                                                        <div className="relative w-32 h-32 mr-4">
+                                                            {formData.imagePreview ? (
+                                                                <img
+                                                                    src={formData.imagePreview}
+                                                                    alt="Image Preview"
+                                                                    className="object-cover w-full h-full rounded-md"
+                                                                />
+                                                            ) : (
+                                                                <div className="flex items-center justify-center w-full h-full bg-gray-200 rounded-md">
+                                                                    <span className="text-gray-500">No Image</span>
+                                                                </div>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                     <div className="flex-1">
                                                         <div className="mb-2">
@@ -249,20 +269,26 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData, seriveDa
                                                 </div>
                                             </div>
                                             <div className="mb-4">
-                                                <label htmlFor="duration" className="block text-sm font-medium text-gray-700">
-                                                    Thời gian
+                                                <label htmlFor="accountStatus" className="block text-sm font-medium text-gray-700">
+                                                    Thời hạn
                                                 </label>
-                                                <input
-                                                    type="text"
-                                                    id="duration"
-                                                    name="duration"
-                                                    {...register('duration')}
-                                                    value={formData.duration}
-                                                    className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                    onChange={handleInputChange}
-                                                    disabled={action === "view"}
-                                                />
-                                                {errors.duration && <p className="text-red-500 text-xs mt-1">{errors.duration.message}</p>}
+                                                <div className="relative">
+                                                    <select
+                                                        id="duration"
+                                                        {...register("duration")}
+                                                        className="block w-full rounded-md border-gray-300 border-2 py-2 pl-3 pr-8 text-base focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm appearance-none bg-white"
+                                                        defaultValue=""
+                                                        disabled={action === "view"}
+                                                    >
+                                                        <option value="0" className="text-gray-500">Thời hạn</option>
+                                                        <option value="1" >1 Ngày</option>
+                                                        <option value="15" >15 Ngày</option>
+                                                        <option value="28"> 1 Tháng</option>
+                                                        <option value="85"> 3 tháng</option>
+                                                        <option value="360"> 1 năm</option>
+                                                    </select>
+                                                    {errors.duration && <span className="text-red-500">{errors.duration.message}</span>}
+                                                </div>
                                             </div>
                                             <div className="mb-4">
                                                 <label htmlFor="price" className="block text-sm font-medium text-gray-700">
@@ -299,7 +325,7 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData, seriveDa
 
                                             <div className="mb-4">
                                                 <label htmlFor="amount" className="block text-sm font-medium text-gray-700">
-                                                Số lượng
+                                                    Số lượng
                                                 </label>
                                                 <input
                                                     type="text"
@@ -313,7 +339,7 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData, seriveDa
                                                 />
                                                 {errors.amount && <p className="text-red-500 text-xs mt-1">{errors.amount.message}</p>}
                                             </div>
-                                            
+
                                             <div className="mb-4">
                                                 <label htmlFor="description" className="block text-sm font-medium text-gray-700">
                                                     Mô tả

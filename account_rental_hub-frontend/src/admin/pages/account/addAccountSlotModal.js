@@ -4,6 +4,7 @@ import { AccountSlotContext } from "../../context/AccountSlotContext";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { GlobalContext } from "../../context/GlobalContext";
 
 const CustomerDropdown = ({ customers, value, onChange, disabled }) => {
     return (
@@ -32,6 +33,8 @@ const CustomerDropdown = ({ customers, value, onChange, disabled }) => {
 };
 
 const PackageDropdown = ({ packages, value, onChange, disabled }) => {
+    const filteredPackages = packages.filter(pack => pack.amount > 0);
+
     return (
         <div>
             <select
@@ -40,13 +43,13 @@ const PackageDropdown = ({ packages, value, onChange, disabled }) => {
                 className="block w-full rounded-md border-gray-300 border-2 py-2 pl-3 pr-8 text-base focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm appearance-none bg-white"
                 value={value?.id || 0}
                 onChange={(e) => {
-                    const selectedPackage = packages.find(pack => pack.id === parseInt(e.target.value, 10));
+                    const selectedPackage = filteredPackages.find(pack => pack.id === parseInt(e.target.value, 10));
                     onChange(selectedPackage);
                 }}
                 disabled={disabled}
             >
                 <option value={0}>--Chọn một gói tài khoản--</option>
-                {packages.map(pack => (
+                {filteredPackages.map(pack => (
                     <option key={pack.id} value={pack.id}>
                         {pack.name}
                     </option>
@@ -64,7 +67,7 @@ const AccountRentalDropdown = ({ accounts, value, onChange, disabled, accountPac
         if (accounts && accountPackageID) {
             const accountPackageIDInt = parseInt(accountPackageID, 10);
             const filtered = accounts.filter(account => {
-                return account.status === 'active' && account.accountRentalPackage.id === accountPackageIDInt;
+                return account.status === 'ACTIVE' && account.accountRentalPackage.id === accountPackageIDInt;
             });
             console.log("filtered accounts:", filtered);
             setFilteredAccounts(filtered);
@@ -99,14 +102,31 @@ const AccountRentalDropdown = ({ accounts, value, onChange, disabled, accountPac
 
 function AddAccountSlotModal({ isOpen, onClose, action, initialData }) {
     const { customerList, accountList, packageList, createData, updateData } = useContext(AccountSlotContext);
-
+    const { globalUpdate, setGlobalUpdate} = useContext(GlobalContext)
     const validationSchema = yup.object().shape({
         accountStatus: yup.string().required('Trạng thái tài khoản là bắt buộc'),
         accountCustomerID: yup.string().required('Người thuê là bắt buộc'),
         accountRentalID: yup.string().required('Tài khoản cho thuê là bắt buộc'),
         accountPackageID: yup.object().required('Gói tài khoản là bắt buộc'),
-        accountRentStartDate: yup.date().required('Ngày bắt đầu gia hạn là bắt buộc'),
-        accountRentEndDate: yup.date().required('Ngày kết thúc gia hạn là bắt buộc'),
+        accountCustomerID: yup
+            .number()
+            .positive('Người thuê là bắt buộc')
+            .required('Người thuê là bắt buộc'),
+        accountRentalID: yup
+            .number()
+            .positive('Tài khoản cho thuê là bắt buộc')
+            .required('Tài khoản cho thuê là bắt buộc'),
+        accountPackageID: yup
+            .object()
+            .required('Gói tài khoản là bắt buộc'),
+        accountRentStartDate: yup
+            .date()
+            .typeError('Ngày bắt đầu thuê phải là một ngày hợp lệ')
+            .required('Ngày bắt đầu thuê là bắt buộc'),
+        accountRentEndDate: yup
+            .date()
+            .typeError('Ngày kết thúc thuê phải là một ngày hợp lệ')
+            .required('Ngày kết thúc thuê là bắt buộc'),
     });
 
     const initFormData = (data) => {
@@ -147,14 +167,16 @@ function AddAccountSlotModal({ isOpen, onClose, action, initialData }) {
     }, [accountRentStartDate, accountPackageID, setValue]);
 
     useEffect(() => {
-        if (initialData) {
+        if (action === "add") {
+            reset(initFormData({}));
+        } else if (initialData) {
             const initialFormData = initFormData(initialData);
             reset(initialFormData);
         }
-    }, [initialData, reset]);
+    }, [initialData, reset, action, globalUpdate]);
 
     const onSubmit = async (data) => {
-        
+
         const accountslotData = {
             startDate: data.accountRentStartDate ? data.accountRentStartDate.toISOString() : null,
             endDate: data.accountRentEndDate ? data.accountRentEndDate.toISOString() : null,
@@ -168,8 +190,6 @@ function AddAccountSlotModal({ isOpen, onClose, action, initialData }) {
 
         };
 
-        console.log("Account Slot Data: ", accountslotData)
-
         if (accountslotData !== null || accountslotData !== undefined) {
             if (action === "add") {
                 await createData(accountslotData);
@@ -177,7 +197,7 @@ function AddAccountSlotModal({ isOpen, onClose, action, initialData }) {
                 await updateData(data.accountSlotID, accountslotData);
             }
         }
-        
+
         onClose();
     };
 
@@ -221,6 +241,7 @@ function AddAccountSlotModal({ isOpen, onClose, action, initialData }) {
                                                             />
                                                         )}
                                                     />
+                                                    {errors.accountPackageID && <span className="text-red-500">{errors.accountPackageID.message}</span>}
                                                 </div>
                                                 <div className="mb-4">
                                                     <label htmlFor="accountRent" className="block text-sm font-medium text-gray-700 mb-2">
@@ -239,6 +260,7 @@ function AddAccountSlotModal({ isOpen, onClose, action, initialData }) {
                                                             />
                                                         )}
                                                     />
+                                                    {errors.accountRentalID && <span className="text-red-500">{errors.accountRentalID.message}</span>}
                                                 </div>
                                                 <div className="mb-4">
                                                     <label htmlFor="accountRenter" className="block text-sm font-medium text-gray-700 mb-2">
@@ -310,10 +332,21 @@ function AddAccountSlotModal({ isOpen, onClose, action, initialData }) {
                                                         {...register('accountStatus')}
                                                         disabled={action === "view"}
                                                     >
-                                                        <option value="">--Chọn trạng thái tài khoản--</option>
-                                                        <option value="Active">Đang thuê</option>
-                                                        <option value="Error">Tài khoản có lỗi</option>
-                                                        <option value="Expired">Hết hạn</option>
+                                                        <option value="" disabled className="text-gray-500">
+                                                            Trạng thái tài khoản
+                                                        </option>
+                                                        <option value="ACTIVE">
+                                                            Đang hoạt động
+                                                        </option>
+                                                        <option value="PENDING">
+                                                            Đang chờ
+                                                        </option>
+                                                        <option value="OVERDUE" >
+                                                            Tài khoản quá hạn
+                                                        </option>
+                                                        <option value="CANCELLED">
+                                                            Tài khoản đã bị hủy
+                                                        </option>
                                                     </select>
                                                     {errors.accountStatus && <span className="text-red-500">{errors.accountStatus.message}</span>}
                                                 </div>

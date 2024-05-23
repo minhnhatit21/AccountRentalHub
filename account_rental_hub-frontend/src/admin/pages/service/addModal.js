@@ -21,21 +21,18 @@ function AddServiceModal({ isOpen, onClose, action, initialData }) {
     });
 
     const initFormData = (data) => {
-        let initialData;
         if (Array.isArray(data) && data.length > 0) {
-            initialData = data[0];
-        } else {
-            initialData = data;
+            data = data[0];
         }
         return {
-            image: initialData.image ? initialData.image : null,
-            serviceID: initialData.id || 0,
-            serviceName: initialData.name || '',
-            description: initialData.description || '',
-            serviceType: initialData.category || '',
-            website: initialData.website || '',
-            imageUrl: initialData.image || '',
-            imagePreview: initialData.image ? initialData.image : null,
+            image: data.image ? data.image : null,
+            serviceID: data.id || 0,
+            serviceName: data.name || '',
+            description: data.description || '',
+            serviceType: data.category || '',
+            website: data.website || '',
+            imageUrl: data.image ? data.image : '',
+            imagePreview: data.image ? data.image : null,
         };
     };
 
@@ -45,12 +42,14 @@ function AddServiceModal({ isOpen, onClose, action, initialData }) {
     });
 
     useEffect(() => {
-        if (initialData) {
+        if (action === "add") {
+            reset(initFormData({}));
+        } else if (initialData) {
             const initialFormData = initFormData(initialData);
-            setFormData(initialFormData);
             reset(initialFormData);
+            setFormData(initialFormData);
         }
-    }, [initialData, reset]);
+    }, [initialData, reset, action]);
 
     const [formData, setFormData] = useState(initFormData(initialData || {}));
 
@@ -84,33 +83,33 @@ function AddServiceModal({ isOpen, onClose, action, initialData }) {
         console.log("responseUploadImage", response);
 
         return response;
-      }
-      
-      const onSubmit = async (data) => {
+    }
+
+    const onSubmit = async (data) => {
         const imageData = data.image instanceof File ? data.image : (data.imageUrl ? data.imageUrl : formData.imagePreview);
         const serviceTypeValue = data.serviceType || '';
         const serviceData = {
-          image: imageData,
-          name: data.serviceName,
-          description: data.description,
-          category: serviceTypeValue,
-          website: data.website,
+            image: imageData,
+            name: data.serviceName,
+            description: data.description,
+            category: serviceTypeValue,
+            website: data.website,
         };
-      
-        const responseUploadImage = formData.image ? await onUploadImage(formData.image) : null;
-      
-        if (responseUploadImage !== null || responseUploadImage !== undefined || imageData !== null) {
-          serviceData.image = responseUploadImage;
-          if (action === "add") {
-            createData(serviceData);
-          } else if (action === "edit") {
-            updateData(formData.serviceID, serviceData)
-          } else {
-            return null;
-          }
-          onClose();
+
+        if (formData.image && formData.image instanceof File) {
+            const responseUploadImage = await onUploadImage(formData.image);
+            serviceData.image = responseUploadImage;
         }
-      };
+
+        if (action === "add") {
+            createData(serviceData);
+        } else if (action === "edit" && data.serviceID > 0) {
+            updateData(data.serviceID, serviceData)
+        } else {
+            return null;
+        }
+        onClose();
+    }
 
     const titleModal = (action) => {
         if (action === "add") return "Thêm dịch vụ"
@@ -141,12 +140,16 @@ function AddServiceModal({ isOpen, onClose, action, initialData }) {
                                                 </label>
                                                 <div className="flex items-center">
                                                     <div className="relative w-32 h-32 mr-4">
-                                                        {formData.imagePreview && (
+                                                        {formData.imagePreview ? (
                                                             <img
                                                                 src={formData.imagePreview}
                                                                 alt="Image Preview"
                                                                 className="object-cover w-full h-full rounded-md"
                                                             />
+                                                        ) : (
+                                                            <div className="flex items-center justify-center w-full h-full bg-gray-200 rounded-md">
+                                                                <span className="text-gray-500">No Image</span>
+                                                            </div>
                                                         )}
                                                     </div>
                                                     <div className="flex-1">
@@ -168,7 +171,7 @@ function AddServiceModal({ isOpen, onClose, action, initialData }) {
                                                                 type="text"
                                                                 id="imageUrl"
                                                                 name="imageUrl"
-                                                                // {...register('imageUrl')}
+                                                                {...register('imageUrl')}
                                                                 value={formData.imageUrl || ''}
                                                                 className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                                 onChange={handleInputChange}
