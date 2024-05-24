@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AccountRentalRepository extends JpaRepository<AccountRental, Long> {
@@ -24,6 +25,15 @@ public interface AccountRentalRepository extends JpaRepository<AccountRental, Lo
             @Param("packageId") Long packageId,
             Pageable pageable);
 
+
     @Query("SELECT ar FROM AccountRental ar WHERE ar.renewEndDate < :currentDate AND ar.status <> 'EXPIRED'")
     List<AccountRental> findAllExpiredAccountRentals(@Param("currentDate") Date currentDate);
+
+    @Query("SELECT ar FROM AccountRental ar " +
+            "WHERE ar.accountRentalPackage.id = :packageId " +
+            "AND ar.status = :status " +
+            "AND ar.accountRentalPackage.amount > :amount AND ar.amountUsers > :accountRentalAmount")
+    List<AccountRental> findFirstByPackageIdAndStatusAndAmountGreaterThan(@Param("packageId") Long packageId,
+                                                                              @Param("status") String status,
+                                                                              @Param("amount") int amount,  @Param("accountRentalAmount") int accountRentalAmount);
 }

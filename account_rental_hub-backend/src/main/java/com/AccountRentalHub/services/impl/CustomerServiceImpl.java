@@ -31,7 +31,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Optional<Customer> getCustomerByUserId(Long id) {
-        return Optional.empty();
+        return customerRepository.findByUserId(id);
     }
 
 //    @Override

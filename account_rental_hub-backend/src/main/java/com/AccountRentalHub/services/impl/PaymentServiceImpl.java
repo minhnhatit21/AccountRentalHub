@@ -8,6 +8,8 @@ import com.AccountRentalHub.repository.*;
 import com.AccountRentalHub.services.PaymentService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Calendar;
@@ -32,6 +34,9 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Autowired
     private CustomerRepository customerRepository;
+
+    @Autowired
+    private AccountRentalRepository accountRentalRepository;
 
     @Override
     @Transactional
@@ -69,9 +74,9 @@ public class PaymentServiceImpl implements PaymentService {
         // Update Rental History and AccountRentalPackage
         List<RentalHistory> rentalHistories = order.getOrderDetails().stream().map(orderDetail -> {
             AccountRentalPackage accountRentalPackage = orderDetail.getRentalAccount().getAccountRentalPackage();
-
+            AccountRental accountRental = orderDetail.getRentalAccount();
             // Check if the amount is greater than 1
-            if (accountRentalPackage.getAmount() >= 1) {
+            if (accountRentalPackage.getAmount() >= 1 && accountRental.getAmountUsers() >= 1) {
                 RentalHistory rentalHistory = new RentalHistory();
                 rentalHistory.setCustomer(customer);
                 rentalHistory.setRentalAccount(orderDetail.getRentalAccount());
@@ -89,12 +94,18 @@ public class PaymentServiceImpl implements PaymentService {
                 accountRentalPackage.setAmount(accountRentalPackage.getAmount() - 1);
                 accountRentalPackageRepository.save(accountRentalPackage);
 
+                accountRental.setAmountUsers(accountRental.getAmountUsers() - 1);
+                accountRentalRepository.save(accountRental);
+
+
                 return rentalHistory;
             } else {
-                throw new RuntimeException("The selected rental package is out of stock");
+                throw new RuntimeException("The selected rental package is out of stock or account rental is out of stock");
             }
         }).collect(Collectors.toList());
 
         rentalHistoryRepository.saveAll(rentalHistories);
     }
+
+
 }

@@ -23,8 +23,12 @@ public class AccountRentalController {
     // Tạo mới một AccountRental
     @PostMapping
     public ResponseEntity<?> createAccountRental(@RequestBody AccountRental accountRental) {
-        AccountRental createdAccountRental = accountRentalService.createAccountRental(accountRental);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdAccountRental);
+        try {
+            AccountRental createdAccountRental = accountRentalService.createAccountRental(accountRental);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdAccountRental);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error create account rental: " + e.getMessage());
+        }
     }
 
     // Đọc thông tin của một AccountRental dựa trên id

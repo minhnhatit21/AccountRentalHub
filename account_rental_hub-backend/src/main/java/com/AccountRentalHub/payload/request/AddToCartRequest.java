@@ -2,7 +2,7 @@ package com.AccountRentalHub.payload.request;
 
 public class AddToCartRequest {
     private Long userId;
-    private Long accountRentalId;
+    private Long accountPackageId;
     private Integer quantity;
 
     public Long getUserId() {
@@ -13,12 +13,12 @@ public class AddToCartRequest {
         this.userId = userId;
     }
 
-    public Long getAccountRentalId() {
-        return accountRentalId;
+    public Long getAccountPackageId() {
+        return accountPackageId;
     }
 
-    public void setAccountRentalId(Long accountRentalId) {
-        this.accountRentalId = accountRentalId;
+    public void setAccountPackageId(Long accountPackageId) {
+        this.accountPackageId = accountPackageId;
     }
 
     public Integer getQuantity() {

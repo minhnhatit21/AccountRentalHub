@@ -12,32 +12,26 @@ import java.util.Date;
 @Table(name = "account_rental")
 public class AccountRental extends BaseEntity{
     @Column(name = "acount_rental_username")
-    @NotBlank(message = "Username cannot be blank")
     private String username;
 
     @Column(name = "acount_rental_email")
-    @NotBlank(message = "email account rental cannot be blank")
     private String email;
 
-    @Column(name = "acount_rental_password")
-    @NotBlank(message = "password account rental cannot be blank")
+    @Column(name = "account_rental_password")
     private String password;
 
-    @Column(name = "acount_rental_status")
-    @NotBlank(message = "status account rental cannot be blank")
+    @Column(name = "account_rental_status")
     private String status;
 
     @Column(name = "renew_start_date")
-    @NotNull(message = "RenewStartDate account rental cannot be null")
     private Date renewStartDate;
 
-    @NotNull(message = "RenewEndDate account rental cannot be null")
     @Column(name = "renew_end_date")
     private Date renewEndDate;
 
     @Column(name = "amount_user")
     @Max(value = 4, message = "Maximum number of users is 4")
-    @Min(value = 1, message = "Miximim numver of users is 1")
+    @Min(value = 0, message = "Minimum number of users is 1")
     private Integer amountUsers = 4;
 
     @ManyToOne

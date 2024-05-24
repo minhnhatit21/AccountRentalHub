@@ -1,6 +1,8 @@
 package com.AccountRentalHub.services.impl;
 
 import com.AccountRentalHub.models.*;
+import com.AccountRentalHub.models.Enum.EAccountRental;
+import com.AccountRentalHub.models.Enum.EOrderStatus;
 import com.AccountRentalHub.models.Enum.ERentalHistoryStatus;
 import com.AccountRentalHub.repository.*;
 import com.AccountRentalHub.services.CartService;
@@ -10,9 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,10 +49,12 @@ public class CartServiceImpl implements CartService {
     private JdbcTemplate jdbcTemplate;
 
     @Override
-    public void addItemToCart(Long userId, Long accountRentalId, Integer quantity) {
+    @Transactional
+    public void addItemToCart(Long userId, Long accountPackageId, Integer quantity) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        // Use Optional and create a new cart if not present
         Cart cart = cartRepository.findByUser(user);
         if (cart == null) {
             cart = new Cart();
@@ -60,16 +62,23 @@ public class CartServiceImpl implements CartService {
             cart = cartRepository.save(cart);
         }
 
-        AccountRental accountRental = accountRentalRepository.findById(accountRentalId)
-                .orElseThrow(() -> new RuntimeException("Account rental not found"));
+        Optional<AccountRental> accountRental = accountRentalRepository
+                .findFirstByPackageIdAndStatusAndAmountGreaterThan(accountPackageId, EAccountRental.ACTIVE.toString(), 0,0)
+                .stream()
+                .findFirst();
 
+        accountRental.orElseThrow(() -> new RuntimeException("Active account rental not found or out of stock"));
+
+
+        // Create and save the cart item
         CartItem cartItem = new CartItem();
         cartItem.setCart(cart);
-        cartItem.setAccountRental(accountRental);
+        cartItem.setAccountRental(accountRental.get());
         cartItem.setQuantity(quantity);
 
         cartItemRepository.save(cartItem);
     }
+
 
     @Transactional
     @Override
@@ -87,7 +96,7 @@ public class CartServiceImpl implements CartService {
         Order order = new Order();
         order.setCustomer(customer);
         order.setOrderDate(new Date());
-        order.setStatus("PENDING");
+        order.setStatus(EOrderStatus.PENDING.toString());
 
         // Generate unique order code
         String orderCode = generateSequentialOrderCode();
@@ -112,7 +121,9 @@ public class CartServiceImpl implements CartService {
         orderDetailRepository.saveAll(orderDetails);
 
         // Clear the cart after checkout
-        cartItemRepository.deleteAll(cart.getCartItems());
+        cart.getCartItems().forEach(cartItem -> cartItemRepository.delete(cartItem));
+        cart.getCartItems().clear();
+        cartRepository.save(cart);
     }
 
     private String generateSequentialOrderCode() {

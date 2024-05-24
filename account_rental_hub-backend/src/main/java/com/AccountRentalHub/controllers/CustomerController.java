@@ -34,7 +34,7 @@ public class CustomerController {
         return customerOptional.map(customer -> new ResponseEntity<>(customer, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @GetMapping("/account/{userid}")
+    @GetMapping("/user/{userid}")
     public ResponseEntity<Customer> getCustomerByUserId(@PathVariable Long userid) {
         Optional<Customer> customerOptional = customerService.getCustomerByUserId(userid);
         return customerOptional.map(customer -> new ResponseEntity<>(customer, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));

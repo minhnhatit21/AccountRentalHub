@@ -18,4 +18,7 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     Page<Customer> findByFullNameContainingIgnoreCase(String fullname, Pageable pageable);
 
     Customer findByUser(User user);
+
+    @Query("SELECT c FROM Customer c WHERE c.user.id = :id")
+    Optional<Customer> findByUserId(Long id);
 }

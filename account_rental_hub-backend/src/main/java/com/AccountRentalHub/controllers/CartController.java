@@ -17,7 +17,7 @@ public class CartController {
     @PostMapping("/add")
     public ResponseEntity<String> addItemToCart(@RequestBody AddToCartRequest addToCartRequest) {
         try {
-            cartService.addItemToCart(addToCartRequest.getUserId(), addToCartRequest.getAccountRentalId(), addToCartRequest.getQuantity());
+            cartService.addItemToCart(addToCartRequest.getUserId(), addToCartRequest.getAccountPackageId(), addToCartRequest.getQuantity());
             return ResponseEntity.ok("Item added to cart successfully");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error adding item to cart: " + e.getMessage());
