@@ -1,7 +1,21 @@
+import { useContext, useEffect, useState } from "react";
 import NotificationDropdown from "../../../../admin/components/dropdown/notification_dropdown"
 import ProfileMenuDropdown from "../../../../admin/components/dropdown/profile_dropdown";
+import { AuthContext } from "../../../../user/context/AuthContext";
 
 function Header({toggleSidebar}) {
+    const { user } = useContext(AuthContext);
+    
+    const [adminProfile,setAdminProfile ] = useState(null);
+
+    useEffect(() => {
+        if (user) {
+            setAdminProfile(user);
+        } else {
+            setAdminProfile(null);
+        }
+    }, [user]);
+
     return (
         <header className="sticky top-0 z-[100] flex w-full bg-white shadow-sm">
             <div className="flex flex-grow items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11">
@@ -31,7 +45,7 @@ function Header({toggleSidebar}) {
                 </div>
                 <div className="flex flex-row w-60">
                     <NotificationDropdown />
-                    <ProfileMenuDropdown />
+                    <ProfileMenuDropdown adminProfile={adminProfile} />
                 </div>
             </div>
         </header>

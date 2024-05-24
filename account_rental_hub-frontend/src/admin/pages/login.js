@@ -36,7 +36,7 @@ const LoginForm = () => {
           const isUser = currentUser.roles.includes('ROLE_USER')
 
           if (isAdmin) {
-            navigate("/admin/dashboard");
+            navigate("/admin/account/service");
             toast.success('Đăng nhập thành công!');
           }
           else if (isUser) {

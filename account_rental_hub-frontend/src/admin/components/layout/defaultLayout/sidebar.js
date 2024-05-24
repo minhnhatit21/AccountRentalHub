@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import MenuItem from "../../partials/menuitem";
+import AuthService from "../../../../services/auth.service";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
@@ -24,6 +25,13 @@ function Sidebar({ toggleSidebar, isOpen }) {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
+
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        AuthService.logout();
+        navigate('/admin/login', { replace: true });
+    };
 
     return (
         <>
@@ -51,7 +59,7 @@ function Sidebar({ toggleSidebar, isOpen }) {
                         <div class="flex gap-2 border-t border-gray-200 p-2"></div>
                         <div className="flex grow h-screen">
                             <nav className="mt-5 flex-1 px-2 bg-white space-y-1">
-                                <NavLink
+                                {/* <NavLink
                                     to="/admin/dashboard"
                                     className={({ isActive }) =>
                                         classNames(
@@ -76,7 +84,7 @@ function Sidebar({ toggleSidebar, isOpen }) {
                                         />
                                     </svg>
                                     <p>Dashboard</p>
-                                </NavLink>
+                                </NavLink> */}
 
                                 {/* ==== Accounts ====*/}
                                 <MenuItem
@@ -266,7 +274,7 @@ function Sidebar({ toggleSidebar, isOpen }) {
 
                                 {/* ==== Payment ====*/}
                                 <MenuItem
-                                    to="/admin/payment"
+                                    to="/admin/transaction"
                                     icon={
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
@@ -275,7 +283,7 @@ function Sidebar({ toggleSidebar, isOpen }) {
                                     title={"Thanh toán"}
                                 >
                                     <NavLink
-                                        to="/admin/payment"
+                                        to="/admin/transaction"
                                         className={({ isActive }) =>
                                             classNames(
                                                 isActive
@@ -308,8 +316,8 @@ function Sidebar({ toggleSidebar, isOpen }) {
                         <div class="flex border-t border-gray-200 p-4">
                         </div>
                         <nav class="mt-2 flex-1 px-2 bg-white space-y-1">
-                            <a href="#"
-                                class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-4 gap-2 text-md font-medium rounded-md">
+                            <a onClick={handleLogout}
+                                className="cursor-pointer text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-4 gap-2 text-md font-medium rounded-md">
 
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />

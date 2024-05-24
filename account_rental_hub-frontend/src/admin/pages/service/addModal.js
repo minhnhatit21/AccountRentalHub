@@ -178,6 +178,7 @@ function AddServiceModal({ isOpen, onClose, action, initialData }) {
                                                                 disabled={action === "view"}
                                                             />
                                                         </div>
+                                                        {errors.imageUrl && <p className="text-red-500 text-xs mt-1">{errors.imageUrl.message}</p>}
                                                     </div>
                                                 </div>
                                             </div>

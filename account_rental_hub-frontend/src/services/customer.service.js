@@ -13,6 +13,17 @@ const getAllCustomer = async () => {
   }
 }
 
+const getCustomerByUserId = async (userId) => {
+  try {
+    const response = await axios.get(API_URL + `/user/${userId}`);
+
+    return response;
+} catch (error) {
+    // console.error("Error while searching account service:", error);
+    throw error;
+}
+}
+
 const searchCustomer = async (page, size, fullName) => {
     try {
         const response = await axios.get(API_URL + `/search?page=${page}&size=${size}&fullname=${fullName}`);
@@ -56,7 +67,8 @@ const updateAccountRental = async (id, accountData) => {
 
 const CustomerService = {
     searchCustomer,
-    getAllCustomer
+    getAllCustomer,
+    getCustomerByUserId
 }
 
 export default CustomerService;

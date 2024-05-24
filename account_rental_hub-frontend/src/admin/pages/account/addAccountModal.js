@@ -37,7 +37,6 @@ function AddAccountModal({ isOpen, onClose, action, initialData, packageData }) 
         accountPassword: yup.string().required('Mật khẩu là bắt buộc'),
         accountStatus: yup.string().required('Trạng thái tài khoản là bắt buộc'),
         accountPackageID: yup.object().required('Gói tài khoản là bắt buộc'),
-        accountSupcriptionDate: yup.date().required('Ngày đăng ký dịch vụ là bắt buộc'),
         accountRenewStartDate: yup.date().required('Ngày bắt đầu gia hạn là bắt buộc'),
         accountRenewEndDate: yup.date().required('Ngày kết thúc gia hạn là bắt buộc'),
     });
@@ -87,7 +86,6 @@ function AddAccountModal({ isOpen, onClose, action, initialData, packageData }) 
             accountPassword: initData.password || '',
             accountStatus: initData.status || '',
             accountPackageID: initData.accountRentalPackage || null,
-            accountSupcriptionDate: initData.createdAt ? new Date(initData.createdAt) : '',
             accountRenewStartDate: initData.renewStartDate ? new Date(initData.renewStartDate) : '',
             accountRenewEndDate: initData.renewEndDate ? new Date(initData.renewEndDate) : '',
             accountServiceWebsite: initData.accountRentalPackage?.accountRentalServices.website || ''

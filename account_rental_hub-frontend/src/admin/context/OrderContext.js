@@ -10,8 +10,8 @@ export const OrderContext = createContext("");
 export const OrderProvider = ({ children }) => {
   const [orderList, setOrders] = useState([]);
   const [pageable, setPageable] = useState(null);
-  const [action, setAction] = useState('add')
-  const [actions, setActions] = useState(actionList)
+  const [action, setAction] = useState('add');
+  const [actions, setActions] = useState(actionList);
   const [update, setUpdate] = useState(false);
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(5);
@@ -21,44 +21,19 @@ export const OrderProvider = ({ children }) => {
   const [endDateSearch, setEndDateSearch] = useState("");
   const [statusSearch, setStatusSearch] = useState("");
 
-   // Global Context
-  const {globalUpdate, setGlobalUpdate} = useContext(GlobalContext);
+  // Global Context
+  const { globalUpdate, setGlobalUpdate } = useContext(GlobalContext);
 
-  useEffect(() => {
-    const fetchOrderInitialData = async () => {
-      try {
-        const response = await OrderService.searchOrders(page, size, orderCodeSearch, userIdSearch, startDateSearch, endDateSearch, statusSearch)
-        if (response?.content) {
-          setOrders(response.content);
-          setPageable(response.pageable);
-        } else {
-          setOrders([]);
-          setPageable(null);
-          console.error("Not Found Data");
-        }
-      } catch (error) {
-        toast.error("Đã xảy ra lỗi khi tải dữ liệu ban đầu");
-      }
-    };
-
-    fetchOrderInitialData();
-  }, [])
-
-  const changePage = (newPage) => {
-    setPage(newPage);
-    searchOrderData(orderCodeSearch, userIdSearch, startDateSearch, endDateSearch, statusSearch);
-  };
-
-  const searchOrderData = useCallback(async (orderCode, userId,startDate,endDate,status) => {
+  const searchOrderData = useCallback(async (orderCode, userId, startDate, endDate, status) => {
     let orderCodeValue = orderCode !== undefined ? orderCode : "";
     let userIdValue = userId !== undefined ? userId : "";
     let startDateValue = startDate !== undefined ? startDate : "";
     let endDateValue = endDate !== undefined ? endDate : "";
     let statusValue = status !== undefined ? status : "";
 
-    if (orderCodeValue !== orderCodeSearch || userIdValue !== userIdSearch 
-        || startDateValue !== startDateSearch || endDateValue !== endDateSearch
-        || statusValue !== statusSearch) {
+    if (orderCodeValue !== orderCodeSearch || userIdValue !== userIdSearch
+      || startDateValue !== startDateSearch || endDateValue !== endDateSearch
+      || statusValue !== statusSearch) {
       setPage(0);
     }
     try {
@@ -87,12 +62,12 @@ export const OrderProvider = ({ children }) => {
         toast.error("Đã xảy ra lỗi khi search dữ liệu");
       }
     }
-  }, [page, size, orderCodeSearch, userIdSearch, startDateSearch, endDateSearch,statusSearch]);
+  }, [page, size, orderCodeSearch, userIdSearch, startDateSearch, endDateSearch, statusSearch]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await searchOrderData(orderCodeSearch, userIdSearch, startDateSearch, endDateSearch,statusSearch);
+        await searchOrderData(orderCodeSearch, userIdSearch, startDateSearch, endDateSearch, statusSearch);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -100,6 +75,11 @@ export const OrderProvider = ({ children }) => {
 
     fetchData();
   }, [searchOrderData, orderCodeSearch, userIdSearch, startDateSearch, endDateSearch, statusSearch, page, update, globalUpdate]);
+
+  const changePage = (newPage) => {
+    setPage(newPage);
+    searchOrderData(orderCodeSearch, userIdSearch, startDateSearch, endDateSearch, statusSearch);
+  };
 
   const value = {
     orderList,
@@ -110,12 +90,13 @@ export const OrderProvider = ({ children }) => {
     setAction,
     setActions,
     changePage,
-    searchOrderData
+    searchOrderData,
+    setUserIdSearch
   };
 
   return (
     <OrderContext.Provider value={value}>
       {children}
     </OrderContext.Provider>
-  )
-}
+  );
+};

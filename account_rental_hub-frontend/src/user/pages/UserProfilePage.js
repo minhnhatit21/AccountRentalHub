@@ -68,7 +68,7 @@ const UserProfile = () => {
                                 <p className="text-gray-600">{userProfile ? userProfile.createdAt : "Chưa có ngày tham gia"}</p>
                             </div>
                         </div>
-                        <div className="mt-8 flex items-center">
+                        {/* <div className="mt-8 flex items-center">
                             <img
                                 src="https://via.placeholder.com/150"
                                 alt="Avatar"
@@ -81,7 +81,7 @@ const UserProfile = () => {
                                 <p className="text-gray-600 mt-2">Vui lòng chọn ảnh nhỏ hơn 5MB</p>
                                 <p className="text-gray-600">Chọn hình ảnh phù hợp, không phản cảm</p>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             ) :

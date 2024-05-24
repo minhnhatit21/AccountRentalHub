@@ -191,7 +191,7 @@ function OrderListView({
                                         <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                                             <div className="flex items-center justify-center space-x-3.5">
                                                 <Link to={{
-                                                    pathname: `/admin/orderDetails?${order.orderCode}`,
+                                                    pathname: `/admin/orderDetails/${order.orderCode}`,
                                                 }} className="hover:text-primary">
                                                     <svg
                                                         width="18"

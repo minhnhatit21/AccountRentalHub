@@ -1,82 +1,117 @@
-const orders = [
-    {
-        id: 6470256,
-        date: "2023-08-24T09:59:42",
-        product: "Gói gia hạn Duolingo 1 tháng",
-        quantity: 1,
-        total: 29000,
-        status: "Đã xử lý"
-    },
-    {
-        id: 5955576,
-        date: "2023-01-11T21:55:11",
-        product: "Tài khoản Netflix Premium 1 tháng - Xem phim chất lượng 4k và Full HD",
-        quantity: 1,
-        total: 89000,
-        status: "Đã xử lý"
-    },
-    {
-        id: 5628470,
-        date: "2022-07-24T09:10:49",
-        product: "Tài khoản học ngoại ngữ Busuu Premium Plus 1 Tháng",
-        quantity: 1,
-        total: 19000,
-        status: "Đã xử lý"
-    },
-    {
-        id: 4848984,
-        date: "2021-07-31T15:18:56",
-        product: "Tài khoản Netflix Premium for 1 User (1 Tháng)",
-        quantity: 1,
-        total: 79000,
-        status: "Đã xử lý"
-    }
-];
+import { useState, useContext, useEffect } from "react";
+import { OrderContext } from "../../admin/context/OrderContext";
+import { AuthContext } from "../context/AuthContext";
+import { Link } from 'react-router-dom';
+
 function OrderHistoryPage() {
+    const { orderList, action, setAction, actions, searchOrderData, changePage, pageable, setUserIdSearch } = useContext(OrderContext);
+    const { isLoggedIn, user } = useContext(AuthContext)
+    const [formData, setFormData] = useState({});
+
+    useEffect(() => {
+        if (user && user.id) {
+            setUserIdSearch(user.id);
+            searchOrderData("", user.id);
+        }
+    }, [user, setUserIdSearch, searchOrderData]);
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        searchOrderData(formData.orderCode, user.id);
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prevState) => ({ ...prevState, [name]: value }));
+    };
+
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+      
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+      };
+
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+    };
+
     return (
         <>
             <div className="flex-1 ml-10">
                 <div className="bg-white rounded-lg shadow-lg p-6">
                     <h1 className="text-2xl font-bold mb-4">Lịch sử đơn hàng</h1>
-                    <div className="mb-4 space-x-2 flex">
-                        <input
-                            type="text"
-                            placeholder="Mã đơn hàng"
-                            className="border rounded-md p-2"
-                        />
-                        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                            Tìm kiếm
-                        </button>
-                    </div>
+                    <form onSubmit={handleSearch}>
+                        <div className="mb-4 space-x-2 flex">
+                            <input
+                                name="orderCode"
+                                type="text"
+                                placeholder="Mã đơn hàng"
+                                className="border rounded-md p-2"
+                                onChange={handleInputChange}
+                            />
+                            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                Tìm kiếm
+                            </button>
+                        </div>
+                    </form>
                     <div className="overflow-x-auto">
                         <table className="w-full border border-gray-300 rounded-lg">
                             <thead>
                                 <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-                                    <th className="py-3 px-6 border-b border-gray-300">Thời gian</th>
                                     <th className="py-3 px-6 border-b border-gray-300">Mã đơn hàng</th>
-                                    <th className="py-3 px-6 border-b border-gray-300">Sản phẩm</th>
-                                    <th className="py-3 px-6 border-b border-gray-300">Tổng tiền</th>
+                                    <th className="py-3 px-6 border-b border-gray-300">Ngày đặt đơn hàng</th>
                                     <th className="py-3 px-6 border-b border-gray-300">Trạng thái</th>
+                                    <th className="py-3 px-6 border-b border-gray-300">Tổng tiền</th>
                                     <th className="py-3 px-6 border-b border-gray-300"></th>
                                 </tr>
                             </thead>
                             <tbody className="text-gray-800 text-sm font-medium">
-                                {orders.map((order) => (
+                                {orderList.map((order) => (
                                     <tr key={order.id} className="border-b border-gray-300 hover:bg-gray-100">
-                                        <td className="py-3 px-6 border-r border-gray-300">{new Date(order.date).toLocaleString()}</td>
-                                        <td className="py-3 px-6 border-r border-gray-300">{order.id}</td>
-                                        <td className="py-3 px-6 border-r border-gray-300">{order.product}</td>
-                                        <td className="py-3 px-6 border-r border-gray-300">{order.total.toLocaleString()} đ</td>
-                                        <td className="py-3 px-6 border-r border-gray-300">{order.status}</td>
+                                        <td className="py-3 px-6 border-r text-center border-gray-300">{order.orderCode}</td>
+                                        <td className="py-3 px-6 border-r text-center border-gray-300">{formatDate(order.orderDate)}</td>
+                                        <td className="py-3 px-6 border-r text-center border-gray-300">{order.status}</td>
+                                        <td className="py-3 px-6 border-r text-center border-gray-300">{formatCurrency(order.totalAmount)}</td>
                                         <td className="py-3 px-6">
-                                            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                                Chi tiết
-                                            </button>
+                                            <Link to={{
+                                                pathname: `/user/orderDetails/${order.orderCode}`,
+                                            }} className="bg-blue-500 text-center hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                               Chi tiết
+                                            </Link>
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
+                    </div>
+                    <div className="flex justify-end items-center mt-4">
+                        {pageable && (
+                            <>
+                                <button
+                                    onClick={() => changePage(pageable.page - 1)}
+                                    disabled={pageable.page === 0}
+                                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    Previous
+                                </button>
+                                <span className="text-sm mx-8">
+                                    Trang {pageable.pageNumber + 1} / {pageable.totalPages}
+                                </span>
+                                <button
+                                    onClick={() => changePage(pageable.page + 1)}
+                                    disabled={pageable.page === pageable.totalPages - 1}
+                                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    Next
+                                </button>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>

@@ -3,53 +3,88 @@ import { useParams } from 'react-router-dom';
 import OrderService from '../../../services/order.service';
 import { toast } from 'react-toastify';
 
-
 const OrderDetails = () => {
-
     const [isConfirming, setIsConfirming] = useState(false);
     const [order, setOrder] = useState({});
     const [orderDetails, setOrderDetails] = useState([]);
-
     const { orderCode } = useParams();
 
     useEffect(() => {
         const fetchOrderDetailsData = async () => {
-          try {
-            const response = await OrderService.getOrderByOrderCode(orderCode)
-            console.log("res orders: ", response);
-            if (response) {
-                setOrder(response);
-                setOrderDetails(response.orderDetails);
-            } else {
-                setOrder({});
-                setOrderDetails([]);
-              console.error("Not Found Data");
+            try {
+                const response = await OrderService.getOrderByOrderCode(orderCode);
+                if (response) {
+                    setOrder(response);
+                    setOrderDetails(response.orderDetails);
+                } else {
+                    setOrder({});
+                    setOrderDetails([]);
+                    console.error("Not Found Data");
+                }
+            } catch (error) {
+                toast.error("Đã xảy ra lỗi khi tải dữ liệu ban đầu");
             }
-          } catch (error) {
-            toast.error("Đã xảy ra lỗi khi tải dữ liệu ban đầu");
-          }
         };
         fetchOrderDetailsData();
-      }, [])
+    }, [orderCode]);
 
-    // Sử dụng giá trị của orderCode ở đây
-    console.log('Order Code:', orderCode);
-
-
-    const handleCancelOrder = () => {
-        // Implement logic to cancel the order
-        console.log('Cancelling order:', order.id);
+    const handleCancelOrder = async () => {
+        try {
+            const response = await OrderService.changeOrderStatus(order.id, 'CANCELLED');
+            if (response.status === 200) {
+                toast.success("Đơn hàng đã được hủy");
+                setOrder(prevOrder => ({ ...prevOrder, status: 'CANCELLED' }));
+            } else {
+                toast.error("Không thể hủy đơn hàng");
+            }
+        } catch (error) {
+            toast.error("Đã xảy ra lỗi khi hủy đơn hàng");
+        }
     };
 
-    const handleConfirmOrder = () => {
+    const handleConfirmOrder = async () => {
         setIsConfirming(true);
-        // Implement logic to confirm the order
-        console.log('Confirming order:', order.id);
+        try {
+            const response = await OrderService.changeOrderStatus(order.id, 'FINISHED');
+            if (response.status === 200) {
+                toast.success("Đơn hàng đã được xác nhận");
+                setOrder(prevOrder => ({ ...prevOrder, status: 'FINISHED' }));
+                setIsConfirming(false);
+            } else {
+                toast.error("Không thể xác nhận đơn hàng");
+                setIsConfirming(false);
+            }
+        } catch (error) {
+            toast.error("Đã xảy ra lỗi khi xác nhận đơn hàng");
+            setIsConfirming(false);
+        }
     };
 
-    const handleDeleteOrder = () => {
-        // Implement logic to delete the order
-        console.log('Deleting order:', order.id);
+    const handleDeleteOrder = async () => {
+        try {
+            const response = await OrderService.deleteOrder(order.id);
+            if (response.status === 200) {
+                toast.success("Đơn hàng đã được xóa");
+                setOrder({});
+                setOrderDetails([]);
+            } else {
+                toast.error("Không thể xóa đơn hàng");
+            }
+        } catch (error) {
+            toast.error("Đã xảy ra lỗi khi xóa đơn hàng");
+        }
+    };
+
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = String(date.getFullYear()).slice(-2);
+        return `${day}-${month}-${year}`;
+    };
+
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
     };
 
     return (
@@ -70,7 +105,11 @@ const OrderDetails = () => {
                 </div>
                 <div>
                     <p className="font-bold">Order Date:</p>
-                    <p>{order.orderDate}</p>
+                    <p>{formatDate(order.orderDate)}</p>
+                </div>
+                <div>
+                    <p className="font-bold">Tổng tiền:</p>
+                    <p>{formatCurrency(order.totalAmount)}</p>
                 </div>
             </div>
 
@@ -78,89 +117,46 @@ const OrderDetails = () => {
                 <table className="w-full table-auto">
                     <thead>
                         <tr className="bg-gray-2 text-left bg-[#F2F2F2]">
-                            <th
-                                className="min-w-[130px] px-4 py-4 font-medium text-black"
-                            >
-                                <p
-                                    className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-md font-medium text-success"
-                                >
-                                    Ảnh đại diện
-                                </p>
+                            <th className="min-w-[130px] px-4 py-4 font-medium text-black">
+                                <p className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-md font-medium text-success">Ảnh đại diện</p>
                             </th>
-                            <th
-                                className="min-w-[130px] px-4 py-4 font-medium text-black"
-                            >
-                                <p
-                                    className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-md font-medium text-success"
-                                >
-                                    Tên dịch vụ
-                                </p>
+                            <th className="min-w-[130px] px-4 py-4 font-medium text-black">
+                                <p className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-md font-medium text-success">Tên dịch vụ</p>
                             </th>
-                            <th
-                                className="min-w-[120px] px-4 py-4 font-medium text-black"
-                            >
-                                <p
-                                    className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-md font-medium text-success"
-                                >
-                                    Gói dịch vụ
-                                </p>
-
+                            <th className="min-w-[120px] px-4 py-4 font-medium text-black">
+                                <p className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-md font-medium text-success">Gói dịch vụ</p>
                             </th>
-                            <th
-                                className="min-w-[120px] px-4 py-4 font-medium text-black"
-                            >
-                                <p
-                                    className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-md font-medium text-success"
-                                >
-                                    Đơn giá
-                                </p>
+                            <th className="min-w-[120px] px-4 py-4 font-medium text-black">
+                                <p className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-md font-medium text-success">Đơn giá</p>
                             </th>
-                            <th
-                                className="min-w-[120px] px-4 py-4 font-medium text-black"
-                            >
-                                <p
-                                    className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-md font-medium text-success"
-                                >
-                                    Thành tiền
-                                </p>
+                            <th className="min-w-[120px] px-4 py-4 font-medium text-black">
+                                <p className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-md font-medium text-success">Thành tiền</p>
                             </th>
                         </tr>
                     </thead>
                     <tbody>
                         {orderDetails && orderDetails.map(od => (
                             <tr key={od.id}>
-                                <td
-                                    className="border-b border-[#eee] px-4 py-5 pl-9 dark:border-strokedark">
-                                    <img
-                                        className="w-16 h-16"
-                                        src={od.accountRental.accountRentalPackage.imgURL || ""}
-                                    ></img>
+                                <td className="border-b border-[#eee] px-4 py-5 pl-9 dark:border-strokedark">
+                                    <img className="w-16 h-16" src={od.accountRental.accountRentalPackage.imgURL || ""} alt="Ảnh đại diện" />
                                 </td>
                                 <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                                    <p
-                                        className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
-                                    >
+                                    <p className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success">
                                         {od.accountRental.accountRentalPackage.accountRentalServices.name || ""}
                                     </p>
                                 </td>
                                 <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                                    <p
-                                        className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
-                                    >
+                                    <p className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success">
                                         {od.accountRental.accountRentalPackage.name || ""}
                                     </p>
                                 </td>
                                 <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                                    <p
-                                        className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
-                                    >
+                                    <p className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success">
                                         {od.accountRental.accountRentalPackage.discountedPrice || ""}
                                     </p>
                                 </td>
                                 <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                                    <p
-                                        className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
-                                    >
+                                    <p className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success">
                                         {od.accountRental.accountRentalPackage.discountedPrice || ""}
                                     </p>
                                 </td>
@@ -172,60 +168,41 @@ const OrderDetails = () => {
 
             <div className='flex mt-6 w-full flex-col'>
                 <p className="font-bold mb-2">Trạng thái đơn hàng:</p>
-                <p
-                    className={`px-2 py-1 rounded-full text-white ${order.orderStatus === 'Paid' ? 'bg-green-500 w-2/3' : 'bg-yellow-500 w-1/2'}`}
-                >
-                    {order.orderStatus}
+                <p className={`px-2 py-1 rounded-full text-white ${
+                    order.status === 'PAID' ? 'bg-green-500 w-2/3' :
+                    order.status === 'FINISHED' ? 'bg-blue-500 w-full' : 'bg-yellow-500 w-1/2'
+                }`}>
+                    {order.status}
                 </p>
             </div>
 
-            <div className='flex mt-6 w-full flex-col'>
-                <p className="font-bold mb-2">Phương thức thanh toán:</p>
-            </div>
-
             <div className="mt-6 flex justify-end space-x-4">
-                <button
-                    className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-                    onClick={handleCancelOrder}
-                >
-                    Hủy đơn hàng
-                </button>
-                {!isConfirming && (
-                    <button
-                        className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
-                        onClick={handleConfirmOrder}
-                    >
-                        Xác nhận đơn
-                    </button>
-                )}
-                {isConfirming && (
-                    <div className="flex space-x-4">
-                        <button
-                            className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
-                            onClick={() => {
-                                setIsConfirming(false);
-                                // Implement logic to complete the confirmation
-                            }}
-                        >
-                            Confirm
-                        </button>
+                {order.status !== 'FINISHED' && order.status !== 'CANCELLED' && (
+                    <>
                         <button
                             className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-                            onClick={() => setIsConfirming(false)}
+                            onClick={handleCancelOrder}
                         >
-                            Cancel
+                            Hủy đơn hàng
                         </button>
-                    </div>
+                        <button
+                            className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+                            onClick={handleConfirmOrder}
+                            disabled={isConfirming}
+                        >
+                            Xác nhận đơn
+                        </button>
+                    </>
                 )}
-                <button
-                    className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
-                    onClick={handleDeleteOrder}
-                >
-                    Xóa đơn hàng
-                </button>
+                {order.status !== 'FINISHED' && order.status !== 'CANCELLED' && (
+                    <button
+                        className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+                        onClick={handleDeleteOrder}
+                    >
+                        Xóa đơn hàng
+                    </button>
+                )}
             </div>
-
-
         </div>
     );
 };

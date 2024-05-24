@@ -30,7 +30,7 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData, seriveDa
     const { createData, updateData } = useContext(AccountPackageContext);
 
     const validationSchema = yup.object().shape({
-        packageName: yup.string().required('Tên dịch vụ là bắt buộc'),
+        packageName: yup.string().required('Tên gói dịch vụ là bắt buộc'),
         description: yup.string().required('Mô tả là bắt buộc'),
         imageUrl: yup.string().url('Vui lòng nhập một URL hợp lệ'),
         duration: yup.number().positive('Thời gian phải là một số dương').required('Thời gian là bắt buộc'),
@@ -81,39 +81,27 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData, seriveDa
 
     const handleInputChange = (e) => {
         const { name, value, files } = e.target;
-        setFormData(prevState => {
-            let updatedValue = value;
-            if (name === 'image') {
-                if (files && files[0]) {
-                    updatedValue = files[0];
-                    return {
-                        ...prevState,
-                        [name]: updatedValue,
-                        imagePreview: URL.createObjectURL(files[0]),
-                        imageUrl: '',
-                    };
-                } else {
-                    return {
-                        ...prevState,
-                        [name]: null,
-                        imagePreview: null,
-                        imageUrl: '',
-                    };
-                }
-            } else if (name === 'imageUrl') {
-                return {
+        if (name === 'image') {
+            if (files && files[0]) {
+                setFormData((prevState) => ({
                     ...prevState,
-                    [name]: value,
-                    imagePreview: value ? value : null,
-                    image: null,
-                };
+                    [name]: files[0],
+                    imagePreview: URL.createObjectURL(files[0]),
+                    imageUrl: '',
+                }));
             } else {
-                return {
-                    ...prevState,
-                    [name]: value
-                };
+                setFormData((prevState) => ({ ...prevState, [name]: null, imagePreview: null, imageUrl: '' }));
             }
-        });
+        } else if (name === 'imageUrl') {
+            setFormData((prevState) => ({
+                ...prevState,
+                [name]: value,
+                imagePreview: value ? value : null,
+                image: null,
+            }));
+        } else {
+            setFormData((prevState) => ({ ...prevState, [name]: value }));
+        }
     };
 
     const onUploadImage = async (file) => {
@@ -140,10 +128,12 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData, seriveDa
 
         if (formData.image && formData.image instanceof File) {
             const responseUploadImage = await onUploadImage(formData.image);
-            packageData.image = responseUploadImage;
+            packageData.imgURL = responseUploadImage;
+            console.log("Image:", packageData.imgURL)
         }
 
         if (action === "add") {
+            console.log("Package: ", packageData);
             createData(packageData);
         } else if (action === "edit" && formData.packageID > 0) {
             console.log("Service: ", packageData);
@@ -222,8 +212,9 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData, seriveDa
                                                                 onChange={handleInputChange}
                                                                 disabled={action === "view"}
                                                             />
-                                                            {errors.imageUrl && <p className="text-red-500 text-xs mt-1">{errors.imageUrl.message}</p>}
+                                                             {errors.imageUrl && <p className="text-red-500 text-xs mt-1">{errors.imageUrl.message}</p>}
                                                         </div>
+                                                       
                                                     </div>
                                                 </div>
                                             </div>
@@ -282,7 +273,7 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData, seriveDa
                                                     >
                                                         <option value="0" className="text-gray-500">Thời hạn</option>
                                                         <option value="1" >1 Ngày</option>
-                                                        <option value="15" >15 Ngày</option>
+                                                        <option value="7" >1 Tuần</option>
                                                         <option value="28"> 1 Tháng</option>
                                                         <option value="85"> 3 tháng</option>
                                                         <option value="360"> 1 năm</option>

@@ -36,7 +36,6 @@ export const AccountProvider = ({ children }) => {
                     setPackageData(response);
                 } else {
                     setPackageData([]);
-                    console.error("Not Found Data");
                 }
             } catch (error) {
                 toast.error("Đã xảy ra lỗi khi tải dữ liệu ban đầu");
@@ -55,16 +54,13 @@ export const AccountProvider = ({ children }) => {
             } else {
                 setAccountList([]);
                 setPageable(null);
-                console.error("Not Found Data");
             }
         } catch (error) {
             if (error.response && error.response.status === 404) {
                 setAccountList([]);
                 setPageable(null);
-                console.error("Not Found Data");
                 toast.warning("Không tìm thấy dữ liệu");
             } else {
-                console.error("Error while searching data:", error);
                 toast.error("Đã xảy ra lỗi khi search dữ liệu");
             }
         }

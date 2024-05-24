@@ -30,36 +30,45 @@ import CartPage from './user/pages/CartPage';
 import PaymentPage from './user/pages/PaymentPage';
 import ProductPage from './user/pages/ProductPage';
 import { GlobalProvider } from './admin/context/GlobalContext';
+import { TransactionProvider } from './admin/context/TransactionContext';
+import Transactions from './admin/pages/transaction/Transaction';
+import ProfileMenuDropdown from './admin/components/dropdown/profile_dropdown';
+import { OrderProvider } from './admin/context/OrderContext';
+import UserOrderDetails from './user/pages/UserOrderDetailsPage';
 
 function App() {
   return (
     <div className="App">
       <GlobalProvider>
-        <Router>
-          <Routes>
-            <Route path='/' element={<AuthProvider><UserHomeDefaultLayout><HomePage /></UserHomeDefaultLayout></AuthProvider>} />
-            <Route path='/home' element={<AuthProvider><UserHomeDefaultLayout><HomePage /></UserHomeDefaultLayout></AuthProvider>} />
-            <Route path='/search' element={<AuthProvider><UserHomeDefaultLayout><UserSearchPage /></UserHomeDefaultLayout></AuthProvider>} />
-            <Route path='/user/cart' element={<AuthProvider><CartDefaultLayout><CartPage /></CartDefaultLayout></AuthProvider>} />
-            <Route path='/user/payment' element={<AuthProvider><CartDefaultLayout><PaymentPage /></CartDefaultLayout></AuthProvider>} />
-            <Route path='/user/profile' element={<AuthProvider><UserDefaultLayout><UserProfile /></UserDefaultLayout></AuthProvider>} />
-            <Route path='/user/orders' element={<AuthProvider><UserDefaultLayout><OrderHistoryPage /></UserDefaultLayout></AuthProvider>} />
-            <Route path='/user/transactions' element={<AuthProvider><UserDefaultLayout><TransactionHistoryPage /></UserDefaultLayout></AuthProvider>} />
-            <Route path='/user/product' element={<AuthProvider><UserHomeDefaultLayout><ProductPage /></UserHomeDefaultLayout></AuthProvider>} />
-            <Route path='/user/wishlist' element={<AuthProvider><UserDefaultLayout><UserProfile /></UserDefaultLayout></AuthProvider>} />
-            <Route path='/forgotPassword' element={<ForgotPasswordPage />} />
-            <Route path='/reset-password' element={<ResetPasswordPage />} />
-            <Route path="/admin/login" element={<LoginForm />} />
-            <Route path="/test" element={<TestAPI />} />
-            <Route path="/admin/dashboard" element={<AdminRoute><DefaultLayout><Dashboard /></DefaultLayout></AdminRoute>} />
-            <Route path='/admin/account/accountPackage' element={<AdminRoute><AccountPackageProvider><DefaultLayout><AccountPackage /></DefaultLayout></AccountPackageProvider></AdminRoute>} />
-            <Route path="/admin/account/service" element={<AdminRoute><AccountServiceProvider><DefaultLayout><Services /></DefaultLayout></AccountServiceProvider></AdminRoute>} />
-          </Routes>
-          <UserRoutes />
-          <CustomerRoutes />
-          <AccountRoutes />
-          <OrderRoutes />
-        </Router>
+        <AuthProvider>
+          <Router>
+            <Routes>
+              <Route path='/' element={<UserHomeDefaultLayout><HomePage /></UserHomeDefaultLayout>} />
+              <Route path='/home' element={<UserHomeDefaultLayout><HomePage /></UserHomeDefaultLayout>} />
+              <Route path='/search' element={<UserHomeDefaultLayout><UserSearchPage /></UserHomeDefaultLayout>} />
+              <Route path='/user/cart' element={<CartDefaultLayout><CartPage /></CartDefaultLayout>} />
+              <Route path='/user/payment' element={<CartDefaultLayout><PaymentPage /></CartDefaultLayout>} />
+              <Route path='/user/profile' element={<UserDefaultLayout><UserProfile /></UserDefaultLayout>} />
+              <Route path='/user/orders' element={<UserDefaultLayout><OrderProvider><OrderHistoryPage /></OrderProvider> </UserDefaultLayout>} />
+              <Route path='/user/orderDetails/:orderCode' element={<UserDefaultLayout><OrderProvider><UserOrderDetails /></OrderProvider> </UserDefaultLayout>} />
+              <Route path='/user/transactions' element={<UserDefaultLayout><TransactionProvider><TransactionHistoryPage /></TransactionProvider> </UserDefaultLayout>} />
+              <Route path='/user/product' element={<UserHomeDefaultLayout><ProductPage /></UserHomeDefaultLayout>} />
+              <Route path='/user/wishlist' element={<UserDefaultLayout><UserProfile /></UserDefaultLayout>} />
+              <Route path='/forgotPassword' element={<ForgotPasswordPage />} />
+              <Route path='/reset-password' element={<ResetPasswordPage />} />
+              <Route path="/admin/login" element={<LoginForm />} />
+              <Route path="/test" element={<TestAPI />} />
+              <Route path="/admin/dashboard" element={<AdminRoute><DefaultLayout><Dashboard /></DefaultLayout></AdminRoute>} />
+              <Route path='/admin/account/accountPackage' element={<AdminRoute><AccountPackageProvider><DefaultLayout><AccountPackage /></DefaultLayout></AccountPackageProvider></AdminRoute>} />
+              <Route path="/admin/account/service" element={<AdminRoute><AccountServiceProvider><DefaultLayout><Services /></DefaultLayout></AccountServiceProvider></AdminRoute>} />
+              <Route path="/admin/transaction" element={<AdminRoute><TransactionProvider><DefaultLayout><Transactions /></DefaultLayout></TransactionProvider></AdminRoute>} />
+            </Routes>
+            <UserRoutes />
+            <CustomerRoutes />
+            <AccountRoutes />
+            <OrderRoutes />
+          </Router>
+        </AuthProvider>
       </GlobalProvider>
       <ToastContainer />
     </div>

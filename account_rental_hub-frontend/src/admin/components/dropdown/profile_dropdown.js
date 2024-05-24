@@ -1,8 +1,9 @@
-import { Fragment } from 'react'
+import { Fragment, useContext, useEffect, useState } from 'react'
 import { forwardRef } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import { Link, useNavigate } from 'react-router-dom'
 import AuthService from '../../../services/auth.service'
+
 
 let MyCustomButton = forwardRef(function (props, ref) {
     return <button className="inline-flex w-full justify-center border-none" ref={ref} {...props} />
@@ -12,7 +13,7 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
-function ProfileMenuDropdown() {
+function ProfileMenuDropdown({adminProfile}) {
 
     const navigate = useNavigate();
 
@@ -20,6 +21,8 @@ function ProfileMenuDropdown() {
         AuthService.logout();
         navigate('/admin/login', { replace: true });
     };
+
+
 
     return (
         <>
