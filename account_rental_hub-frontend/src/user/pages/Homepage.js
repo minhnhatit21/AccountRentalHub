@@ -3,161 +3,166 @@ import ProductsSection from '../components/sections/produc_section';
 import PromotionSection from '../components/sections/promotion_section';
 import { UserGroupIcon, CreditCardIcon, LockClosedIcon } from "@heroicons/react/20/solid";
 import { AuthContext } from '../context/AuthContext';
+import { HomePageContext } from '../context/HomePageContext';
 
+const products = [
+    {
+        image: 'https://i.ibb.co/K2ZFMsz/Netflix-1.png',
+        title: 'Netflix Premium 1 tháng',
+        originalPrice: '260.000đ',
+        discountedPrice: '99.000đ',
+        discount: 62,
+    },
+    {
+        image: 'https://i.ibb.co/v4YZVb0/Divine-Shop-Goi-Gia-Han-Spotify-1-Nam-40567.jpg',
+        title: 'Gói gia hạn Spotify Premium 1 năm',
+        originalPrice: '590.000đ',
+        discountedPrice: '299.000đ',
+        discount: 49,
+    },
+    {
+        image: 'https://i.ibb.co/JnFfgZW/HULU.png',
+        title: 'Hulu Premium 1 năm',
+        originalPrice: '1.180.000đ',
+        discountedPrice: '599.000đ',
+        discount: 51,
+    },
+    {
+        image: 'https://i.ibb.co/v4YZVb0/Divine-Shop-Goi-Gia-Han-Spotify-1-Nam-40567.jpg',
+        title: 'Gói gia hạn Spotify Premium 1 năm',
+        originalPrice: '590.000đ',
+        discountedPrice: '299.000đ',
+        discount: 49,
+    },
+    {
+        image: 'https://i.ibb.co/K2ZFMsz/Netflix-1.png',
+        title: 'Netflix Premium 1 tháng',
+        originalPrice: '260.000đ',
+        discountedPrice: '99.000đ',
+        discount: 62,
+    },
+    {
+        image: 'https://i.ibb.co/v4YZVb0/Divine-Shop-Goi-Gia-Han-Spotify-1-Nam-40567.jpg',
+        title: 'Gói gia hạn Spotify Premium 1 năm',
+        originalPrice: '590.000đ',
+        discountedPrice: '299.000đ',
+        discount: 49,
+    },
+    {
+        image: 'https://i.ibb.co/K2ZFMsz/Netflix-1.png',
+        title: 'Netflix Premium 1 tháng',
+        originalPrice: '260.000đ',
+        discountedPrice: '99.000đ',
+        discount: 62,
+    },
+    {
+        image: 'https://i.ibb.co/v4YZVb0/Divine-Shop-Goi-Gia-Han-Spotify-1-Nam-40567.jpg',
+        title: 'Gói gia hạn Spotify Premium 1 năm',
+        originalPrice: '590.000đ',
+        discountedPrice: '299.000đ',
+        discount: 49,
+    },
+    {
+        image: 'https://i.ibb.co/K2ZFMsz/Netflix-1.png',
+        title: 'Netflix Premium 1 tháng',
+        originalPrice: '260.000đ',
+        discountedPrice: '99.000đ',
+        discount: 62,
+    },
+    {
+        image: 'https://i.ibb.co/v4YZVb0/Divine-Shop-Goi-Gia-Han-Spotify-1-Nam-40567.jpg',
+        title: 'Gói gia hạn Spotify Premium 1 năm',
+        originalPrice: '590.000đ',
+        discountedPrice: '299.000đ',
+        discount: 49,
+    },
+    {
+        image: 'https://i.ibb.co/K2ZFMsz/Netflix-1.png',
+        title: 'Netflix Premium 1 tháng',
+        originalPrice: '260.000đ',
+        discountedPrice: '99.000đ',
+        discount: 62,
+    },
+    {
+        image: 'https://i.ibb.co/v4YZVb0/Divine-Shop-Goi-Gia-Han-Spotify-1-Nam-40567.jpg',
+        title: 'Gói gia hạn Spotify Premium 1 năm',
+        originalPrice: '590.000đ',
+        discountedPrice: '299.000đ',
+        discount: 49,
+    },
+    {
+        image: 'https://i.ibb.co/JnFfgZW/HULU.png',
+        title: 'Hulu Premium 1 năm',
+        originalPrice: '1.180.000đ',
+        discountedPrice: '599.000đ',
+        discount: 51,
+    },
+    {
+        image: 'https://i.ibb.co/v4YZVb0/Divine-Shop-Goi-Gia-Han-Spotify-1-Nam-40567.jpg',
+        title: 'Gói gia hạn Spotify Premium 1 năm',
+        originalPrice: '590.000đ',
+        discountedPrice: '299.000đ',
+        discount: 49,
+    },
+    {
+        image: 'https://i.ibb.co/K2ZFMsz/Netflix-1.png',
+        title: 'Netflix Premium 1 tháng',
+        originalPrice: '260.000đ',
+        discountedPrice: '99.000đ',
+        discount: 62,
+    },
+    {
+        image: 'https://i.ibb.co/v4YZVb0/Divine-Shop-Goi-Gia-Han-Spotify-1-Nam-40567.jpg',
+        title: 'Gói gia hạn Spotify Premium 1 năm',
+        originalPrice: '590.000đ',
+        discountedPrice: '299.000đ',
+        discount: 49,
+    },
+    {
+        image: 'https://i.ibb.co/K2ZFMsz/Netflix-1.png',
+        title: 'Netflix Premium 1 tháng',
+        originalPrice: '260.000đ',
+        discountedPrice: '99.000đ',
+        discount: 62,
+    },
+    {
+        image: 'https://i.ibb.co/v4YZVb0/Divine-Shop-Goi-Gia-Han-Spotify-1-Nam-40567.jpg',
+        title: 'Gói gia hạn Spotify Premium 1 năm',
+        originalPrice: '590.000đ',
+        discountedPrice: '299.000đ',
+        discount: 49,
+    },
+    {
+        image: 'https://i.ibb.co/K2ZFMsz/Netflix-1.png',
+        title: 'Netflix Premium 1 tháng',
+        originalPrice: '260.000đ',
+        discountedPrice: '99.000đ',
+        discount: 62,
+    },
+    {
+        image: 'https://i.ibb.co/v4YZVb0/Divine-Shop-Goi-Gia-Han-Spotify-1-Nam-40567.jpg',
+        title: 'Gói gia hạn Spotify Premium 1 năm',
+        originalPrice: '590.000đ',
+        discountedPrice: '299.000đ',
+        discount: 49,
+    },
+];
 
 function HomePage() {
 
     const { isLoggedIn } = useContext(AuthContext);
-    const products = [
-        {
-            image: 'https://i.ibb.co/K2ZFMsz/Netflix-1.png',
-            title: 'Netflix Premium 1 tháng',
-            originalPrice: '260.000đ',
-            discountedPrice: '99.000đ',
-            discount: 62,
-        },
-        {
-            image: 'https://i.ibb.co/v4YZVb0/Divine-Shop-Goi-Gia-Han-Spotify-1-Nam-40567.jpg',
-            title: 'Gói gia hạn Spotify Premium 1 năm',
-            originalPrice: '590.000đ',
-            discountedPrice: '299.000đ',
-            discount: 49,
-        },
-        {
-            image: 'https://i.ibb.co/JnFfgZW/HULU.png',
-            title: 'Hulu Premium 1 năm',
-            originalPrice: '1.180.000đ',
-            discountedPrice: '599.000đ',
-            discount: 51,
-        },
-        {
-            image: 'https://i.ibb.co/v4YZVb0/Divine-Shop-Goi-Gia-Han-Spotify-1-Nam-40567.jpg',
-            title: 'Gói gia hạn Spotify Premium 1 năm',
-            originalPrice: '590.000đ',
-            discountedPrice: '299.000đ',
-            discount: 49,
-        },
-        {
-            image: 'https://i.ibb.co/K2ZFMsz/Netflix-1.png',
-            title: 'Netflix Premium 1 tháng',
-            originalPrice: '260.000đ',
-            discountedPrice: '99.000đ',
-            discount: 62,
-        },
-        {
-            image: 'https://i.ibb.co/v4YZVb0/Divine-Shop-Goi-Gia-Han-Spotify-1-Nam-40567.jpg',
-            title: 'Gói gia hạn Spotify Premium 1 năm',
-            originalPrice: '590.000đ',
-            discountedPrice: '299.000đ',
-            discount: 49,
-        },
-        {
-            image: 'https://i.ibb.co/K2ZFMsz/Netflix-1.png',
-            title: 'Netflix Premium 1 tháng',
-            originalPrice: '260.000đ',
-            discountedPrice: '99.000đ',
-            discount: 62,
-        },
-        {
-            image: 'https://i.ibb.co/v4YZVb0/Divine-Shop-Goi-Gia-Han-Spotify-1-Nam-40567.jpg',
-            title: 'Gói gia hạn Spotify Premium 1 năm',
-            originalPrice: '590.000đ',
-            discountedPrice: '299.000đ',
-            discount: 49,
-        },
-        {
-            image: 'https://i.ibb.co/K2ZFMsz/Netflix-1.png',
-            title: 'Netflix Premium 1 tháng',
-            originalPrice: '260.000đ',
-            discountedPrice: '99.000đ',
-            discount: 62,
-        },
-        {
-            image: 'https://i.ibb.co/v4YZVb0/Divine-Shop-Goi-Gia-Han-Spotify-1-Nam-40567.jpg',
-            title: 'Gói gia hạn Spotify Premium 1 năm',
-            originalPrice: '590.000đ',
-            discountedPrice: '299.000đ',
-            discount: 49,
-        },
-        {
-            image: 'https://i.ibb.co/K2ZFMsz/Netflix-1.png',
-            title: 'Netflix Premium 1 tháng',
-            originalPrice: '260.000đ',
-            discountedPrice: '99.000đ',
-            discount: 62,
-        },
-        {
-            image: 'https://i.ibb.co/v4YZVb0/Divine-Shop-Goi-Gia-Han-Spotify-1-Nam-40567.jpg',
-            title: 'Gói gia hạn Spotify Premium 1 năm',
-            originalPrice: '590.000đ',
-            discountedPrice: '299.000đ',
-            discount: 49,
-        },
-        {
-            image: 'https://i.ibb.co/JnFfgZW/HULU.png',
-            title: 'Hulu Premium 1 năm',
-            originalPrice: '1.180.000đ',
-            discountedPrice: '599.000đ',
-            discount: 51,
-        },
-        {
-            image: 'https://i.ibb.co/v4YZVb0/Divine-Shop-Goi-Gia-Han-Spotify-1-Nam-40567.jpg',
-            title: 'Gói gia hạn Spotify Premium 1 năm',
-            originalPrice: '590.000đ',
-            discountedPrice: '299.000đ',
-            discount: 49,
-        },
-        {
-            image: 'https://i.ibb.co/K2ZFMsz/Netflix-1.png',
-            title: 'Netflix Premium 1 tháng',
-            originalPrice: '260.000đ',
-            discountedPrice: '99.000đ',
-            discount: 62,
-        },
-        {
-            image: 'https://i.ibb.co/v4YZVb0/Divine-Shop-Goi-Gia-Han-Spotify-1-Nam-40567.jpg',
-            title: 'Gói gia hạn Spotify Premium 1 năm',
-            originalPrice: '590.000đ',
-            discountedPrice: '299.000đ',
-            discount: 49,
-        },
-        {
-            image: 'https://i.ibb.co/K2ZFMsz/Netflix-1.png',
-            title: 'Netflix Premium 1 tháng',
-            originalPrice: '260.000đ',
-            discountedPrice: '99.000đ',
-            discount: 62,
-        },
-        {
-            image: 'https://i.ibb.co/v4YZVb0/Divine-Shop-Goi-Gia-Han-Spotify-1-Nam-40567.jpg',
-            title: 'Gói gia hạn Spotify Premium 1 năm',
-            originalPrice: '590.000đ',
-            discountedPrice: '299.000đ',
-            discount: 49,
-        },
-        {
-            image: 'https://i.ibb.co/K2ZFMsz/Netflix-1.png',
-            title: 'Netflix Premium 1 tháng',
-            originalPrice: '260.000đ',
-            discountedPrice: '99.000đ',
-            discount: 62,
-        },
-        {
-            image: 'https://i.ibb.co/v4YZVb0/Divine-Shop-Goi-Gia-Han-Spotify-1-Nam-40567.jpg',
-            title: 'Gói gia hạn Spotify Premium 1 năm',
-            originalPrice: '590.000đ',
-            discountedPrice: '299.000đ',
-            discount: 49,
-        },
-    ];
+    const {packageList} = useContext(HomePageContext);
+
+    console.log("Product: ", packageList)
 
     return (
+
         <>
             {/* PromotionSection */}
             <PromotionSection />
 
             {/* Product Section */}
-            <ProductsSection products={products} />
+            <ProductsSection products={packageList} />
 
             {/* Features Section */}
             <section className="bg-white py-16 px-32">

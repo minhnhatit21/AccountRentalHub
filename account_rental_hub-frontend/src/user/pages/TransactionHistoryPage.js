@@ -1,6 +1,7 @@
 import { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { TransactionContext } from "../../admin/context/TransactionContext";
+import { SignInModal } from "../components/modals/login_register_modal";
 
 const transactions = [
     {
@@ -23,6 +24,7 @@ function TransactionHistoryPage() {
     const { transactionList, action, setAction, actions, searchTransactionData, changePage, pageable, setUserIdSearch } = useContext(TransactionContext);
     const { isLoggedIn, user } = useContext(AuthContext)
     const [formData, setFormData] = useState({});
+    const [showSiginModal, setShowSigninModal] = useState(false);
 
     useEffect(() => {
         if (user && user.id) {
@@ -49,20 +51,29 @@ function TransactionHistoryPage() {
         const hours = String(date.getHours()).padStart(2, '0');
         const minutes = String(date.getMinutes()).padStart(2, '0');
         const seconds = String(date.getSeconds()).padStart(2, '0');
-      
+
         return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-      };
+    };
 
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
     };
 
+    const handleLogin = () => {
+        setShowSigninModal(true);
+    }
+
+    const handleCloseSigninModal = () => {
+        setShowSigninModal(false);
+    }
+
     return (
         <>
-            <div className="flex-1 ml-10">
-                <div className="bg-white rounded-lg shadow-lg p-6">
-                    <h1 className="text-2xl font-bold mb-4">Lịch sử giao dịch</h1>
-                    {/* <div className="mb-4 space-x-2">
+            {isLoggedIn ? (
+                <div className="flex-1 ml-10">
+                    <div className="bg-white rounded-lg shadow-lg p-6">
+                        <h1 className="text-2xl font-bold mb-4">Lịch sử giao dịch</h1>
+                        {/* <div className="mb-4 space-x-2">
                         <input
                             type="text"
                             placeholder="Mô tả"
@@ -72,55 +83,65 @@ function TransactionHistoryPage() {
                             Tìm kiếm
                         </button>
                     </div> */}
-                    <div className="overflow-x-auto">
-                        <table className="w-full border border-gray-300 rounded-lg">
-                            <thead>
-                                <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-                                    <th className="py-3 px-6 border-b border-r border-gray-300">Mã đơn hàng</th>
-                                    <th className="py-3 px-6 border-b border-r border-gray-300">Thời gian</th>
-                                    <th className="py-3 px-6 border-b border-r border-gray-300">Phương thức thanh toán</th>
-                                    <th className="py-3 px-6 border-b border-r border-gray-300">Số tiền</th>
-                                </tr>
-                            </thead>
-                            <tbody className="text-gray-800 text-sm font-medium">
-                                {transactionList && transactionList.map((transaction, index) => (
-                                    <tr key={index} className="border-b border-gray-200 hover:bg-gray-100">
-                                        <td className="py-3 px-6 text-center border-r border-gray-300">{transaction.orderCode}</td>
-                                        <td className="py-3 px-6 text-center border-r border-gray-300">{formatDate(transaction.transactionDate)}</td>
-                                        <td className="py-3 px-6 text-center border-r border-gray-300">{transaction.paymentMethod}</td>
-                                        <td className="py-3 px-6 text-center border-r text-red-600 border-gray-300">
-                                           - {formatCurrency(transaction.amount)}
-                                        </td>
+                        <div className="overflow-x-auto">
+                            <table className="w-full border border-gray-300 rounded-lg">
+                                <thead>
+                                    <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                                        <th className="py-3 px-6 border-b border-r border-gray-300">Mã đơn hàng</th>
+                                        <th className="py-3 px-6 border-b border-r border-gray-300">Thời gian</th>
+                                        <th className="py-3 px-6 border-b border-r border-gray-300">Phương thức thanh toán</th>
+                                        <th className="py-3 px-6 border-b border-r border-gray-300">Số tiền</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div className="flex justify-end items-center mt-4">
-                        {pageable && (
-                            <>
-                                <button
-                                    onClick={() => changePage(pageable.page - 1)}
-                                    disabled={pageable.page === 0}
-                                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    Previous
-                                </button>
-                                <span className="text-sm mx-8">
-                                    Trang {pageable.pageNumber + 1} / {pageable.totalPages}
-                                </span>
-                                <button
-                                    onClick={() => changePage(pageable.page + 1)}
-                                    disabled={pageable.page === pageable.totalPages - 1}
-                                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    Next
-                                </button>
-                            </>
-                        )}
+                                </thead>
+                                <tbody className="text-gray-800 text-sm font-medium">
+                                    {transactionList && transactionList.map((transaction, index) => (
+                                        <tr key={index} className="border-b border-gray-200 hover:bg-gray-100">
+                                            <td className="py-3 px-6 text-center border-r border-gray-300">{transaction.orderCode}</td>
+                                            <td className="py-3 px-6 text-center border-r border-gray-300">{formatDate(transaction.transactionDate)}</td>
+                                            <td className="py-3 px-6 text-center border-r border-gray-300">{transaction.paymentMethod}</td>
+                                            <td className="py-3 px-6 text-center border-r text-red-600 border-gray-300">
+                                                - {formatCurrency(transaction.amount)}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className="flex justify-end items-center mt-4">
+                            {pageable && (
+                                <>
+                                    <button
+                                        onClick={() => changePage(pageable.pageNumber - 1)}
+                                        disabled={pageable.pageNumber === 0}
+                                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        Previous
+                                    </button>
+                                    <span className="text-sm mx-8">
+                                        Trang {pageable.pageNumber + 1} / {pageable.totalPages}
+                                    </span>
+                                    <button
+                                        onClick={() => changePage(pageable.pageNumber + 1)}
+                                        disabled={pageable.page === pageable.totalPages - 1}
+                                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        Next
+                                    </button>
+                                </>
+                            )}
+                        </div>
                     </div>
                 </div>
-            </div>
+            ) :
+                (
+                    <div className='flex-1 ml-10 bg-white rounded-lg shadow-lg p-6'>
+                        <button onClick={handleLogin} className='bg-[#474193] px-4 py-2 rounded-lg'>
+                            <h2 className="text-white font-semibold">Đăng nhập để xem thông tin</h2>
+                        </button>
+                        <SignInModal showModal={showSiginModal} onCloseModal={handleCloseSigninModal} />
+                    </div>
+                )
+            }
         </>
     );
 }

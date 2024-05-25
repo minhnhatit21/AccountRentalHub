@@ -1,5 +1,15 @@
-import { useState } from "react";
-import { Link } from 'react-router-dom';
+import { useContext, useEffect, useState } from "react";
+import { Link, useNavigate } from 'react-router-dom';
+import CartService from "../../services/cart-service";
+import { toast } from "react-toastify";
+import AccountPackageService from "../../services/account-rental-package.service";
+import { AuthContext } from "../context/AuthContext";
+import { SignInModal } from "../components/modals/login_register_modal";
+
+
+const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+};
 
 function CartEmpty() {
     return (
@@ -35,40 +45,24 @@ const CartItem = ({ item, onQuantityChange, onRemove }) => {
         <div className="bg-white rounded-lg shadow-md p-6 flex flex-col md:flex-row justify-between items-center mb-4">
             <div className="flex items-center">
                 <img
-                    src={item.image}
-                    alt={item.name}
+                    src={item.accountRentalPackage.imgURL}
+                    alt={item.accountRentalPackage.name}
                     className="w-20 h-20 object-contain"
                 />
                 <div className="ml-4">
-                    <h2 className="text-lg font-bold">{item.name}</h2>
-                    <p className="text-gray-600">{item.category}</p>
-                    <p className="text-gray-500">Tình trạng: {item.status}</p>
+                    <h2 className="text-lg font-bold">{item.accountRentalPackage.name}</h2>
+                    <p className="mb-4">
+                        Tình trạng:
+                        <span className={`${item?.accountRentalPackage.amount > 0 ? "text-green-600" : "text-red-600"}`}> {item?.accountRentalPackage.amount > 0 ? "Còn hàng" : "Hết hàng"}</span>
+                    </p>
                     <div className="mt-4 flex items-center">
-                        <div className="flex items-center">
-                            <button
-                                className="bg-gray-200 rounded-l-md py-2 px-4 text-gray-700 hover:bg-gray-300"
-                                onClick={() => onQuantityChange(item.id, -1)}
-                                disabled={item.quantity === 1}
-                            >
-                                -
-                            </button>
-                            <span className="bg-white py-2 px-4 text-gray-700">{item.quantity}</span>
-                            <button
-                                className="bg-gray-200 rounded-r-md py-2 px-4 text-gray-700 hover:bg-gray-300"
-                                onClick={() => onQuantityChange(item.id, 1)}
-                            >
-                                +
-                            </button>
-                        </div>
-                        <div className="ml-4">
-                            <span className="text-lg font-bold text-slate-700">{item.price}đ</span>
-                            {item.originalPrice && (
-                                <>
-                                    <span className="text-gray-500 line-through ml-2">{item.originalPrice}đ</span>
-                                    <span className="text-green-600 ml-2">-{item.discount}%</span>
-                                </>
-                            )}
-                        </div>
+                        <span className="text-lg font-bold text-slate-700">{formatCurrency(item.accountRentalPackage.discountedPrice)}</span>
+                        {item.originalPrice && (
+                            <>
+                                <span className="text-gray-500 line-through ml-2">{formatCurrency(item.accountRentalPackage.price)}</span>
+                                <span className="text-green-600 ml-2">-{formatCurrency(item.accountRentalPackage.discount)}%</span>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>
@@ -82,47 +76,164 @@ const CartItem = ({ item, onQuantityChange, onRemove }) => {
 };
 
 function CartPage() {
-    const [items, setItems] = useState([
-        {
-            id: 1,
-            name: "Tài khoản Netflix Premium 1 user 4K FullHD (1 Tháng)",
-            category: "App, Giải trí, Xem phim",
-            status: "Còn hàng",
-            image: "https://i.ibb.co/1GqrngD/1f8a13ac739a.png",
-            price: 99000,
-            originalPrice: 260000,
-            discount: 62,
-            quantity: 1,
-        },
-        {
-            id: 2,
-            name: "Tài khoản Spotify Premium 1 user 4K FullHD (1 Tháng)",
-            category: "App, Giải trí, Xem phim",
-            status: "Còn hàng",
-            image: "https://i.ibb.co/0Gg8PVy/5acc91228d2e.jpg",
-            price: 19000,
-            originalPrice: 54000,
-            discount: 62,
-            quantity: 1,
-        },
-    ]);
+    const [items, setItems] = useState([]);
+
+    const { isLoggedIn, user } = useContext(AuthContext);
+    const [showSiginModal, setShowSigninModal] = useState(false);
+
+    const navigate = useNavigate();
+
+    const fetchAccountPackage = async () => {
+        try {
+            const response = await AccountPackageService.getAllAccountRentalPackages();
+            if (response) {
+                return response;
+            } else {
+                console.log("Not Found");
+                return [];
+            }
+        } catch (error) {
+            toast.error("Đã xảy ra lỗi khi tải dữ liệu ban đầu");
+            return [];
+        }
+    };
+
+    const mergeCarts = async (userId, serverCart, localCart, accountPackages) => {
+        const mergedCart = [...serverCart];
+
+        for (const localItem of localCart) {
+            const existingItem = mergedCart.find(
+                serverItem => serverItem.accountRentalPackage.id === localItem.accountPackageId
+            );
+            if (!existingItem) {
+                const packageDetails = accountPackages.find(
+                    pkg => pkg.id === localItem.accountPackageId
+                ) || null;
+                console.log("packageDetails:", packageDetails);
+                if (packageDetails) {
+                    if (userId) {
+                        try {
+                            console.log(`UserID: ${userId}, accountPackageId: ${localItem.accountPackageId}, `)
+                            const cartItem = {
+                                userId: userId ? parseInt(userId) : null,
+                                accountPackageId: localItem.accountPackageId,
+                                quantity: 1,
+                            };
+                            await CartService.addToCart(cartItem);
+                            toast.success(`Đã thêm ${packageDetails.name} vào giỏ hàng trên máy chủ`);
+                        } catch (error) {
+                            console.error("Error adding to cart:", error);
+                            toast.error(`Không thể thêm ${packageDetails.name} vào giỏ hàng trên máy chủ`);
+                        }
+                    }
+                    mergedCart.push({
+                        id: localItem.accountPackageId,
+                        accountRentalPackage: packageDetails,
+                        quantity: 1
+                    });
+                }
+            }
+        }
+
+        return mergedCart;
+    };
+
+    useEffect(() => {
+        const userLocalStorage = localStorage.getItem('user');
+        let userId = null;
+        if (userLocalStorage) {
+            const userData = JSON.parse(userLocalStorage);
+            userId = userData.id;
+        }
+
+        const fetchData = async () => {
+            const accountPackages = await fetchAccountPackage();
+            const localCartItems = JSON.parse(localStorage.getItem('cart')) || [];
+            if (userId) {
+                // User is logged in, fetch cart from server and sync local cart
+                try {
+                    const serverCartItems = await CartService.getCartItems(userId);
+                    const mergedCartItems = await mergeCarts(userId, serverCartItems, localCartItems, accountPackages);
+                    setItems(mergedCartItems);
+                    localStorage.removeItem('cart'); // Clear local cart after sync
+                } catch (error) {
+                    toast.error("Đã xảy ra lỗi khi tải giỏ hàng từ máy chủ.");
+                }
+            } else {
+                // User is not logged in, use local storage cart
+                const mergedCartItems = await mergeCarts(null, [], localCartItems, accountPackages);
+                setItems(mergedCartItems);
+            }
+        };
+
+        fetchData();
+    }, [user]);
 
     const handleQuantityChange = (itemId, change) => {
+
         setItems(prevItems =>
             prevItems.map(item =>
-                item.id === itemId ? { ...item, quantity: item.quantity + change } : item
+                item.accountPackageId === itemId ? { ...item, quantity: item.quantity + change } : item
             )
         );
     };
 
-    const handleRemove = (itemId) => {
-        setItems(prevItems => prevItems.filter(item => item.id !== itemId));
+    const handleRemove = async (itemId) => {
+        console.log("Remove call, itemId:", itemId);
+
+        if (user) {
+
+            const selectedItems = items.filter(item => item.id === itemId);
+            try {
+
+
+                // Xóa mục giỏ hàng từ máy chủ
+                await CartService.deleteCartItem(itemId);
+                toast.success(`Đã xóa ${selectedItems[0].accountRentalPackage.name} ra khỏi giỏ hàng`);
+            } catch (error) {
+                console.error("Error while deleting cart item:", error);
+                toast.error(`Đã xảy ra lỗi khi xóa ${selectedItems[0].accountRentalPackage.name} giỏ hàng khỏi máy chủ`);
+            }
+        }
+
+        // Cập nhật giỏ hàng cục bộ
+        setItems(prevItems => {
+            const filteredItems = prevItems.filter(item => item.id !== itemId);
+            console.log("Filtered items:", filteredItems);
+            localStorage.setItem('cart', JSON.stringify(filteredItems));
+            return filteredItems;
+        });
     };
 
+    const handleToPayment = async () => {
+        if (user) {
+            try {
+                const response = await CartService.createOrderFromCart(user.id);
+                if (response !== null) {
+                    const data = response.order;
+                    console.log("Data: ", data);
+                    localStorage.setItem('order', JSON.stringify(data));
+                    navigate('/user/payment');
+                }
+                toast.success("Đã thêm vào giỏ hàng.");
+            } catch (error) {
+                toast.error("Đã xảy ra lỗi khi thêm đơn hàng.");
+            }
+        }
+    }
 
-    const termPrice = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    const handleLogin = () => {
+        setShowSigninModal(true);
+    }
+
+    const handleCloseSigninModal = () => {
+        setShowSigninModal(false);
+    }
+
+    const termPrice = items.reduce((acc, item) => acc + item.accountRentalPackage.discountedPrice * 1, 0);
     const discount = 0;
     const totalPrice = termPrice - discount;
+
     return (
         <div className="flex-1">
             <div className="p-6">
@@ -133,7 +244,7 @@ function CartPage() {
                             <>
                                 {items.map(item => (
                                     <CartItem
-                                        key={item.id}
+                                        key={item.accountRentalPackage.id}
                                         item={item}
                                         onQuantityChange={handleQuantityChange}
                                         onRemove={handleRemove}
@@ -147,20 +258,31 @@ function CartPage() {
                     <div className="bg-white rounded-lg h-48 shadow-md p-6 mt-6 md:mt-0 md:ml-6 md:w-1/3">
                         <div className="flex justify-between items-center">
                             <h3 className="text-lg font-bold">Tạm tính:</h3>
-                            <span className="text-lg font-bold text-slate-900">{termPrice}đ</span>
+                            <span className="text-lg font-bold text-slate-900">{formatCurrency(termPrice)}</span>
                         </div>
                         <div className="flex justify-between items-center">
                             <h3 className="text-lg font-bold">Giảm giá:</h3>
-                            <span className="text-lg font-bold text-slate-900">{discount}đ</span>
+                            <span className="text-lg font-bold text-slate-900">{formatCurrency(discount)}</span>
                         </div>
                         <div className="flex justify-between items-center">
                             <h3 className="text-lg font-bold">Tổng giá trị sản phẩm:</h3>
-                            <span className="text-lg font-bold text-slate-900">{totalPrice}đ</span>
+                            <span className="text-lg font-bold text-slate-900">{formatCurrency(totalPrice)}</span>
                         </div>
                         <div className="flex justify-center mt-4">
-                            <Link to="/user/payment" className="bg-blue-500 text-white py-2 px-4 rounded-md">
-                                TIẾN HÀNH THANH TOÁN
-                            </Link>
+
+                            {isLoggedIn ? (
+                                <button onClick={handleToPayment} className="bg-blue-500 text-white py-2 px-4 rounded-md">
+                                    TIẾN HÀNH THANH TOÁN
+                                </button>
+                            ) :
+                                (
+                                    <>
+                                        <button onClick={handleLogin} className='bg-[#474193] px-4 py-2 rounded-lg'>
+                                            <h2 className="text-white font-semibold">Đăng nhập để thanh toán</h2>
+                                        </button>
+                                        <SignInModal showModal={showSiginModal} onCloseModal={handleCloseSigninModal} />
+                                    </>
+                                )}
                         </div>
                     </div>
                 </div>

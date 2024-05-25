@@ -52,12 +52,22 @@ const updateAccountRental = async (id, accountData) => {
     }
   }
 
+  const checkAccountRentalAvailability = async (packageId) => {
+    try {
+      const response = await axios.get(API_URL + `/check-availability?packageId=${packageId}&status=ACTIVE&packageAmount=0&rentalAmount=0`)
+      return response.data;
+    } catch (error) {
+      throw error
+    }
+  }
+
 const AccountRentalService = {
     searchAccountRental,
     createAccountRental,
     updateAccountRental,
     deleteAccountRental,
-    getAllAccountRental
+    getAllAccountRental,
+    checkAccountRentalAvailability
 }
 
 export default AccountRentalService;

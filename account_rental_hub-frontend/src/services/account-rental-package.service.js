@@ -10,6 +10,16 @@ const getAllAccountRentalPackages = async () => {
   }
 }
 
+const getAllAccountRentalPackagesByServiceId = async (serviceId) => {
+  try {
+    const response = await axios.get(API_URL + '/service/' + serviceId);
+    console.log("Package:", response);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
 const searchAccountPackage = async (page, size, service, name) => {
     try {
 
@@ -56,7 +66,8 @@ const AccountPackageService = {
     createAccountPackage,
     updateAccountPackage,
     deleteAccountPackage,
-    getAllAccountRentalPackages
+    getAllAccountRentalPackages,
+    getAllAccountRentalPackagesByServiceId
 }
 
 export default AccountPackageService;

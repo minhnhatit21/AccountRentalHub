@@ -1,11 +1,38 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { AuthContext } from "../context/AuthContext";
+import CustomerService from "../../services/customer.service";
+import { useLocation, useSearchParams } from "react-router-dom";
+import PaymentService from "../../services/payment.service";
+import { toast } from "react-toastify";
 
 function PaymentPage() {
-    const [billingDetails, setBillingDetails] = useState({
-        name: "",
-        email: ""
-    });
+
+    const [order, setOrder] = useState(null);
+
+    const { isLoggedIn, user } = useContext(AuthContext);
+    const [billingDetails, setBillingDetails] = useState(null);
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("creditCard");
+
+    useEffect(() => {
+        const orderString = localStorage.getItem('order');
+        const parsedOrder = orderString ? JSON.parse(orderString) : null;
+        setOrder(parsedOrder);
+        const fetchData = async () => {
+            try {
+                if (user) {
+                    const currentUser = await CustomerService.getCustomerByUserId(user.id);
+                    setBillingDetails(currentUser.data);
+                } else {
+                    setBillingDetails(null);
+                }
+            } catch (error) {
+                console.error("Error while fetching customer data:", error);
+                setBillingDetails(null);
+            }
+        };
+    
+        fetchData();
+    },[user])
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -19,13 +46,30 @@ function PaymentPage() {
         setSelectedPaymentMethod(e.target.value);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Handle payment submission logic
+        const paymentData = {
+            userId: user ? parseInt(user.id) : null,
+            orderId: order?.id || 0,
+            paymentMethod: selectedPaymentMethod,
+            amount: 500000
+        }
+        console.log("pa: ", paymentData)
+        if(paymentData !== null) {
+            try {
+                const response = await PaymentService.processPayment(paymentData);
+                console.log("Response: ", response)
+                toast.success("Thanh toán thành công. Kiểm tra phần Lịch sử đơn hàng để xem");
+            } catch (error) {
+                console.error(error.response.data)
+                toast.error(`${error.response.data}`);
+            }
+            
+        }
         console.log("Payment submitted:", billingDetails, selectedPaymentMethod);
     };
 
-    const totalPrice = 99000; // Example total price
+    const totalPrice = order?.totalAmount || "99000"; // Example total price
 
     return (
         <div className="flex-1">
@@ -40,7 +84,7 @@ function PaymentPage() {
                                 <input
                                     type="text"
                                     name="name"
-                                    value={billingDetails.name}
+                                    value={billingDetails?.fullname || ""}
                                     onChange={handleInputChange}
                                     className="w-full px-3 py-2 border rounded-md"
                                     required
@@ -51,7 +95,7 @@ function PaymentPage() {
                                 <input
                                     type="email"
                                     name="email"
-                                    value={billingDetails.email}
+                                    value={user?.email || ""}
                                     onChange={handleInputChange}
                                     className="w-full px-3 py-2 border rounded-md"
                                     required
@@ -131,7 +175,7 @@ function PaymentPage() {
                         <h2 className="text-lg font-bold mb-4">Tóm tắt đơn hàng</h2>
                         <div className="flex justify-between items-center mb-4">
                             <span>Sản phẩm</span>
-                            <span>1 x 99.000đ</span>
+                            <span>1 x ${totalPrice}</span>
                         </div>
                         <div className="flex justify-between items-center font-bold text-lg">
                             <span>Tổng cộng</span>

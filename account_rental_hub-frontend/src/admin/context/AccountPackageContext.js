@@ -21,6 +21,7 @@ export const AccountPackageProvider = ({ children }) => {
     const [serviceSearch, setServiceSearch] = useState("");
     const [nameSearch, setNameSearch] = useState("");
 
+    // Fetch service names once on mount
     useEffect(() => {
         const fetchServiceNameData = async () => {
             try {
@@ -58,39 +59,36 @@ export const AccountPackageProvider = ({ children }) => {
         fetchInitialData();
     }, [fetchInitialData]);
 
-    const searchData = useCallback(
-        async (category, name) => {
-            let nameValue = name !== undefined ? name : "";
-            let serviceValue = category !== undefined ? category : "";
-            if (nameValue !== nameSearch || serviceValue !== serviceSearch) {
-                setPage(0); // Reset page to 0 for new search
+    const searchData = useCallback(async (category, name) => {
+        let nameValue = name !== undefined ? name : "";
+        let serviceValue = category !== undefined ? category : "";
+        if (nameValue !== nameSearch || serviceValue !== serviceSearch) {
+            setPage(0); // Reset page to 0 for new search
+        }
+        try {
+            const response = await AccountPackageService.searchAccountPackage(0, size, serviceValue, nameValue);
+            if (response?.content) {
+                setData(response.content);
+                setPageable(response.pageable);
+                setNameSearch(nameValue);
+                setServiceSearch(serviceValue);
+            } else {
+                setData([]);
+                setPageable(null);
+                console.error("Not Found Data");
             }
-            try {
-                const response = await AccountPackageService.searchAccountPackage(0, size, serviceValue, nameValue);
-                if (response?.content) {
-                    setData(response.content);
-                    setPageable(response.pageable);
-                    setNameSearch(nameValue);
-                    setServiceSearch(serviceValue);
-                } else {
-                    setData([]);
-                    setPageable(null);
-                    console.error("Not Found Data");
-                }
-            } catch (error) {
-                if (error.response && error.response.status === 404) {
-                    setData([]);
-                    setPageable(null);
-                    console.error("Not Found Data");
-                    toast.warning("Không tìm thấy dữ liệu");
-                } else {
-                    console.error("Error while searching data:", error);
-                    toast.error("Đã xảy ra lỗi khi search dữ liệu");
-                }
+        } catch (error) {
+            if (error.response && error.response.status === 404) {
+                setData([]);
+                setPageable(null);
+                console.error("Not Found Data");
+                toast.warning("Không tìm thấy dữ liệu");
+            } else {
+                console.error("Error while searching data:", error);
+                toast.error("Đã xảy ra lỗi khi search dữ liệu");
             }
-        },
-        [nameSearch, serviceSearch, size]
-    );
+        }
+    }, [nameSearch, serviceSearch, size]);
 
     const createData = async (packageData) => {
         try {

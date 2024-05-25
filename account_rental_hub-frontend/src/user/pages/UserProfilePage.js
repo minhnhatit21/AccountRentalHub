@@ -29,8 +29,6 @@ const UserProfile = () => {
     
         fetchData();
     }, [user])
-
-    console.log("Current User: ", userProfile);
     
     const handleLogin = () => {
         setShowSigninModal(true);
