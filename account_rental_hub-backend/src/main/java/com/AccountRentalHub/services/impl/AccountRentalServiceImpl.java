@@ -95,4 +95,11 @@ public class AccountRentalServiceImpl implements AccountRentalService {
         }
     }
 
+    @Override
+    public boolean checkAccountRentalAvailability(Long packageId, String status, int packageAmount, int rentalAmount) {
+        return accountRentalRepository
+                .findFirstByPackageIdAndStatusAndAmountsGreaterThan(packageId, status, packageAmount, rentalAmount)
+                .isPresent();
+    }
+
 }

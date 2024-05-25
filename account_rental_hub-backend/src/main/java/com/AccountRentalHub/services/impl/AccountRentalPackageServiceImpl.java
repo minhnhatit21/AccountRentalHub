@@ -119,6 +119,11 @@ public class AccountRentalPackageServiceImpl implements AccountRentalPackageServ
     }
 
     @Override
+    public List<AccountRentalPackage> getAllAccountRentalPackagesByServiceID(Long serviceId) {
+        return accountRentalPackageRepository.findAllAccountRentalPackagesByServiceId(serviceId);
+    }
+
+    @Override
     public Page<AccountRentalPackage> getAllAccountRentalPackages(Pageable pageable) {
         return accountRentalPackageRepository.findAll(pageable);
     }

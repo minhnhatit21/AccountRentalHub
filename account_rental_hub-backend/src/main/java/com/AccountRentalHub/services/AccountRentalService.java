@@ -14,4 +14,6 @@ public interface AccountRentalService {
     Page<AccountRental> getAllAccountRentals(Pageable pageable);
     Page<AccountRental> getAllAccountRentalsPageable(Pageable pageable, String status, Long packageID, String username);
     void checkAndMarkExpiredAccountRentals();
+
+    boolean checkAccountRentalAvailability(Long packageId, String status, int packageAmount, int rentalAmount);
 }

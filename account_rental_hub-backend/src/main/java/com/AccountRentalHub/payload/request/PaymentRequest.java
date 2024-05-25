@@ -1,17 +1,17 @@
 package com.AccountRentalHub.payload.request;
 
 public class PaymentRequest {
-    private Long customerId;
+    private Long userId;
     private Long orderId;
     private String paymentMethod;
     private Double amount;
 
-    public Long getCustomerId() {
-        return customerId;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public Long getOrderId() {

@@ -45,6 +45,16 @@ public class AccountRentalPackageController {
         return accountRentalPackageOptional.map(accountRentalPackage -> new ResponseEntity<>(accountRentalPackage, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    @GetMapping("/service/{id}")
+    public ResponseEntity<List<AccountRentalPackage>> getAccountRentalPackageByServiceId(@PathVariable Long id) {
+        List<AccountRentalPackage> accountRentalPackages = accountRentalPackageService.getAllAccountRentalPackagesByServiceID(id);
+        if (!accountRentalPackages.isEmpty()) {
+            return new ResponseEntity<>(accountRentalPackages, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<AccountRentalPackage> updateAccountRentalPackage(@PathVariable Long id, @RequestBody AccountRentalPackage accountRentalPackage) throws Exception {
         AccountRentalPackage updateAccountRentalPackage = accountRentalPackageService.updateAccountRentalPackage(id, accountRentalPackage);

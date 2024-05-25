@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,9 +46,8 @@ public class PaymentServiceImpl implements PaymentService {
         Order order = orderRepository.findById(paymentRequest.getOrderId())
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
-        Customer customer = customerRepository.findById(paymentRequest.getCustomerId())
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
-
+        Optional<Customer> optionalCustomer = customerRepository.findByUserId(paymentRequest.getUserId());
+        Customer customer = optionalCustomer.get();
         if (!order.getCustomer().getId().equals(customer.getId())) {
             throw new RuntimeException("Order does not belong to the customer");
         }
@@ -91,8 +91,8 @@ public class PaymentServiceImpl implements PaymentService {
                 rentalHistory.setStatus(ERentalHistoryStatus.ACTIVE.toString());
 
                 // Decrease the amount of the package by 1
-                accountRentalPackage.setAmount(accountRentalPackage.getAmount() - 1);
-                accountRentalPackageRepository.save(accountRentalPackage);
+//                accountRentalPackage.setAmount(accountRentalPackage.getAmount() - 1);
+//                accountRentalPackageRepository.save(accountRentalPackage);
 
                 accountRental.setAmountUsers(accountRental.getAmountUsers() - 1);
                 accountRentalRepository.save(accountRental);

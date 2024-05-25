@@ -44,6 +44,12 @@ public interface AccountRentalPackageService {
     List<AccountRentalPackage> getAllAccountRentalPackages();
 
     /**
+     * Get all list AccountRentalPackages by Service ID without pagination
+     * @return
+     */
+    List<AccountRentalPackage> getAllAccountRentalPackagesByServiceID(Long serviceId);
+
+    /**
      * Get list AccountRentalPackages with pagination
      * @param pageable
      * @return

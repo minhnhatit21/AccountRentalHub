@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -54,6 +56,22 @@ public class AccountRentalController {
     public ResponseEntity<Void> deleteAccountRental(@PathVariable Long id) {
         accountRentalService.deleteAccountRental(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/check-availability")
+    public ResponseEntity<Map<String, Object>> checkAccountRentalAvailability(
+            @RequestParam Long packageId,
+            @RequestParam String status,
+            @RequestParam int packageAmount,
+            @RequestParam int rentalAmount) {
+
+        boolean isAvailable = accountRentalService.checkAccountRentalAvailability(packageId, status, packageAmount, rentalAmount);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("isAvailable", isAvailable);
+        response.put("message", isAvailable ? "Account rental is available" : "Account rental not found or out of stock");
+
+        return ResponseEntity.ok(response);
     }
 
     // Lấy danh sách tất cả các AccountRental với phân trang

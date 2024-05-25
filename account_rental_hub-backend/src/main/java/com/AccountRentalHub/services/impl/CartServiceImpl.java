@@ -4,6 +4,7 @@ import com.AccountRentalHub.models.*;
 import com.AccountRentalHub.models.Enum.EAccountRental;
 import com.AccountRentalHub.models.Enum.EOrderStatus;
 import com.AccountRentalHub.models.Enum.ERentalHistoryStatus;
+import com.AccountRentalHub.payload.response.CartItemResponse;
 import com.AccountRentalHub.repository.*;
 import com.AccountRentalHub.services.CartService;
 import jakarta.transaction.Transactional;
@@ -62,6 +63,7 @@ public class CartServiceImpl implements CartService {
             cart = cartRepository.save(cart);
         }
 
+
         Optional<AccountRental> accountRental = accountRentalRepository
                 .findFirstByPackageIdAndStatusAndAmountGreaterThan(accountPackageId, EAccountRental.ACTIVE.toString(), 0,0)
                 .stream()
@@ -79,10 +81,22 @@ public class CartServiceImpl implements CartService {
         cartItemRepository.save(cartItem);
     }
 
+    @Override
+    public List<CartItemResponse> getCartItems(Long userId) {
+        return cartRepository.findByUserId(userId)
+                .map(cart -> cart.getCartItems().stream()
+                        .map(cartItem -> new CartItemResponse(
+                                cartItem.getId(),
+                                cartItem.getAccountRental().getAccountRentalPackage(),
+                                cartItem.getQuantity()))
+                        .collect(Collectors.toList()))
+                .orElseThrow(() -> new RuntimeException("Cart not found for user id: " + userId));
+    }
+
 
     @Transactional
     @Override
-    public void createOrderFromCart(Long userId) {
+    public Order createOrderFromCart(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -124,6 +138,14 @@ public class CartServiceImpl implements CartService {
         cart.getCartItems().forEach(cartItem -> cartItemRepository.delete(cartItem));
         cart.getCartItems().clear();
         cartRepository.save(cart);
+
+        return order;
+    }
+
+    @Override
+    @Transactional
+    public void removeCartItems(Long cartItemId) {
+        cartItemRepository.deleteById(cartItemId);
     }
 
     private String generateSequentialOrderCode() {

@@ -36,4 +36,15 @@ public interface AccountRentalRepository extends JpaRepository<AccountRental, Lo
     List<AccountRental> findFirstByPackageIdAndStatusAndAmountGreaterThan(@Param("packageId") Long packageId,
                                                                               @Param("status") String status,
                                                                               @Param("amount") int amount,  @Param("accountRentalAmount") int accountRentalAmount);
+    @Query(value = "SELECT ar.* " +
+            "FROM account_rental ar " +
+            "JOIN account_rental_package arp ON ar.account_rental_package_id = arp.id " +
+            "WHERE arp.id = :packageId AND ar.account_rental_status = :status AND arp.amount > :packageAmount AND ar.amount_user > :rentalAmount " +
+            "ORDER BY ar.id ASC " +
+            "LIMIT 1", nativeQuery = true)
+    Optional<AccountRental> findFirstByPackageIdAndStatusAndAmountsGreaterThan(
+            @Param("packageId") Long packageId,
+            @Param("status") String status,
+            @Param("packageAmount") int packageAmount,
+            @Param("rentalAmount") int rentalAmount);
 }

@@ -43,5 +43,5 @@ public class CartItem extends BaseEntity {
         this.quantity = quantity;
     }
 
-    // Getters and Setters
+
 }

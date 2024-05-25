@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AccountRentalPackageRepository extends JpaRepository<AccountRentalPackage, Long> {
@@ -20,4 +21,8 @@ public interface AccountRentalPackageRepository extends JpaRepository<AccountRen
 
     @Query("SELECT s FROM AccountRentalPackage s ORDER BY s.name ASC")
     List<AccountRentalPackage> findAllAccountRentalPackages();
+
+    @Query("SELECT arp FROM AccountRentalPackage arp WHERE " +
+            "(:serviceId IS NULL OR arp.accountRentalServices.id = :serviceId)")
+    List<AccountRentalPackage> findAllAccountRentalPackagesByServiceId(@Param("serviceId") Long serviceId);
 }
