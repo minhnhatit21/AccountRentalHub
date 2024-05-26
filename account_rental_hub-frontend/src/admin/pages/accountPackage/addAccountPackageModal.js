@@ -106,8 +106,6 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData, seriveDa
 
     const onUploadImage = async (file) => {
         const response = await ImageService.uploadImage(file);
-        console.log("responseUploadImage", response);
-
         return response;
     }
 
@@ -129,14 +127,11 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData, seriveDa
         if (formData.image && formData.image instanceof File) {
             const responseUploadImage = await onUploadImage(formData.image);
             packageData.imgURL = responseUploadImage;
-            console.log("Image:", packageData.imgURL)
         }
 
         if (action === "add") {
-            console.log("Package: ", packageData);
             createData(packageData);
         } else if (action === "edit" && formData.packageID > 0) {
-            console.log("Service: ", packageData);
             updateData(formData.packageID, packageData);
         }
 
@@ -144,7 +139,6 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData, seriveDa
     };
 
     const titleModal = (action) => {
-        console.log("Actions: ", action)
         if (action === "add") return "Thêm gói tài khoản"
         else if (action === "edit") return "Chỉnh sửa gói tài khoản"
         else if (action === "view") return "Xem chi tiết tài khoản"

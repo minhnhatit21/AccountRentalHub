@@ -52,7 +52,7 @@ function PaymentPage() {
             userId: user ? parseInt(user.id) : null,
             orderId: order?.id || 0,
             paymentMethod: selectedPaymentMethod,
-            amount: 500000
+            amount: order?.totalAmount
         }
         console.log("pa: ", paymentData)
         if(paymentData !== null) {

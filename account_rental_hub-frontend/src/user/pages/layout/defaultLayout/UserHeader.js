@@ -1,15 +1,14 @@
 import { FaShoppingCart, FaBars } from 'react-icons/fa';
-import CategoryDropdown from '../../../components/dropdowns/category_dropdown'
+import CategoryDropdown from '../../../components/dropdowns/category_dropdown';
 import { useContext, useEffect, useState } from 'react';
 import { SignInModal, SignUpModal } from '../../../components/modals/login_register_modal';
 import UserProfileDropdown from '../../../components/dropdowns/user_profile_dropdown';
 import { AuthContext } from '../../../context/AuthContext';
 import { Link } from 'react-router-dom';
+import SearchBar from '../../../components/sections/search_bar';
 
 function UserHeader() {
-
     const { isLoggedIn, user } = useContext(AuthContext);
-
     const [showSiginModal, setShowSigninModal] = useState(false);
     const [showSigupModal, setShowSignupModal] = useState(false);
     const [userProfile, setUserProfile] = useState(null);
@@ -21,7 +20,6 @@ function UserHeader() {
             setUserProfile(null);
         }
     }, [user]);
-
 
     const handleLogin = () => {
         setShowSigninModal(true);
@@ -48,21 +46,10 @@ function UserHeader() {
                             <FaBars className="text-2xl text-white cursor-pointer" />
                         </div>
                         <div className="hidden lg:flex text-lg text-white font-bold">
-                            <img src="https://i.ibb.co/mzSYdh5/Vutrukey-Text.png" className='w-36'></img>
+                            <img src="https://i.ibb.co/mzSYdh5/Vutrukey-Text.png" alt='logo' className='w-36'></img>
                         </div>
                     </Link>
-                    <div className="relative flex-1 px-10">
-                        <input
-                            type="text"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Tìm kiếm sản phẩm...."
-                        />
-                        <button className="absolute inset-y-0 right-0 px-4 bg-[#0550EB] text-white rounded-r-md hover:bg-[#3405EB] flex items-center">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
-                        </button>
-                    </div>
+                    <SearchBar />
                     <div className="flex items-center space-x-4 lg:ml-4">
                         {!isLoggedIn ? (
                             <>
@@ -72,9 +59,9 @@ function UserHeader() {
                                     </svg>
 
                                     <div className='ml-2 text-white'>
-                                        <a onClick={handleLogin} className='hover:text-[#DEC01F] cursor-pointer'> <strong>Đăng nhập</strong> </a>
+                                        <button onClick={handleLogin} className='hover:text-[#DEC01F] cursor-pointer'> <strong>Đăng nhập</strong> </button>
                                         /
-                                        <a onClick={handleRegister} className='hover:text-[#DEC01F] cursor-pointer'> <strong>Đăng ký</strong> </a>
+                                        <button onClick={handleRegister} className='hover:text-[#DEC01F] cursor-pointer'> <strong>Đăng ký</strong> </button>
                                     </div>
                                     <SignInModal showModal={showSiginModal} onCloseModal={handleCloseSigninModal} />
                                     <SignUpModal showModal={showSigupModal} onCloseModal={handleCloseSignupModal} />
@@ -96,43 +83,37 @@ function UserHeader() {
                 <ul className='flex items-center text-[#989AAF] font-semibold'>
                     <li>
                         <Link to="/search?service=netflix" className="flex items-center px-4 py-2 mx-2 cursor-pointer hover:text-[#DEC01F]">
-                            <img src='https://i.ibb.co/nrF9Q6R/netflix-png.webp' className='w-6 h-6 mr-2'></img>
+                            <img src='https://i.ibb.co/nrF9Q6R/netflix-png.webp' alt='netflix' className='w-6 h-6 mr-2'></img>
                             Netflix
                         </Link>
                     </li>
                     <li>
-                        <Link to="/search?service=disneyplus" className="flex items-center px-4 py-2 mx-2 cursor-pointer hover:text-[#DEC01F]">
-                            <img src='https://i.ibb.co/2NxFzRj/Disney-White-Logo-wine.png' className='w-6 h-6 mr-2'></img>
+                        <Link to="/search?service=disney plus" className="flex items-center px-4 py-2 mx-2 cursor-pointer hover:text-[#DEC01F]">
+                            <img src='https://i.ibb.co/2NxFzRj/Disney-White-Logo-wine.png' alt='Disney Plus' className='w-6 h-6 mr-2'></img>
                             Disney Plus
                         </Link>
                     </li>
-                    {/* <li>
-                        <Link to="/search?service=amazoneprime" className="flex items-center px-4 py-2 mx-2 cursor-pointer hover:text-[#DEC01F]">
-                            <img src='https://i.ibb.co/2KgG7VW/Amazon-Prime-Logo-wine.png' className='w-6 h-6 mr-2'></img>
-                            Amazon Prime
-                        </Link>
-                    </li> */}
                     <li>
-                        <Link to="/search?service=youtubepremium" className="flex items-center px-4 py-2 mx-2 cursor-pointer hover:text-[#DEC01F]">
-                            <img src='https://i.ibb.co/TvkZrVm/You-Tube-Icon-Full-Color-Logo-wine.png' className='w-6 h-6 mr-2'></img>
+                        <Link to="/search?service=youtube premium" className="flex items-center px-4 py-2 mx-2 cursor-pointer hover:text-[#DEC01F]">
+                            <img src='https://i.ibb.co/TvkZrVm/You-Tube-Icon-Full-Color-Logo-wine.png' alt='Youtube Premium' className='w-6 h-6 mr-2'></img>
                             Youtube Premium
                         </Link>
                     </li>
                     <li>
                         <Link to="/search?service=spotify" className="flex items-center px-4 py-2 mx-2 cursor-pointer hover:text-[#DEC01F]">
-                            <img src='https://i.ibb.co/1MMrKR3/Spotify-Icon-Logo-wine.png' className='w-6 h-6 mr-2'></img>
+                            <img src='https://i.ibb.co/1MMrKR3/Spotify-Icon-Logo-wine.png'  alt='Spotify' className='w-6 h-6 mr-2'></img>
                             Spotify
                         </Link>
                     </li>
                     <li>
                         <Link to="/search?service=canva" className="flex items-center px-4 py-2 mx-2 cursor-pointer hover:text-[#DEC01F]">
-                            <img src='https://i.ibb.co/pZLtPXB/Canva-icon-2021-svg-150x150-png.webp' className='w-6 h-6 mr-2'></img>
+                            <img src='https://i.ibb.co/pZLtPXB/Canva-icon-2021-svg-150x150-png.webp' alt='Canva' className='w-6 h-6 mr-2'></img>
                             Canva
                         </Link>
                     </li>
                     <li>
                         <Link to="/search?service=duolingo" className="flex items-center px-4 py-2 mx-2 cursor-pointer hover:text-[#DEC01F]">
-                            <img src='https://i.ibb.co/dsZgL5p/duolingo.png' className='w-6 h-6 mr-2'></img>
+                            <img src='https://i.ibb.co/dsZgL5p/duolingo.png'  alt='Duolingo' className='w-6 h-6 mr-2'></img>
                             Duolingo
                         </Link>
                     </li>

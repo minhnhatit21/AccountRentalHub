@@ -9,7 +9,6 @@ function CustomerModal({ isOpen, onClose, action, initialData }) {
         } else {
             initData = data;
         }
-        console.log("Init Data: ", initData)
         return {
             fullname: initData.fullname || '',
             customerEmail: Object.keys(initData).length > 0 ? initData.user.email : '',
@@ -38,21 +37,14 @@ function CustomerModal({ isOpen, onClose, action, initialData }) {
         const { name, value } = e.target;
     };
 
-    const convertStringToDate = (dateString) => {
-        const date = new Date(dateString);
-        date.setHours(0, 0, 0, 0);
-        return date.toISOString().slice(0, 10);
-    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
         // Xử lý logic lưu dữ liệu dịch vụ mới
-        console.log(formData);
         onClose();
     };
 
     const titleModal = (action) => {
-        console.log("Actions: ", action)
         if (action === "edit") return "Chỉnh sửa thông tin khách hàng"
         else if (action === "view") return "Xem chi tiết thông tin khách hàng"
     }

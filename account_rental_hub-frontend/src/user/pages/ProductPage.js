@@ -7,7 +7,6 @@ import { AuthContext } from "../context/AuthContext";
 import AccountRentalService from "../../services/account-rental.service";
 
 function ProductPage() {
-    const { serviceName } = useParams();
     const { user } = useContext(AuthContext);
     const location = useLocation();
     const navigate = useNavigate();
@@ -21,10 +20,8 @@ function ProductPage() {
     useEffect(() => {
         const fetchAccountPackage = async () => {
             try {
-                console.log("Fetching account packages for serviceId:", serviceId);
                 const response = await AccountPackageService.getAllAccountRentalPackagesByServiceId(serviceId);
                 if (response) {
-                    console.log("Received packages:", response);
                     setPackageData(response);
 
                     // Check for packageId and set the corresponding duration
@@ -37,14 +34,12 @@ function ProductPage() {
 
                             // Check availability
                             const check = await AccountRentalService.checkAccountRentalAvailability(packageId);
-                            console.log("Availability check result:", check.isAvailable);
                             if (check.isAvailable === false || selectedPackage.amount < 1) {
                                 setIsStocking(false);
                             } else {
                                 setIsStocking(true);
                             }
                         } else {
-                            console.warn("No package found with the specified packageId.");
                             if (response.length > 0) {
                                 setSelectedDuration(response[0].duration.toString());
                                 setIsStocking(true); // Default to stocking if no specific packageId is found
@@ -75,9 +70,6 @@ function ProductPage() {
         setSelectedDuration(e.target.value);
     };
 
-    const handleQuantityChange = (change) => {
-        setQuantity(prevQuantity => Math.max(1, prevQuantity + change));
-    };
 
     const handleAddToCart = async () => {
         const userId = user?.id || null;
@@ -95,8 +87,6 @@ function ProductPage() {
             accountPackageId,
             quantity: 1,
         };
-
-        console.log("Cart: ", cartItem)
 
         if (userId) {
             // User is logged in, add to server cart
@@ -177,7 +167,7 @@ function ProductPage() {
                     </div> */}
                     <div className="flex justify-end">
                         <button
-                            className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md transition-colors"
+                            className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             disabled={!isStocking}
                             onClick={handleAddToCart}>
                             Thêm vào giỏ hàng

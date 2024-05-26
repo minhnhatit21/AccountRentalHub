@@ -24,9 +24,9 @@ export const OrderProvider = ({ children }) => {
   // Global Context
   const { globalUpdate, setGlobalUpdate } = useContext(GlobalContext);
 
-  const searchOrderData = useCallback(async (orderCode, userId, startDate, endDate, status) => {
+  const searchOrderData = useCallback(async (orderCode, userId, startDate, endDate, status, requireUserId = true) => {
     let orderCodeValue = orderCode !== undefined ? orderCode : "";
-    let userIdValue = userId !== undefined ? userId : "";
+    let userIdValue = requireUserId ? (userId !== undefined ? userId : "") : "";
     let startDateValue = startDate !== undefined ? startDate : "";
     let endDateValue = endDate !== undefined ? endDate : "";
     let statusValue = status !== undefined ? status : "";

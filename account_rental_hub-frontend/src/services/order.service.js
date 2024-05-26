@@ -18,8 +18,6 @@ const searchOrders = async (page, size, orderCode, userId, startDate, endDate, s
         const response = await axios.get(
             API_URL 
             + `/search?page=${page}&size=${size}&orderCode=${orderCode}&userId=${userId}&startDate=${startDate}&endDate=${endDate}&status=${status}`);
-        // console.log("API: ", API_URL 
-        // + `/search?page=${page}&size=${size}&orderCode=${orderCode}&userId=${userId}&startDate=${startDate}&endDate=${endDate}&status=${status}`)
             return response.data;
     } catch (error) {
         // console.error("Error while searching account service:", error);

@@ -28,7 +28,6 @@ const packageDropdown = (packages, defaultValue, handleInputChange) => {
 
 function AccountSlotView({
     accountSlots,
-    packageData,
     action,
     dataAccountSlotModalRef,
     showAccountSlotModal,
@@ -41,7 +40,7 @@ function AccountSlotView({
     handleDeteteAccountSlotClose,
     handleDeleteAccountSlot,
 }) {
-    const { searchSlotData, pageable, changePage, packageList, deletedata } = useContext(AccountSlotContext)
+    const { searchSlotData, pageable, changePage, packageList } = useContext(AccountSlotContext)
 
     const [formData, setFormData] = useState({});
 
@@ -388,7 +387,8 @@ function AccountSlotView({
                                             </button>
                                             <button
                                                 onClick={() => onDeleteClick(slot.id)}
-                                                className="hover:text-primary">
+                                                className="hover:text-primary disabled:opacity-50"
+                                                disabled={slot.status === 'ACTIVE'}>
                                                 <svg
 
                                                     width="18"

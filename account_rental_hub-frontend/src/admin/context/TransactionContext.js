@@ -22,36 +22,27 @@ export const TransactionProvider = ({ children }) => {
   const [statusSearch, setStatusSearch] = useState("");
 
   // Global Context
-  const { globalUpdate, setGlobalUpdate } = useContext(GlobalContext);
+  const { globalUpdate } = useContext(GlobalContext);
 
-  const changePage = (newPage) => {
+  const changePage = useCallback((newPage) => {
     setPage(newPage);
-    searchTransactionData(customerNameSearch, userIdSearch, startDateSearch, endDateSearch, statusSearch);
-  };
+  }, []);
 
-  const searchTransactionData = useCallback(async (customerName, userId, startDate, endDate, status) => {
-    let customerNameValue = customerName !== undefined ? customerName : "";
-    let userIdValue = userId !== undefined ? userId : "";
-    let startDateValue = startDate !== undefined ? startDate : "";
-    let endDateValue = endDate !== undefined ? endDate : "";
-    let statusValue = status !== undefined ? status : "";
-
-    if (customerNameValue !== customerNameSearch || userIdValue !== userIdSearch 
-        || startDateValue !== startDateSearch || endDateValue !== endDateSearch
-        || statusValue !== statusSearch) {
+  const searchTransactionData = useCallback(async (customerName = "", userId = "", startDate = "", endDate = "", status = "") => {
+    if (customerName !== customerNameSearch || userId !== userIdSearch || startDate !== startDateSearch || endDate !== endDateSearch || status !== statusSearch) {
       setPage(0);
     }
 
     try {
-      const response = await TransactionService.searchTransactions(page, size, customerNameValue, userIdValue, startDateValue, endDateValue, statusValue);
+      const response = await TransactionService.searchTransactions(page, size, customerName, userId, startDate, endDate, status);
       if (response?.content) {
         setTransactions(response.content);
         setPageable(response.pageable);
-        setCustomerNameSearch(customerNameValue);
-        setUserIdSearch(userIdValue);
-        setStartDateSearch(startDateValue);
-        setEndDateSearch(endDateValue);
-        setStatusSearch(statusValue);
+        setCustomerNameSearch(customerName);
+        setUserIdSearch(userId);
+        setStartDateSearch(startDate);
+        setEndDateSearch(endDate);
+        setStatusSearch(status);
       } else {
         setTransactions([]);
         setPageable(null);
@@ -80,7 +71,7 @@ export const TransactionProvider = ({ children }) => {
     };
 
     fetchData();
-  }, [searchTransactionData, customerNameSearch, userIdSearch, startDateSearch, endDateSearch, statusSearch, page, update, globalUpdate]);
+  }, [searchTransactionData, customerNameSearch, userIdSearch, startDateSearch, endDateSearch, statusSearch, page, size, update, globalUpdate]);
 
   const value = {
     transactionList,
@@ -92,13 +83,12 @@ export const TransactionProvider = ({ children }) => {
     setActions,
     changePage,
     searchTransactionData,
-    setUserIdSearch
+    setUserIdSearch,
   };
 
   return (
     <TransactionContext.Provider value={value}>
       {children}
     </TransactionContext.Provider>
-  )
+  );
 }
-

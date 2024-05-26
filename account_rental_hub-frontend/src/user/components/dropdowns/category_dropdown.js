@@ -1,13 +1,15 @@
-import { Fragment } from 'react'
-import { FaBars, FaGraduationCap, FaPencilAlt, FaBriefcase, FaFilm, FaHeadphones } from 'react-icons/fa'
-import { Menu, Transition } from '@headlessui/react'
-import { Link } from 'react-router-dom';
+import { Menu, Transition } from '@headlessui/react';
+import { Fragment } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FaBars, FaGraduationCap, FaBriefcase, FaFilm, FaHeadphones } from 'react-icons/fa';
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
 function CategoryDropdown() {
+    const navigate = useNavigate(); // Hook để điều hướng
+
     return (
         <Menu as="div" className="relative inline-block">
             <div>
@@ -29,43 +31,54 @@ function CategoryDropdown() {
                     <div className="py-1">
                         <Menu.Item>
                             {({ active }) => (
-                                <Link to="/search?tag=study" className={classNames(
-                                    active ? 'bg-[#13112e] text-slate-50' : 'text-white',
-                                    'flex items-center px-4 py-2 text-md font-semibold cursor-pointer'
-                                )}>
+                                <div
+                                    onClick={() => navigate('/search?tag=study')}
+                                    className={classNames(
+                                        active ? 'bg-[#13112e] text-slate-50' : 'text-white',
+                                        'flex items-center px-4 py-2 text-md font-semibold cursor-pointer'
+                                    )}
+                                >
                                     <FaGraduationCap className='w-4 h-4 mr-4' /> Học tập
-                                </Link>
+                                </div>
                             )}
                         </Menu.Item>
                         <Menu.Item>
                             {({ active }) => (
-                                <Link to="/search?tag=work" className={classNames(
-                                    active ? 'bg-[#13112e] text-slate-50' : 'text-white',
-                                    'flex items-center px-4 py-2 text-md font-semibold cursor-pointer'
-                                )}>
+                                <div
+                                    onClick={() => navigate('/search?tag=work')}
+                                    className={classNames(
+                                        active ? 'bg-[#13112e] text-slate-50' : 'text-white',
+                                        'flex items-center px-4 py-2 text-md font-semibold cursor-pointer'
+                                    )}
+                                >
                                     <FaBriefcase className='w-4 h-4 mr-4' /> Làm việc
-                                </Link>
+                                </div>
                             )}
                         </Menu.Item>
                         <Menu.Item>
                             {({ active }) => (
-                                <Link to="/search?tag=movie" className={classNames(
-                                    active ? 'bg-[#13112e] text-slate-50' : 'text-white',
-                                    'flex items-center px-4 py-2 text-md font-semibold cursor-pointer'
-                                )}>
+                                <div
+                                    onClick={() => navigate('/search?tag=movie')}
+                                    className={classNames(
+                                        active ? 'bg-[#13112e] text-slate-50' : 'text-white',
+                                        'flex items-center px-4 py-2 text-md font-semibold cursor-pointer'
+                                    )}
+                                >
                                     <FaFilm className='w-4 h-4 mr-4' /> Xem phim
-                                </Link>
+                                </div>
                             )}
                         </Menu.Item>
                         <Menu.Item>
                             {({ active }) => (
-                                <Link to="/search?tag=music" className={classNames(
-                                    active ? 'bg-[#13112e] text-slate-50' : 'text-white fon',
-                                    'flex items-center px-4 py-2 text-md font-semibold cursor-pointer'
-                                )}>
-
+                                <div
+                                    onClick={() => navigate('/search?tag=music')}
+                                    className={classNames(
+                                        active ? 'bg-[#13112e] text-slate-50' : 'text-white',
+                                        'flex items-center px-4 py-2 text-md font-semibold cursor-pointer'
+                                    )}
+                                >
                                     <FaHeadphones className='w-4 h-4 mr-4' /> Nghe nhạc
-                                </Link>
+                                </div>
                             )}
                         </Menu.Item>
                     </div>

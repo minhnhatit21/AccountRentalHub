@@ -1,11 +1,11 @@
-import { Link, NavLink, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
 export function UserSidebar() {
-    const location = useLocation();
+
 
     return (
         <div className="bg-white py-4 px-2 rounded-lg">
@@ -53,7 +53,7 @@ export function UserSidebar() {
                 </NavLink>
             </div>
 
-            <div className="mb-4">
+            {/* <div className="mb-4">
                 <NavLink
                     to="/user/wishlist"
                     className={({ isActive }) =>
@@ -66,7 +66,7 @@ export function UserSidebar() {
                 >
                     <h2 className="font-semibold">Sản phẩm yêu thích</h2>
                 </NavLink>
-            </div>
+            </div> */}
         </div>
     );
 }

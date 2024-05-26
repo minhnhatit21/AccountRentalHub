@@ -19,12 +19,6 @@ function Customers() {
         changePage(newPage);
     };
 
-    // Hanldle Add customers
-    const handleAddCustomerClick = () => {
-        setAction(actions[0]);
-        setShowCustomerModal(true);
-    };
-
     const handleEditCustomerClick = (id) => {
         setAction(actions[1]);
         const data = customerList.filter(customer => customer.id === id);
@@ -53,13 +47,11 @@ function Customers() {
     }
 
     const handleDeleteCustomerModalClose = () => {
-        console.log('Call close delete');
         setShowDeleteCustomerModal(false);
         dataModalRef.current = null
     }
 
     const handleDeleteCustomer = (customerId) => {
-        console.log(`Xóa khách hàng có id ${customerId}`);
         setShowDeleteCustomerModal(false);
         dataModalRef.current = null
     };

@@ -211,7 +211,6 @@ function CartPage() {
                 const response = await CartService.createOrderFromCart(user.id);
                 if (response !== null) {
                     const data = response.order;
-                    console.log("Data: ", data);
                     localStorage.setItem('order', JSON.stringify(data));
                     navigate('/user/payment');
                 }
@@ -271,18 +270,28 @@ function CartPage() {
                         <div className="flex justify-center mt-4">
 
                             {isLoggedIn ? (
-                                <button onClick={handleToPayment} className="bg-blue-500 text-white py-2 px-4 rounded-md">
-                                    TIẾN HÀNH THANH TOÁN
-                                </button>
-                            ) :
-                                (
-                                    <>
-                                        <button onClick={handleLogin} className='bg-[#474193] px-4 py-2 rounded-lg'>
-                                            <h2 className="text-white font-semibold">Đăng nhập để thanh toán</h2>
-                                        </button>
-                                        <SignInModal showModal={showSiginModal} onCloseModal={handleCloseSigninModal} />
-                                    </>
-                                )}
+                                items.length > 0 ? (
+                                    <button
+                                        onClick={handleToPayment}
+                                        className="bg-blue-500 text-white py-2 px-4 rounded-md"
+                                    >
+                                        TIẾN HÀNH THANH TOÁN
+                                    </button>
+                                ) : null
+                            ) : (
+                                <>
+                                    <button
+                                        onClick={handleLogin}
+                                        className="bg-[#474193] px-4 py-2 rounded-lg"
+                                    >
+                                        <h2 className="text-white font-semibold">Đăng nhập để thanh toán</h2>
+                                    </button>
+                                    <SignInModal
+                                        showModal={showSiginModal}
+                                        onCloseModal={handleCloseSigninModal}
+                                    />
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>

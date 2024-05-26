@@ -106,7 +106,6 @@ export const AccountSlotProvider = ({ children }) => {
         let usernameValue = username !== undefined ? username : "";
         let statusValue = status !== undefined ? status : "";
         let packageIDValue = packageID !== undefined ? packageID : "";
-        console.log(`Form Data: ${status}, ${username}, ${packageID}`);
         if (usernameValue !== fullnameSearch || statusValue !== statusSearch || packageIDValue !== packageIDSearch) {
             setPage(0);
         }

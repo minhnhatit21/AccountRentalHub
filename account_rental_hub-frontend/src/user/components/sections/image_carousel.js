@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const ImageCarousel = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const images = [
         'https://i.ibb.co/1XrVNLK/2.png',
-        'https://i.ibb.co/yFPLBD6/Xem-phim-th-ga.png',
+        'https://i.ibb.co/Ltxqfwf/Netflix-81012.png',
         'https://i.ibb.co/cQytPHf/t-i-u-c-ng-vi-c-45178.png'
         // Thêm các URL của ảnh khác
     ];
@@ -27,19 +27,18 @@ const ImageCarousel = () => {
 
     return (
         <div className="relative rounded-md overflow-hidden">
-            <div className="w-full h-80 md:h-96 lg:h-128">
+            <div className="w-full h-80 md:h-96 lg:h-128 relative">
                 {images.map((image, index) => (
                     <img
                         key={index}
                         src={image}
                         alt={`Slide ${index + 1}`}
-                        className={`absolute top-0 left-0 w-full h-full object-cover ${index === currentIndex ? 'opacity-100' : 'opacity-0'
-                            } transition-opacity duration-300`}
+                        className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000 ${index === currentIndex ? 'opacity-100' : 'opacity-0'}`}
                     />
                 ))}
             </div>
             <button
-                className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-gray-200 hover:bg-gray-300 rounded-full p-2"
+                className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-gray-700 hover:bg-gray-900 text-white rounded-full p-2"
                 onClick={handlePrevClick}
             >
                 <svg
@@ -58,7 +57,7 @@ const ImageCarousel = () => {
                 </svg>
             </button>
             <button
-                className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-gray-200 hover:bg-gray-300 rounded-full p-2"
+                className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-gray-700 hover:bg-gray-900 text-white rounded-full p-2"
                 onClick={handleNextClick}
             >
                 <svg
@@ -76,13 +75,11 @@ const ImageCarousel = () => {
                     />
                 </svg>
             </button>
-            <div className='absolute flex bottom-0 py-4 justify-center gap-3 w-full'>
-                {images.map((image, index) => (
+            <div className='absolute flex bottom-4 justify-center gap-3 w-full'>
+                {images.map((_, index) => (
                     <div
                         key={index}
-                        alt={`Image ${index + 1}`}
-                        className={`rounded-sm w-8 h-1 ${index === currentIndex ? 'bg-white' : 'bg-gray-500'
-                            } transition-opacity duration-300`}
+                        className={`rounded-full w-3 h-3 ${index === currentIndex ? 'bg-white' : 'bg-gray-500'} transition-all duration-300`}
                     ></div>
                 ))}
             </div>
@@ -91,3 +88,4 @@ const ImageCarousel = () => {
 };
 
 export default ImageCarousel;
+

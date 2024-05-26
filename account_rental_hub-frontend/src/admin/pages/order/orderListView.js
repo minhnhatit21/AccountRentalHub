@@ -3,13 +3,8 @@ import Pagination from "../../components/partials/pagination";
 import { Link } from 'react-router-dom';
 
 function OrderListView({
-    action,
     pageable,
     orderList,
-    handleViewOrderClick,
-    isOpenModal,
-    dataModal,
-    orderModalClose,
     onSearchData,
     onChagepage
 }) {
@@ -19,8 +14,7 @@ function OrderListView({
 
     const handleSearch = (e) => {
         e.preventDefault();
-        // console.log("Form Data: ", formData.orderCode + "," + formData.userId + "," + formData.startDate + "," + formData.endDate + "," + formData.orderStatus );
-        onSearchData(formData.orderCode, formData.userId, formData.startDate, formData.endDate, formData.orderStatus);
+        onSearchData(formData.orderCode, formData.userId, formData.startDate, formData.endDate, formData.orderStatus,false);
     }
 
     const handleInputChange = (e) => {

@@ -13,7 +13,6 @@ const getAllAccountRentalPackages = async () => {
 const getAllAccountRentalPackagesByServiceId = async (serviceId) => {
   try {
     const response = await axios.get(API_URL + '/service/' + serviceId);
-    console.log("Package:", response);
     return response.data;
   } catch (error) {
     throw error;
@@ -29,6 +28,18 @@ const searchAccountPackage = async (page, size, service, name) => {
         // console.error("Error while searching account service:", error);
         throw error;
     }
+}
+
+const searchAccountPackageNyUser = async (page, size, service, name, category, serviceName, minPrice, maxPrice) => {
+  try {
+      const response = await axios.get(API_URL + 
+        `/search?page=${page}&size=${size}&serviceId=${service}&name=${name}&category=${category}&serviceName=${serviceName}&minPrice=${minPrice}&maxPrice=${maxPrice}`);
+      
+        return response.data;
+  } catch (error) {
+      // console.error("Error while searching account service:", error);
+      throw error;
+  }
 }
 
 const createAccountPackage = async (packageData) => {
@@ -67,7 +78,8 @@ const AccountPackageService = {
     updateAccountPackage,
     deleteAccountPackage,
     getAllAccountRentalPackages,
-    getAllAccountRentalPackagesByServiceId
+    getAllAccountRentalPackagesByServiceId,
+    searchAccountPackageNyUser
 }
 
 export default AccountPackageService;

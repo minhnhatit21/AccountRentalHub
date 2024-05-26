@@ -8,9 +8,7 @@ function CustomerView({
     action,
     pageable,
     customerList,
-    handleEditCustomerClick,
     handleViewCustomerClick,
-    handleDeleteCustomerClick,
     isOpenModal,
     isOpenDeleteModal,
     dataModal,
@@ -35,16 +33,9 @@ function CustomerView({
         setFormData((prevState) => ({ ...prevState, [name]: value }));
     };
 
-    const onDeleteCustomerClick = (id) => {
-        handleDeleteCustomerClick(id);
-    }
 
     const onViewCustomerClick = (id) => {
         handleViewCustomerClick(id);
-    }
-
-    const onEditCustomerClick = (id) => {
-        handleEditCustomerClick(id);
     }
 
     return (
@@ -133,28 +124,6 @@ function CustomerView({
                         dataToDelete={dataModal.current}
 
                     />
-                    {/* <div className="flex items-center justify-center md:space-x-4 space-y-4 md:space-y-0 md:w-64">
-                        <button
-                            onClick={handleAddCustomerClick}
-                            className="flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 mr-2">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                            </svg>
-                            <span>Thêm dịch vụ</span>
-                        </button>
-                        <AddCustomerModal
-                            isOpen={showModal}
-                            onClose={handleModalClose}
-                            action={action}
-                            initialData={dataModalRef.current}
-                        />
-                        <DeleteCustomerModal
-                            isOpen={showDeleteModal}
-                            onClose={handleDeleteModalClose}
-                            customerDataToDelete={dataModalRef.current}
-                            onDeleteCustomer={handleDeleteCustomer}
-                        />
-                    </div> */}
                 </div>
 
                 <div className="max-w-full overflow-x-auto rounded-xl border-solid border-2 border-[#F2F2F2]">
@@ -239,7 +208,7 @@ function CustomerView({
                                         </p>
                                     </td>
                                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                                        <div className="flex items-center space-x-3.5">
+                                        <div className="flex items-center justify-center space-x-3.5">
                                             <button
                                                 onClick={() => onViewCustomerClick(customer.id)}
                                                 className="hover:text-primary">
@@ -260,7 +229,7 @@ function CustomerView({
                                                     />
                                                 </svg>
                                             </button>
-                                            <button
+                                            {/* <button
                                                 onClick={() => onDeleteCustomerClick(customer.id)}
                                                 className="hover:text-primary">
                                                 <svg
@@ -296,7 +265,7 @@ function CustomerView({
                                                     <path d="m5.433 13.917 1.262-3.155A4 4 0 0 1 7.58 9.42l6.92-6.918a2.121 2.121 0 0 1 3 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 0 1-.65-.65Z" />
                                                     <path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0 0 10 3H4.75A2.75 2.75 0 0 0 2 5.75v9.5A2.75 2.75 0 0 0 4.75 18h9.5A2.75 2.75 0 0 0 17 15.25V10a.75.75 0 0 0-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5Z" />
                                                 </svg>
-                                            </button>
+                                            </button> */}
                                         </div>
                                     </td>
                                 </tr>

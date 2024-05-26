@@ -28,7 +28,6 @@ export const CustomerProvider = ({children}) => {
                 } else {
                     setCustomerList([]);
                     setPageable(null);
-                    console.error("Not Found Data");
                 }
             } catch (error) {
                 toast.error("Đã xảy ra lỗi khi tải dữ liệu ban đầu");
@@ -41,7 +40,6 @@ export const CustomerProvider = ({children}) => {
     const searchData = useCallback(
         async (fullName) => {
             let nameValue = fullName !== undefined ? fullName : "";
-            console.log("Fullname: ", nameValue)
             if (nameValue === fullName) {
                 setPage(0);
                 try {
@@ -54,16 +52,13 @@ export const CustomerProvider = ({children}) => {
                     } else {
                         setCustomerList([]);
                         setPageable(null);
-                        console.error("Not Found Data");
                     }
                 } catch (error) {
                     if (error.response && error.response.status === 404) {
                         setCustomerList([]);
                         setPageable(null);
-                        console.error("Not Found Data");
                         toast.warning("Không tìm thấy dữ liệu");
                     } else {
-                        console.error("Error while searching data:", error);
                         toast.error("Đã xảy ra lỗi khi search dữ liệu");
                     }
                 }
@@ -77,7 +72,7 @@ export const CustomerProvider = ({children}) => {
             try {
                 await searchData(fullNameSearch);
             } catch (error) {
-                console.error('Error fetching data:', error);
+                toast.error('Lỗi khi tải dữ liệu:', error);
             }
         };
 

@@ -61,7 +61,7 @@ function UserProfileDropdown({ imageSrc, username }) {
                                 </Link>
                             )}
                         </Menu.Item>
-                        <Menu.Item>
+                        {/* <Menu.Item>
                             {({ active }) => (
                                 <Link
                                     to={"/user/wishlist"}
@@ -72,7 +72,7 @@ function UserProfileDropdown({ imageSrc, username }) {
                                     Sản phẩm yêu thích
                                 </Link>
                             )}
-                        </Menu.Item>
+                        </Menu.Item> */}
                         <Menu.Item>
                             {({ active }) => (
                                 <div

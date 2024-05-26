@@ -44,19 +44,21 @@ const OrderDetails = () => {
 
     const handleConfirmOrder = async () => {
         setIsConfirming(true);
-        try {
-            const response = await OrderService.changeOrderStatus(order.id, 'FINISHED');
-            if (response.status === 200) {
-                toast.success("Đơn hàng đã được xác nhận");
-                setOrder(prevOrder => ({ ...prevOrder, status: 'FINISHED' }));
-                setIsConfirming(false);
-            } else {
-                toast.error("Không thể xác nhận đơn hàng");
+        if(order.status === 'PAID') {
+            try {
+                const response = await OrderService.changeOrderStatus(order.id, 'FINISHED');
+                if (response.status === 200) {
+                    toast.success("Đơn hàng đã được xác nhận");
+                    setOrder(prevOrder => ({ ...prevOrder, status: 'FINISHED' }));
+                    setIsConfirming(false);
+                } else {
+                    toast.error("Không thể xác nhận đơn hàng");
+                    setIsConfirming(false);
+                }
+            } catch (error) {
+                toast.error("Đã xảy ra lỗi khi xác nhận đơn hàng");
                 setIsConfirming(false);
             }
-        } catch (error) {
-            toast.error("Đã xảy ra lỗi khi xác nhận đơn hàng");
-            setIsConfirming(false);
         }
     };
 
@@ -180,13 +182,30 @@ const OrderDetails = () => {
                 {order.status !== 'FINISHED' && order.status !== 'CANCELLED' && (
                     <>
                         <button
-                            className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                            className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
                             onClick={handleCancelOrder}
                         >
                             Hủy đơn hàng
                         </button>
+                        {/* <button
+                            className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                            onClick={handleConfirmOrder}
+                            disabled={isConfirming}
+                        >
+                            Xác nhận đơn
+                        </button> */}
+                    </>
+                )}
+                {order.status === 'PAID' && (
+                    <>
+                        {/* <button
+                            className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                            onClick={handleCancelOrder}
+                        >
+                            Hủy đơn hàng
+                        </button> */}
                         <button
-                            className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+                            className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
                             onClick={handleConfirmOrder}
                             disabled={isConfirming}
                         >
@@ -196,7 +215,7 @@ const OrderDetails = () => {
                 )}
                 {order.status !== 'FINISHED' && order.status !== 'CANCELLED' && (
                     <button
-                        className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+                        className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
                         onClick={handleDeleteOrder}
                     >
                         Xóa đơn hàng
