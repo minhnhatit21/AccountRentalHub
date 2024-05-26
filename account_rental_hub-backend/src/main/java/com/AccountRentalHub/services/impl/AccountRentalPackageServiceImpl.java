@@ -129,7 +129,7 @@ public class AccountRentalPackageServiceImpl implements AccountRentalPackageServ
     }
 
     @Override
-    public Page<AccountRentalPackage> searchAccountRentalPackagesPageable(Pageable pageable,Long serviceId, String name) {
-        return accountRentalPackageRepository.findByServiceIDAndPackageName(serviceId, name, pageable);
+    public Page<AccountRentalPackage> searchAccountRentalPackagesPageable(Pageable pageable,Long serviceId, String name,String category,Double minPrice, Double maxPrice,String serviceName) {
+        return accountRentalPackageRepository.findByFilters(serviceId,name,category,minPrice,maxPrice,serviceName,pageable);
     }
 }

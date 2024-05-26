@@ -101,8 +101,15 @@ public class RentalHistoryServiceImpl implements RentalHistoryService {
 
 
     @Override
+    @Transactional
     public void deleteRentalHistory(Long id) {
-        rentalHistoryRepository.deleteById(id);
+        Optional<RentalHistory> rentalHistory = rentalHistoryRepository.findById(id);
+        if(rentalHistory.isPresent()) {
+            RentalHistory account = rentalHistory.get();
+            if(!Objects.equals(account.getStatus(), ERentalHistoryStatus.ACTIVE.toString())) {
+                rentalHistoryRepository.deleteById(id);
+            }
+        }
     }
 
     @Override

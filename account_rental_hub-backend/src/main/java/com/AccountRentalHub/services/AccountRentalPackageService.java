@@ -59,5 +59,5 @@ public interface AccountRentalPackageService {
     /**
      * Search list AccountRentalPackage with service name and account package name
      */
-    Page<AccountRentalPackage> searchAccountRentalPackagesPageable(Pageable pageable, Long serviceId, String name);
+    Page<AccountRentalPackage> searchAccountRentalPackagesPageable(Pageable pageable, Long serviceId, String name, String category,Double minPrice, Double maxPrice,String serviceName);
 }

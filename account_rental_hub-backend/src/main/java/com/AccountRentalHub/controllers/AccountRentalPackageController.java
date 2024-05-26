@@ -82,9 +82,14 @@ public class AccountRentalPackageController {
     public ResponseEntity<CustomPageResponse<AccountRentalPackage>> searchAccountRentalServicesByServiceNameAndPage(
             @RequestParam(required = false) Long serviceId,
             @RequestParam(required = false) String name,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) String serviceName,
             Pageable pageable) {
 
-        Page<AccountRentalPackage> searchResult = accountRentalPackageService.searchAccountRentalPackagesPageable(pageable, serviceId, name);
+        Page<AccountRentalPackage> searchResult = accountRentalPackageService.searchAccountRentalPackagesPageable(
+                pageable, serviceId, name, category, minPrice, maxPrice, serviceName);
 
         if (searchResult.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -99,4 +104,5 @@ public class AccountRentalPackageController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
     }
+
 }

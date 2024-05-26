@@ -34,13 +34,13 @@ public class AccountRentalServiceImpl implements AccountRentalService {
             AccountRentalPackage accountRentalPackage = optionalAccountRentalPackage.get();
             if (accountRentalPackage.getAmount() > 0) {
                 accountRentalPackage.setAmount(accountRentalPackage.getAmount() - 1);
+                return accountRentalRepository.save(accountRental);
             } else {
                 throw new IllegalStateException("Account rental package amount must be greater than 0");
             }
         } else {
             throw new IllegalArgumentException("Account rental package not found");
         }
-        return accountRentalRepository.save(accountRental);
     }
     @Override
     public Optional<AccountRental> getAccountRentalById(Long id) {

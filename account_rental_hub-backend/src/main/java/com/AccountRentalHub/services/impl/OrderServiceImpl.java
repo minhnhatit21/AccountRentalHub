@@ -23,9 +23,9 @@ public class OrderServiceImpl implements OrderService {
         Optional<Order> order = orderRepository.findById(orderID);
         if(order.isPresent()) {
             Order exitingOrder = order.get();
-            if(Objects.equals(status, EOrderStatus.FINISHED.toString())) {
+            if(Objects.equals(status, EOrderStatus.FINISHED.toString()) && Objects.equals(exitingOrder.getStatus(), EOrderStatus.PAID.toString())) {
                 exitingOrder.setStatus(EOrderStatus.FINISHED.toString());
-            } else if(Objects.equals(status, EOrderStatus.CANCELLED.toString())) {
+            } else if(Objects.equals(status, EOrderStatus.CANCELLED.toString()) && !Objects.equals(exitingOrder.getStatus(), EOrderStatus.FINISHED.toString())) {
                 exitingOrder.setStatus(EOrderStatus.CANCELLED.toString());
             } else if(Objects.equals(status, EOrderStatus.PAID.toString())) {
                 exitingOrder.setStatus(EOrderStatus.PAID.toString());
