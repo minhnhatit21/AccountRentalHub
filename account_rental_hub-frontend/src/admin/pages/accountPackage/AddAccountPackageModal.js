@@ -103,7 +103,6 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData, seriveDa
             setFormData((prevState) => ({ ...prevState, [name]: value }));
         }
     };
-
     const onUploadImage = async (file) => {
         const response = await ImageService.uploadImage(file);
         return response;
