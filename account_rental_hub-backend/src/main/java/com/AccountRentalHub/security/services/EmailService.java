@@ -1,5 +1,7 @@
 package com.AccountRentalHub.security.services;
 
+import com.AccountRentalHub.models.Order;
+import com.AccountRentalHub.models.OrderDetail;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
@@ -46,29 +48,59 @@ public class EmailService {
     }
 
     public void sendResetPasswordEmail(String toEmail, String resetUrl, String username) throws IOException, MessagingException, GeneralSecurityException {
-        NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-        Credential credential = getCredentials(httpTransport);
-
-        Gmail service = new Gmail.Builder(httpTransport, JSON_FACTORY, credential)
-                .setApplicationName(APPLICATION_NAME)
-                .build();
-
-        Message message = createMessageWithEmail(toEmail, resetUrl, username);
-        message = service.users().messages().send("me", message).execute();
-    }
-
-    private Message createMessageWithEmail(String toEmail, String resetUrl, String username) throws MessagingException, IOException {
-        MimeMessage mimeMessage = new MimeMessage(Session.getDefaultInstance(new Properties(), null));
-        mimeMessage.setFrom(new InternetAddress("NhatShop"));
-        mimeMessage.addRecipient(jakarta.mail.Message.RecipientType.TO, new InternetAddress(toEmail));
-        mimeMessage.setSubject("Reset Password");
-
+        Gmail service = getGmailService();
+        String subject = "Reset Password";
         String htmlContent = "<html><body>" +
-                "<p>Tên tài khoản của bạn là: <strong>" + username + "<strong/>.</p>" +
+                "<p>Tên tài khoản của bạn là: <strong>" + username + "</strong>.</p>" +
                 "<p>Để thay đổi mật khẩu, nhấn vào link bên dưới:</p>" +
                 "<p><a href=\"" + resetUrl + "\">Reset Password</a></p>" +
                 "</body></html>";
+        Message message = createMessage(toEmail, subject, htmlContent);
+        service.users().messages().send("me", message).execute();
+    }
 
+    public void sendOrderPaymentEmail(String toEmail, Order order) throws GeneralSecurityException, IOException, MessagingException {
+        Gmail service = getGmailService();
+        String subject = "Order Payment";
+        StringBuilder htmlContent = new StringBuilder("<html><body>");
+        htmlContent.append("<h1>Cám ơn bạn đã đặt hàng tại Vutrukey, dưới đây là thông tin đơn hàng: </h1>")
+                .append("<p>Mã đơn hàng: ").append(order.getOrderCode()).append("</p>")
+                .append("<p>Ngày đặt đơn: ").append(order.getOrderDate()).append("</p>")
+                .append("<p>Trạng thái đơn hàng: ").append(order.getStatus()).append("</p>")
+                .append("<p>Tổng tiền: ").append(order.getTotalAmount()).append("VNĐ </p>");
+        htmlContent.append("</body></html>");
+        Message message = createMessage(toEmail, subject, htmlContent.toString());
+        service.users().messages().send("me", message).execute();
+    }
+
+    public void sendOrderConfirmationEmail(String toEmail, Order order) throws GeneralSecurityException, IOException, MessagingException {
+        Gmail service = getGmailService();
+        String subject = "Order Confirmation";
+        StringBuilder htmlContent = new StringBuilder("<html><body>");
+        htmlContent.append("<h1>Cám ơn bạn đã đặt hàng tại Vutrukey, dưới đây là thông tin đơn hàng: </h1>")
+                .append("<p>Mã đơn hàng: ").append(order.getOrderCode()).append("</p>")
+                .append("<p>Ngày đặt đơn: ").append(order.getOrderDate()).append("</p>")
+                .append("<p>Trạng thái đơn hàng: ").append(order.getStatus()).append("</p>")
+                .append("<p>Tổng tiền: ").append(order.getTotalAmount()).append("VNĐ </p>")
+                .append("<p>Order Items:</p>")
+                .append("<ul>");
+
+        for (OrderDetail detail : order.getOrderDetails()) {
+            htmlContent.append("<li>").append(detail.getRentalAccount().getAccountRentalPackage().getName())
+                    .append(" - Số lượng: ").append(detail.getQuantity())
+                    .append("</li>");
+        }
+
+        htmlContent.append("</ul></body></html>");
+        Message message = createMessage(toEmail, subject, htmlContent.toString());
+        service.users().messages().send("me", message).execute();
+    }
+
+    private Message createMessage(String toEmail, String subject, String htmlContent) throws MessagingException, IOException {
+        MimeMessage mimeMessage = new MimeMessage(Session.getDefaultInstance(new Properties(), null));
+        mimeMessage.setFrom(new InternetAddress("nhmnhat2101.it@gmail.com"));
+        mimeMessage.addRecipient(jakarta.mail.Message.RecipientType.TO, new InternetAddress(toEmail));
+        mimeMessage.setSubject(subject);
         mimeMessage.setContent(htmlContent, "text/html; charset=utf-8");
 
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -81,8 +113,15 @@ public class EmailService {
         return message;
     }
 
+    private Gmail getGmailService() throws GeneralSecurityException, IOException {
+        final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+        Credential credential = getCredentials(httpTransport);
+        return new Gmail.Builder(httpTransport, JSON_FACTORY, credential)
+                .setApplicationName(APPLICATION_NAME)
+                .build();
+    }
+
     private Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
-        // Load client secrets.
         InputStream in = EmailService.class.getResourceAsStream(credentialsFilePath);
         if (in == null) {
             throw new FileNotFoundException("Resource not found: " + credentialsFilePath);
@@ -90,16 +129,12 @@ public class EmailService {
         GoogleClientSecrets clientSecrets =
                 GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 
-        // Build flow and trigger user authorization request.
         GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
                 HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, scopes)
                 .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
                 .setAccessType("offline")
                 .build();
         LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
-        Credential credential = new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
-        //returns an authorized Credential object.
-        return credential;
+        return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
     }
 }
-

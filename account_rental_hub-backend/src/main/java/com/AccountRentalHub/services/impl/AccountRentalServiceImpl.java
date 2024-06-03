@@ -62,6 +62,7 @@ public class AccountRentalServiceImpl implements AccountRentalService {
             existingAccountRental.setRenewStartDate(newAccountRentalData.getRenewStartDate());
             existingAccountRental.setRenewEndDate(newAccountRentalData.getRenewEndDate());
             existingAccountRental.setAccountRentalPackage(newAccountRentalData.getAccountRentalPackage());
+            existingAccountRental.setAmountUsers(newAccountRentalData.getAmountUsers());
 
             return accountRentalRepository.save(existingAccountRental);
         } else {

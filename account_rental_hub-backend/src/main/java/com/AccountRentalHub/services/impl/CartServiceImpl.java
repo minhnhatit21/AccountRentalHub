@@ -65,7 +65,7 @@ public class CartServiceImpl implements CartService {
 
 
         Optional<AccountRental> accountRental = accountRentalRepository
-                .findFirstByPackageIdAndStatusAndAmountGreaterThan(accountPackageId, EAccountRental.ACTIVE.toString(), 0,0)
+                .findFirstByPackageIdAndStatusAndAmountGreaterThan(accountPackageId, EAccountRental.ACTIVE.toString(), -1 ,0)
                 .stream()
                 .findFirst();
 

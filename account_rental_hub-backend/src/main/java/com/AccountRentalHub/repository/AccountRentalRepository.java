@@ -34,8 +34,8 @@ public interface AccountRentalRepository extends JpaRepository<AccountRental, Lo
             "AND ar.status = :status " +
             "AND ar.accountRentalPackage.amount > :amount AND ar.amountUsers > :accountRentalAmount")
     List<AccountRental> findFirstByPackageIdAndStatusAndAmountGreaterThan(@Param("packageId") Long packageId,
-                                                                              @Param("status") String status,
-                                                                              @Param("amount") int amount,  @Param("accountRentalAmount") int accountRentalAmount);
+                                                                          @Param("status") String status,
+                                                                          @Param("amount") int amount,  @Param("accountRentalAmount") int accountRentalAmount);
     @Query(value = "SELECT ar.* " +
             "FROM account_rental ar " +
             "JOIN account_rental_package arp ON ar.account_rental_package_id = arp.id " +
