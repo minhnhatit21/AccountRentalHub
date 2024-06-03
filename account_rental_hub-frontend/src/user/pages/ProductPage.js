@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { useParams, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import AccountPackageService from "../../services/account-rental-package.service";
 import { toast } from "react-toastify";
 import CartService from "../../services/cart-service";
@@ -15,7 +15,7 @@ function ProductPage() {
     const [selectedDuration, setSelectedDuration] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const [packageData, setPackageData] = useState([]);
-    const [isStocking, setIsStocking] = useState(true)
+    const [isStocking, setIsStocking] = useState(true);
 
     useEffect(() => {
         const fetchAccountPackage = async () => {
@@ -23,58 +23,66 @@ function ProductPage() {
                 const response = await AccountPackageService.getAllAccountRentalPackagesByServiceId(serviceId);
                 if (response) {
                     setPackageData(response);
-
-                    // Check for packageId and set the corresponding duration
-                    if (packageId) {
-                        const selectedPackage = response.find(pkg => pkg.id === packageId);
-
-                        if (selectedPackage) {
-
-                            setSelectedDuration(selectedPackage.duration.toString());
-
-                            // Check availability
-                            const check = await AccountRentalService.checkAccountRentalAvailability(packageId);
-                            if (check.isAvailable === false || selectedPackage.amount < 1) {
-                                setIsStocking(false);
-                            } else {
-                                setIsStocking(true);
-                            }
-                        } else {
-                            if (response.length > 0) {
-                                setSelectedDuration(response[0].duration.toString());
-                                setIsStocking(true); // Default to stocking if no specific packageId is found
-                            }
-                        }
-                    } else if (response.length > 0) {
-                        setSelectedDuration(response[0].duration.toString());
-                        setIsStocking(true); // Default to stocking if no specific packageId is found
-                    }
                 } else {
-                    console.warn("No packages received.");
                     setPackageData([]);
-                    setIsStocking(false); // No packages available
+                    setIsStocking(false);
                 }
             } catch (error) {
                 console.error("Error fetching account packages:", error);
-                // toast.error("Đã xảy ra lỗi khi tải dữ liệu ban đầu");
-                setIsStocking(false); // Error fetching packages
+                setIsStocking(false);
             }
         };
 
-        fetchAccountPackage();
-    }, [serviceId, packageId]);
+        if (serviceId) {
+            fetchAccountPackage();
+        }
+    }, [serviceId]);
 
+    useEffect(() => {
+        const checkAvailability = async (packageId) => {
+            try {
+                const check = await AccountRentalService.checkAccountRentalAvailability(packageId);
+                setIsStocking(check.isAvailable);
+            } catch (error) {
+                setIsStocking(false);
+            }
+        };
 
+        if (packageId && packageData.length > 0) {
+            const selectedPackage = packageData.find(pkg => pkg.id === packageId);
+            if (selectedPackage) {
+                setSelectedDuration(selectedPackage.duration.toString());
+                checkAvailability(packageId);
+            } else if (packageData.length > 0) {
+                setSelectedDuration(packageData[0].duration.toString());
+                setIsStocking(true); // Đặt mặc định là có hàng nếu không tìm thấy packageId cụ thể
+            }
+        } else if (packageData.length > 0) {
+            setSelectedDuration(packageData[0].duration.toString());
+            setIsStocking(true); // Đặt mặc định là có hàng nếu không có packageId cụ thể
+        }
+    }, [packageId, packageData]);
+
+    const checkAvailability = async (packageId) => {
+        try {
+            const check = await AccountRentalService.checkAccountRentalAvailability(packageId);
+            setIsStocking(check.isAvailable);
+        } catch (error) {
+            console.error("Error checking package availability:", error);
+            setIsStocking(false);
+        }
+    };
 
     const handleDurationChange = (e) => {
         setSelectedDuration(e.target.value);
+        const selectedPackage = packageData.find(pkg => pkg.duration.toString() === e.target.value);
+        if (selectedPackage) {
+            checkAvailability(selectedPackage.id);
+        }
     };
-
 
     const handleAddToCart = async () => {
         const userId = user?.id || null;
-
-
         const accountPackageId = packageData.find(pkg => pkg.duration.toString() === selectedDuration)?.id;
 
         if (!accountPackageId) {
@@ -89,27 +97,25 @@ function ProductPage() {
         };
 
         if (userId) {
-            // User is logged in, add to server cart
             try {
                 await CartService.addToCart(cartItem);
                 toast.success("Đã thêm vào giỏ hàng.");
-                navigate('/user/cart'); // Redirect to cart page
+                navigate('/user/cart');
             } catch (error) {
                 toast.error("Đã xảy ra lỗi khi thêm vào giỏ hàng.");
             }
         } else {
-            // User is not logged in, add to local storage cart
             const localCart = JSON.parse(localStorage.getItem('cart')) || [];
             localCart.push(cartItem);
             localStorage.setItem('cart', JSON.stringify(localCart));
             toast.success("Đã thêm vào giỏ hàng (chưa đăng nhập).");
-            navigate('/user/cart'); // Redirect to cart page
+            navigate('/user/cart');
         }
     };
 
-
     const selectedPackage = packageData.find(pkg => pkg.duration.toString() === selectedDuration);
     const totalPrice = selectedPackage ? selectedPackage.discountedPrice * quantity : 0;
+    const originalPrice = selectedPackage ? selectedPackage.price : 0;
 
     return (
         <div className="container mx-auto px-4 lg:px-32 py-8 lg:py-16">
@@ -131,6 +137,9 @@ function ProductPage() {
                     <div className="mb-4">
                         <span className="text-2xl font-bold text-red-600">{totalPrice.toLocaleString()}đ</span>
                     </div>
+                    <div className="mb-4">
+                        <span className="text-gray-500 line-through mr-2">{originalPrice.toLocaleString()}đ</span>
+                    </div>
                     <div className="mb-4 bg-yellow-100 p-4 rounded-md shadow-md">
                         <label className="block text-gray-800 font-bold mb-2 text-lg">Chọn thời gian thuê:</label>
                         <select
@@ -145,26 +154,6 @@ function ProductPage() {
                             ))}
                         </select>
                     </div>
-
-                    {/* <div className="mb-4">
-                        <label className="block text-gray-700 font-bold mb-2">Số lượng:</label>
-                        <div className="flex items-center">
-                            <button
-                                className="bg-gray-200 rounded-l-md py-2 px-4 text-gray-700 hover:bg-gray-300 disabled:opacity-50"
-                                onClick={() => handleQuantityChange(-1)}
-                                disabled={quantity === 1}
-                            >
-                                -
-                            </button>
-                            <span className="bg-white py-2 px-4 text-gray-700 border">{quantity}</span>
-                            <button
-                                className="bg-gray-200 rounded-r-md py-2 px-4 text-gray-700 hover:bg-gray-300"
-                                onClick={() => handleQuantityChange(1)}
-                            >
-                                +
-                            </button>
-                        </div>
-                    </div> */}
                     <div className="flex justify-end">
                         <button
                             className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"

@@ -8,7 +8,7 @@ export function UserSidebar() {
 
 
     return (
-        <div className="bg-white py-4 px-2 rounded-lg">
+        <div className="bg-white h-60 py-4 px-2 rounded-lg">
             <div className="mb-4">
                 <NavLink
                     to="/user/profile"

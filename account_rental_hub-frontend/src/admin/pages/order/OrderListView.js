@@ -22,6 +22,48 @@ function OrderListView({
         setFormData((prevState) => ({ ...prevState, [name]: value }));
     };
 
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    };
+
+    const getStatusColor = (status) => {
+        switch (status) {
+            case 'PAID':
+                return 'bg-success bg-opacity-10 text-green-400';
+            case 'PENDING':
+                return 'bg-danger bg-opacity-10 text-yellow-400';
+            case 'FINISHED':
+                return 'bg-warning bg-opacity-10 text-blue-400';
+            case 'CANCELLED':
+                return 'bg-warning bg-opacity-10 text-red-400';
+            default:
+                return 'bg-gray-200 text-gray-600';
+        }
+    };
+
+    const getStatusText = (status) => {
+        switch (status) {
+            case 'FINISHED':
+                return 'Đã hoàn thành';
+            case 'CANCELLED':
+                return 'Đã hủy'
+            case 'PAID':
+                return 'Đã thanh toán';
+            case 'PENDING':
+                return 'Đang chờ';
+            default:
+                return 'Không xác định';
+        }
+    };
+
 
     return (
         <>
@@ -172,14 +214,14 @@ function OrderListView({
                                             <p
                                                 className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
                                             >
-                                                {order.status}
+                                               <span className={`${getStatusColor(order.status)}`}>{getStatusText(order.status)}</span> 
                                             </p>
                                         </td>
                                         <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                                             <p
                                                 className="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success"
                                             >
-                                                {order.orderDate}
+                                                {formatDate(order.orderDate)}
                                             </p>
                                         </td>
                                         <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">

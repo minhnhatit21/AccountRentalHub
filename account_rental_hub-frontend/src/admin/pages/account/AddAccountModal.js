@@ -5,6 +5,8 @@ import * as yup from 'yup';
 import { AccountContext } from "../../context/AccountContext";
 import 'react-datepicker/dist/react-datepicker.css';
 import C_Datepicker from "../../components/partials/datepicker";
+import Requiredicon from "../../components/partials/requiredicon";
+
 
 const PackageSelect = ({ packages, value, onChange }) => (
     <div>
@@ -28,17 +30,27 @@ const PackageSelect = ({ packages, value, onChange }) => (
     </div>
 );
 
+
 function AddAccountModal({ isOpen, onClose, action, initialData, packageData }) {
     const { createData, updateData } = useContext(AccountContext);
+    const [loading, setLoading] = useState(false);
 
     const validationSchema = yup.object().shape({
         accountUserName: yup.string().required('Tên tài khoản đăng nhập là bắt buộc'),
         accountEmail: yup.string().email('Email không hợp lệ').required('Email là bắt buộc'),
         accountPassword: yup.string().required('Mật khẩu là bắt buộc'),
         accountStatus: yup.string().required('Trạng thái tài khoản là bắt buộc'),
-        accountPackageID: yup.object().required('Gói tài khoản là bắt buộc'),
-        accountRenewStartDate: yup.date().required('Ngày bắt đầu gia hạn là bắt buộc'),
-        accountRenewEndDate: yup.date().required('Ngày kết thúc gia hạn là bắt buộc'),
+        accountPackageID: yup.object()
+            .required('Gói tài khoản là bắt buộc'),
+        accountRenewStartDate: yup
+            .date()
+            .typeError('Ngày bắt gia hạn phải là một ngày hợp lệ')
+            .required('Ngày bắt đầu gia hạn là bắt buộc'),
+        accountRenewEndDate: yup
+            .date()
+            .typeError('Ngày kết thúc gia hạn phải là một ngày hợp lệ')
+            .required('Ngày kết thúc gia hạn là bắt buộc'),
+            accountAmountUser: yup.number().positive('Loại tài khoảng không hợp lệ').required('Loại tài khoản là bắt buộc')
     });
 
     const initFormData = (data) => {
@@ -53,7 +65,8 @@ function AddAccountModal({ isOpen, onClose, action, initialData, packageData }) 
                 accountSupcriptionDate: '',
                 accountRenewStartDate: '',
                 accountRenewEndDate: '',
-                accountServiceWebsite: ''
+                accountServiceWebsite: '',
+                accountAmountUser: 0
             };
         }
 
@@ -63,22 +76,6 @@ function AddAccountModal({ isOpen, onClose, action, initialData, packageData }) 
         } else {
             initData = data;
         }
-
-        if (action === "add") {
-            return {
-                accountID: 0,
-                accountUserName: '',
-                accountEmail: '',
-                accountPassword: '',
-                accountStatus: '',
-                accountPackageID: 0,
-                accountSupcriptionDate: '',
-                accountRenewStartDate: '',
-                accountRenewEndDate: '',
-                accountServiceWebsite: ''
-            };
-        }
-
         return {
             accountID: initData.id || 0,
             accountUserName: initData.username || '',
@@ -88,7 +85,8 @@ function AddAccountModal({ isOpen, onClose, action, initialData, packageData }) 
             accountPackageID: initData.accountRentalPackage || null,
             accountRenewStartDate: initData.renewStartDate ? new Date(initData.renewStartDate) : '',
             accountRenewEndDate: initData.renewEndDate ? new Date(initData.renewEndDate) : '',
-            accountServiceWebsite: initData.accountRentalPackage?.accountRentalServices.website || ''
+            accountServiceWebsite: initData.accountRentalPackage?.accountRentalServices.website || '',
+            accountAmountUser: initData.amountUsers || 0
         };
     };
 
@@ -118,9 +116,8 @@ function AddAccountModal({ isOpen, onClose, action, initialData, packageData }) 
         }
     }, [accountRenewStartDate, accountPackageID, setValue]);
 
-
-
     const onSubmit = async (data) => {
+        setLoading(true);
         const accountData = {
             username: data.accountUserName,
             email: data.accountEmail,
@@ -128,20 +125,22 @@ function AddAccountModal({ isOpen, onClose, action, initialData, packageData }) 
             status: data.accountStatus,
             renewStartDate: data.accountRenewStartDate ? data.accountRenewStartDate.toISOString() : null,
             renewEndDate: data.accountRenewEndDate ? data.accountRenewEndDate.toISOString() : null,
+            amountUsers: data.accountAmountUser,
             accountRentalPackage: {
                 id: data.accountPackageID.id,
             }
         };
 
-        if (accountData) {
+        try {
             if (action === "add") {
                 await createData(accountData);
             } else if (action === "edit" && data.accountID !== 0) {
                 await updateData(data.accountID, accountData);
             }
+            onClose();
+        } finally {
+            setLoading(false);
         }
-
-        onClose();
     };
 
     const titleModal = (action) => {
@@ -167,7 +166,7 @@ function AddAccountModal({ isOpen, onClose, action, initialData, packageData }) 
                                 <form onSubmit={handleSubmit(onSubmit)}>
                                     <div className="mb-4">
                                         <label htmlFor="accountUserName" className="block text-sm font-medium text-gray-700">
-                                            Tên tài khoản đăng nhập
+                                            Tên tài khoản đăng nhập<Requiredicon />
                                         </label>
                                         <input
                                             type="text"
@@ -181,7 +180,7 @@ function AddAccountModal({ isOpen, onClose, action, initialData, packageData }) 
 
                                     <div className="mb-4">
                                         <label htmlFor="accountEmail" className="block text-sm font-medium text-gray-700">
-                                            Email
+                                            Email<Requiredicon />
                                         </label>
                                         <input
                                             type="text"
@@ -195,7 +194,7 @@ function AddAccountModal({ isOpen, onClose, action, initialData, packageData }) 
 
                                     <div className="mb-4">
                                         <label htmlFor="accountPassword" className="block text-sm font-medium text-gray-700">
-                                            Mật khẩu
+                                            Mật khẩu<Requiredicon />
                                         </label>
                                         <input
                                             type="password"
@@ -206,10 +205,28 @@ function AddAccountModal({ isOpen, onClose, action, initialData, packageData }) 
                                         />
                                         {errors.accountPassword && <span className="text-red-500">{errors.accountPassword.message}</span>}
                                     </div>
-
+                                    <div className="mb-4">
+                                                <label htmlFor="accountStatus" className="block text-sm font-medium text-gray-700">
+                                                    Loại tài khoản<Requiredicon />
+                                                </label>
+                                                <div className="relative">
+                                                    <select
+                                                        id="accountAmountUser"
+                                                        {...register("accountAmountUser")}
+                                                        className="block w-full rounded-md border-gray-300 border-2 py-2 pl-3 pr-8 text-base focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm appearance-none bg-white"
+                                                        defaultValue=""
+                                                        disabled={action === "view"}
+                                                    >
+                                                        <option value="0" className="text-gray-500">Loại tài khoản</option>
+                                                        <option value="1" >Dùng riêng</option>
+                                                        <option value="4" >Dùng chung</option>
+                                                    </select>
+                                                    {errors.accountAmountUser && <span className="text-red-500">{errors.accountAmountUser.message}</span>}
+                                                </div>
+                                            </div>
                                     <div className="mb-4">
                                         <label htmlFor="accountRenewStartDate" className="block text-sm font-medium text-gray-700">
-                                            Ngày bắt đầu gia hạn
+                                            Ngày bắt đầu gia hạn <Requiredicon />
                                         </label>
                                         <Controller
                                             control={control}
@@ -228,7 +245,7 @@ function AddAccountModal({ isOpen, onClose, action, initialData, packageData }) 
 
                                     <div className="mb-4">
                                         <label htmlFor="accountRenewEndDate" className="block text-sm font-medium text-gray-700">
-                                            Ngày kết thúc gia hạn
+                                            Ngày kết thúc gia hạn <Requiredicon />
                                         </label>
                                         <Controller
                                             control={control}
@@ -238,7 +255,7 @@ function AddAccountModal({ isOpen, onClose, action, initialData, packageData }) 
                                                     selected={field.value}
                                                     value={field.value}
                                                     onChange={(date) => field.onChange(date)}
-                                                    disabled={action === "view"}
+                                                    disabled={action === "view" || !accountRenewStartDate || !accountPackageID}
                                                 />
                                             )}
                                         />
@@ -247,7 +264,7 @@ function AddAccountModal({ isOpen, onClose, action, initialData, packageData }) 
 
                                     <div className="mb-4">
                                         <label htmlFor="accountStatus" className="block text-sm font-medium text-gray-700">
-                                            Trạng thái tài khoản
+                                            Trạng thái tài khoản <Requiredicon />
                                         </label>
                                         <div className="relative">
                                             <select
@@ -269,7 +286,7 @@ function AddAccountModal({ isOpen, onClose, action, initialData, packageData }) 
 
                                     <div className="mb-4">
                                         <label htmlFor="accountPackageID" className="block text-sm font-medium text-gray-700">
-                                            Gói tài khoản
+                                            Gói tài khoản<Requiredicon />
                                         </label>
                                         <Controller
                                             control={control}
@@ -289,9 +306,11 @@ function AddAccountModal({ isOpen, onClose, action, initialData, packageData }) 
                                         {action !== "view" && (
                                             <button
                                                 type="submit"
-                                                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                                                className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 ${loading ? 'bg-blue-400' : 'bg-blue-600'
+                                                    } text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm`}
+                                                disabled={loading}
                                             >
-                                                Lưu
+                                                {loading ? 'Đang lưu...' : 'Lưu'}
                                             </button>
                                         )}
                                         {action === "edit" && accountServiceWebsite && (

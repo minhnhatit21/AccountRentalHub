@@ -90,7 +90,7 @@ export const AccountProvider = ({ children }) => {
             setUpdate(prev => !prev);
             setGlobalUpdate(prev => !prev)
         } catch (error) {
-            toast.error(error.response.data.message + ". Vui lòng thử lại!");
+            toast.error(error.response.data + ". Vui lòng thử lại!");
         }
     };
 

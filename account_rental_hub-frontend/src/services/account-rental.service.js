@@ -54,7 +54,7 @@ const updateAccountRental = async (id, accountData) => {
 
   const checkAccountRentalAvailability = async (packageId) => {
     try {
-      const response = await axios.get(API_URL + `/check-availability?packageId=${packageId}&status=ACTIVE&packageAmount=0&rentalAmount=0`)
+      const response = await axios.get(API_URL + `/check-availability?packageId=${packageId}&status=ACTIVE&packageAmount=-1&rentalAmount=0`)
       return response.data;
     } catch (error) {
       throw error

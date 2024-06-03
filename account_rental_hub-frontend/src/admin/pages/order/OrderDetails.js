@@ -179,7 +179,7 @@ const OrderDetails = () => {
             </div>
 
             <div className="mt-6 flex justify-end space-x-4">
-                {order.status !== 'FINISHED' && order.status !== 'CANCELLED' && (
+                {order.status !== 'FINISHED' && order.status !== 'CANCELLED' &&  order.status !== 'PAID' &&(
                     <>
                         <button
                             className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -213,7 +213,7 @@ const OrderDetails = () => {
                         </button>
                     </>
                 )}
-                {order.status !== 'FINISHED' && order.status !== 'CANCELLED' && (
+                {order.status !== 'FINISHED' && order.status !== 'CANCELLED' && order.status !== 'PAID' && (
                     <button
                         className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
                         onClick={handleDeleteOrder}

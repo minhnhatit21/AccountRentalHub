@@ -25,7 +25,6 @@ import { AccountServiceProvider } from './admin/context/AccountServiceContext';
 import Services from './admin/pages/service/Services';
 import OrderHistoryPage from './user/pages/OrderHistoryPage';
 import TransactionHistoryPage from './user/pages/TransactionHistoryPage';
-import CartEmpty from './user/pages/CartPage';
 import CartPage from './user/pages/CartPage';
 import PaymentPage from './user/pages/PaymentPage';
 import ProductPage from './user/pages/ProductPage';
@@ -36,6 +35,8 @@ import ProfileMenuDropdown from './admin/components/dropdown/profile_dropdown';
 import { OrderProvider } from './admin/context/OrderContext';
 import UserOrderDetails from './user/pages/UserOrderDetailsPage';
 import { HomePageProvider } from './user/context/HomePageContext';
+import { OrderUserContext, OrderUserProvider } from './user/context/UserOderHistoryContext';
+import { TransactionUserProvider } from './user/context/UserTransactionContext';
 
 function App() {
   return (
@@ -50,9 +51,9 @@ function App() {
               <Route path='/user/cart' element={<CartDefaultLayout><CartPage /></CartDefaultLayout>} />
               <Route path='/user/payment' element={<CartDefaultLayout><PaymentPage /></CartDefaultLayout>} />
               <Route path='/user/profile' element={<UserDefaultLayout><UserProfile /></UserDefaultLayout>} />
-              <Route path='/user/orders' element={<UserDefaultLayout><OrderProvider><OrderHistoryPage /></OrderProvider> </UserDefaultLayout>} />
+              <Route path='/user/orders' element={<UserDefaultLayout><OrderUserProvider><OrderHistoryPage /></OrderUserProvider> </UserDefaultLayout>} />
               <Route path='/user/orderDetails/:orderCode' element={<UserDefaultLayout><OrderProvider><UserOrderDetails /></OrderProvider> </UserDefaultLayout>} />
-              <Route path='/user/transactions' element={<UserDefaultLayout><TransactionProvider><TransactionHistoryPage /></TransactionProvider> </UserDefaultLayout>} />
+              <Route path='/user/transactions' element={<UserDefaultLayout><TransactionUserProvider><TransactionHistoryPage /></TransactionUserProvider> </UserDefaultLayout>} />
               <Route path='/user/product/:serviceName' element={<UserHomeDefaultLayout><HomePageProvider><ProductPage /></HomePageProvider></UserHomeDefaultLayout>} />
               <Route path='/user/wishlist' element={<UserDefaultLayout><UserProfile /></UserDefaultLayout>} />
               <Route path='/forgotPassword' element={<ForgotPasswordPage />} />

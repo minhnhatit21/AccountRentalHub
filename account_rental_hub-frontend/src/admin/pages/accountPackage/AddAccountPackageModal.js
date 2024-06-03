@@ -4,6 +4,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import ImageService from "../../../services/image.service";
 import { AccountPackageContext } from "../../context/AccountPackageContext";
+import RequiredIcon from "../../components/partials/requiredicon";
 
 const serviceSelection = (services, defaultValue, handleInputChange) => {
     return (
@@ -28,10 +29,11 @@ const serviceSelection = (services, defaultValue, handleInputChange) => {
 
 function AddAccountPackageModal({ isOpen, onClose, action, initialData, seriveData }) {
     const { createData, updateData } = useContext(AccountPackageContext);
+    const [loading, setLoading] = useState(false);
 
     const validationSchema = yup.object().shape({
         packageName: yup.string().required('Tên gói dịch vụ là bắt buộc'),
-        description: yup.string().required('Mô tả là bắt buộc'),
+        description: yup.string().max(200, 'Mô tả không được vượt quá 200 ký tự').required('Mô tả là bắt buộc'),
         imageUrl: yup.string().url('Vui lòng nhập một URL hợp lệ'),
         duration: yup.number().positive('Thời gian phải là một số dương').required('Thời gian là bắt buộc'),
         price: yup.number().positive('Giá gốc phải là một số dương').required('Giá gốc là bắt buộc'),
@@ -109,6 +111,7 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData, seriveDa
     }
 
     const onSubmit = async (data) => {
+        setLoading(true);
         const imageData = data.image instanceof File ? data.image : (data.imageUrl ? data.imageUrl : formData.imagePreview);
         const packageData = {
             imgURL: imageData,
@@ -128,13 +131,18 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData, seriveDa
             packageData.imgURL = responseUploadImage;
         }
 
-        if (action === "add") {
-            createData(packageData);
-        } else if (action === "edit" && formData.packageID > 0) {
-            updateData(formData.packageID, packageData);
-        }
+        
 
-        onClose();
+        try {
+            if (action === "add") {
+                createData(packageData);
+            } else if (action === "edit" && formData.packageID > 0) {
+                updateData(formData.packageID, packageData);
+            }
+            onClose();
+        } finally {
+            setLoading(false);
+        }
     };
 
     const titleModal = (action) => {
@@ -154,7 +162,7 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData, seriveDa
                         <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
                             &#8203;
                         </span>
-                        <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                        <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full sm:p-6">
                             <div>
                                 <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                                     <h3 className="text-lg leading-6 font-medium text-gray-900">{titleModal(action)}</h3>
@@ -165,8 +173,8 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData, seriveDa
                                                     Hình ảnh
                                                 </label>
                                                 <div className="flex items-center">
-                                                    <div className="relative w-32 h-32 mr-4">
-                                                        <div className="relative w-32 h-32 mr-4">
+                                                    <div className="relative w-64 h-32 mr-4">
+                                                        <div className="relative w-64 h-32 mr-4">
                                                             {formData.imagePreview ? (
                                                                 <img
                                                                     src={formData.imagePreview}
@@ -214,7 +222,7 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData, seriveDa
 
                                             <div className="mb-4">
                                                 <label htmlFor="packageName" className="block text-sm font-medium text-gray-700">
-                                                    Tên gói tài khoản
+                                                    Tên gói tài khoản<RequiredIcon />
                                                 </label>
                                                 <input
                                                     type="text"
@@ -231,7 +239,7 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData, seriveDa
 
                                             <div className="mb-4">
                                                 <label htmlFor="serviceType" className="block text-sm font-medium text-gray-700">
-                                                    Loại dịch vụ
+                                                    Loại dịch vụ<RequiredIcon />
                                                 </label>
                                                 <div className="relative">
                                                     {serviceSelection(seriveData, formData.serviceID, handleInputChange)}
@@ -254,7 +262,7 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData, seriveDa
                                             </div>
                                             <div className="mb-4">
                                                 <label htmlFor="accountStatus" className="block text-sm font-medium text-gray-700">
-                                                    Thời hạn
+                                                    Thời hạn<RequiredIcon />
                                                 </label>
                                                 <div className="relative">
                                                     <select
@@ -269,6 +277,7 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData, seriveDa
                                                         <option value="7" >1 Tuần</option>
                                                         <option value="28"> 1 Tháng</option>
                                                         <option value="85"> 3 tháng</option>
+                                                        <option value="180"> 6 Tháng</option>
                                                         <option value="360"> 1 năm</option>
                                                     </select>
                                                     {errors.duration && <span className="text-red-500">{errors.duration.message}</span>}
@@ -276,7 +285,7 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData, seriveDa
                                             </div>
                                             <div className="mb-4">
                                                 <label htmlFor="price" className="block text-sm font-medium text-gray-700">
-                                                    Giá gốc tài khoản
+                                                    Giá gốc tài khoản<RequiredIcon />
                                                 </label>
                                                 <input
                                                     type="text"
@@ -292,7 +301,7 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData, seriveDa
                                             </div>
                                             <div className="mb-4">
                                                 <label htmlFor="discountPrice" className="block text-sm font-medium text-gray-700">
-                                                    Giá bán tài khoản
+                                                    Giá bán tài khoản<RequiredIcon />
                                                 </label>
                                                 <input
                                                     type="text"
@@ -309,7 +318,7 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData, seriveDa
 
                                             <div className="mb-4">
                                                 <label htmlFor="amount" className="block text-sm font-medium text-gray-700">
-                                                    Số lượng
+                                                    Số lượng<RequiredIcon />
                                                 </label>
                                                 <input
                                                     type="text"
@@ -326,7 +335,7 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData, seriveDa
 
                                             <div className="mb-4">
                                                 <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-                                                    Mô tả
+                                                    Mô tả<RequiredIcon />
                                                 </label>
                                                 <textarea
                                                     id="description"
@@ -343,9 +352,10 @@ function AddAccountPackageModal({ isOpen, onClose, action, initialData, seriveDa
                                                 {action !== "view" && (
                                                     <button
                                                         type="submit"
-                                                        className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                                                        className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50"
+                                                        disabled={loading}
                                                     >
-                                                        Lưu
+                                                        {loading ? 'Đang lưu...' : 'Lưu'}
                                                     </button>
                                                 )}
                                                 <button

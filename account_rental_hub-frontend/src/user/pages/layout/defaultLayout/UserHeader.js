@@ -6,36 +6,54 @@ import UserProfileDropdown from '../../../components/dropdowns/user_profile_drop
 import { AuthContext } from '../../../context/AuthContext';
 import { Link } from 'react-router-dom';
 import SearchBar from '../../../components/sections/search_bar';
+import CartService from '../../../../services/cart-service';
 
 function UserHeader() {
     const { isLoggedIn, user } = useContext(AuthContext);
     const [showSiginModal, setShowSigninModal] = useState(false);
     const [showSigupModal, setShowSignupModal] = useState(false);
     const [userProfile, setUserProfile] = useState(null);
+    const [cartItemsCount, setCartItemsCount] = useState(0);
 
     useEffect(() => {
         if (user) {
             setUserProfile(user);
+            fetchCartItemsCount(user.id);
         } else {
             setUserProfile(null);
+            fetchLocalCartItemsCount();
         }
     }, [user]);
 
+    const fetchCartItemsCount = async (userId) => {
+        try {
+            const cartItems = await CartService.getCartItems(userId);
+            setCartItemsCount(cartItems.length);
+        } catch (error) {
+            console.error('Failed to fetch cart items count', error);
+        }
+    };
+
+    const fetchLocalCartItemsCount = () => {
+        const localCartItems = JSON.parse(localStorage.getItem('cart')) || [];
+        setCartItemsCount(localCartItems.length);
+    };
+
     const handleLogin = () => {
         setShowSigninModal(true);
-    }
+    };
 
     const handleRegister = () => {
         setShowSignupModal(true);
-    }
+    };
 
     const handleCloseSigninModal = () => {
         setShowSigninModal(false);
-    }
+    };
 
     const handleCloseSignupModal = () => {
         setShowSignupModal(false);
-    }
+    };
 
     return (
         <>
@@ -70,9 +88,15 @@ function UserHeader() {
                         ) : userProfile ? (
                             <UserProfileDropdown imageSrc={"https://via.placeholder.com/150"} username={userProfile.username} email={userProfile.email} />
                         ) : null}
-                        <Link to="/user/cart">
+                        <Link to="/user/cart" className="relative">
                             <div className="flex items-center px-4 py-2 rounded-md bg-[#474193] text-white hover:bg-[#424069]">
-                                <FaShoppingCart className="mr-2" /> <strong>Giỏ hàng</strong>
+                                <FaShoppingCart className="mr-2" />
+                                <strong>Giỏ hàng</strong>
+                                {cartItemsCount > 0 && (
+                                    <span className="absolute top-[-8px] right-[-8px] inline-block w-6 h-6 bg-red-600 text-white text-sm leading-tight text-center rounded-full">
+                                        {cartItemsCount}
+                                    </span>
+                                )}
                             </div>
                         </Link>
                     </div>
@@ -101,7 +125,7 @@ function UserHeader() {
                     </li>
                     <li>
                         <Link to="/search?service=spotify" className="flex items-center px-4 py-2 mx-2 cursor-pointer hover:text-[#DEC01F]">
-                            <img src='https://i.ibb.co/1MMrKR3/Spotify-Icon-Logo-wine.png'  alt='Spotify' className='w-6 h-6 mr-2'></img>
+                            <img src='https://i.ibb.co/1MMrKR3/Spotify-Icon-Logo-wine.png' alt='Spotify' className='w-6 h-6 mr-2'></img>
                             Spotify
                         </Link>
                     </li>
@@ -113,7 +137,7 @@ function UserHeader() {
                     </li>
                     <li>
                         <Link to="/search?service=duolingo" className="flex items-center px-4 py-2 mx-2 cursor-pointer hover:text-[#DEC01F]">
-                            <img src='https://i.ibb.co/dsZgL5p/duolingo.png'  alt='Duolingo' className='w-6 h-6 mr-2'></img>
+                            <img src='https://i.ibb.co/dsZgL5p/duolingo.png' alt='Duolingo' className='w-6 h-6 mr-2'></img>
                             Duolingo
                         </Link>
                     </li>

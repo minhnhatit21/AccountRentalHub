@@ -2,9 +2,10 @@ import { useState, useEffect, useCallback, useContext } from "react";
 import { TransactionContext } from "../../admin/context/TransactionContext";
 import { SignInModal } from "../components/modals/login_register_modal";
 import { Link } from "react-router-dom";
+import { TransactionUserContext } from "../context/UserTransactionContext";
 
 function TransactionHistoryPage() {
-    const { transactionList, searchTransactionData, setUserIdSearch, pageable, changePage } = useContext(TransactionContext);
+    const { transactionList, searchTransactionData, setUserIdSearch, pageable, changePage } = useContext(TransactionUserContext);
     const [user, setUser] = useState(null);
     const [formData, setFormData] = useState({});
     const [showSiginModal, setShowSigninModal] = useState(false);
@@ -57,6 +58,7 @@ function TransactionHistoryPage() {
                                     <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
                                         <th className="py-3 px-6 border-b border-gray-300">Ngày giao dịch</th>
                                         <th className="py-3 px-6 border-b border-gray-300">Trạng thái</th>
+                                        <th className="py-3 px-6 border-b border-gray-300">Phương thức giao dịch</th>
                                         <th className="py-3 px-6 border-b border-gray-300">Số tiền</th>
                                     </tr>
                                 </thead>
@@ -65,6 +67,7 @@ function TransactionHistoryPage() {
                                         <tr key={transaction.id} className="border-b border-gray-300 hover:bg-gray-100">
                                             <td className="py-3 px-6 border-r text-center border-gray-300">{formatDate(transaction.transactionDate)}</td>
                                             <td className="py-3 px-6 border-r text-center border-gray-300">{transaction.status}</td>
+                                            <td className="py-3 px-6 border-r text-center border-gray-300">{transaction.paymentMethod}</td>
                                             <td className="py-3 px-6 border-r text-center border-gray-300">{formatCurrency(transaction.amount)}</td>
                                         </tr>
                                     ))}

@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import CustomerService from "../../services/customer.service";
-import { useLocation, useSearchParams } from "react-router-dom";
 import PaymentService from "../../services/payment.service";
 import { toast } from "react-toastify";
 
@@ -12,6 +11,7 @@ function PaymentPage() {
     const { isLoggedIn, user } = useContext(AuthContext);
     const [billingDetails, setBillingDetails] = useState(null);
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("creditCard");
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         const orderString = localStorage.getItem('order');
@@ -30,9 +30,9 @@ function PaymentPage() {
                 setBillingDetails(null);
             }
         };
-    
+
         fetchData();
-    },[user])
+    }, [user])
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -47,6 +47,7 @@ function PaymentPage() {
     };
 
     const handleSubmit = async (e) => {
+        setIsLoading(true);
         e.preventDefault();
         const paymentData = {
             userId: user ? parseInt(user.id) : null,
@@ -54,22 +55,23 @@ function PaymentPage() {
             paymentMethod: selectedPaymentMethod,
             amount: order?.totalAmount
         }
-        console.log("pa: ", paymentData)
-        if(paymentData !== null) {
+        if (paymentData !== null) {
             try {
                 const response = await PaymentService.processPayment(paymentData);
-                console.log("Response: ", response)
-                toast.success("Thanh toán thành công. Kiểm tra phần Lịch sử đơn hàng để xem");
+                if (response) {
+                    toast.success("Thanh toán thành công. Kiểm tra phần Lịch sử đơn hàng hoặc truy cập mail của bạn để xem");
+                }
             } catch (error) {
                 console.error(error.response.data)
                 toast.error(`${error.response.data}`);
+            } finally {
+                setIsLoading(false);
+                localStorage.removeItem("order");
             }
-            
         }
-        console.log("Payment submitted:", billingDetails, selectedPaymentMethod);
     };
 
-    const totalPrice = order?.totalAmount || "99000"; // Example total price
+    const totalPrice = order?.totalAmount || "0";
 
     return (
         <div className="flex-1">
@@ -166,20 +168,26 @@ function PaymentPage() {
                                     Chuyển khoản ngân hàng
                                 </label>
                             </div>
-                            <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-md">
-                                Hoàn tất thanh toán
+                            <button
+                                type="submit"
+                                className="w-full bg-[#3D65DB] text-white py-3 px-6 rounded-md transition duration-300 hover:bg-blue-600 disabled:opacity-50"
+                                disabled={isLoading}
+                            >
+                                {isLoading ? "Đang xử lý..." : "Hoàn tất thanh toán"}
                             </button>
                         </form>
                     </div>
                     <div className="bg-white rounded-lg h-48 shadow-md  p-6 mt-6 md:mt-0 md:w-1/3">
-                        <h2 className="text-lg font-bold mb-4">Tóm tắt đơn hàng</h2>
-                        <div className="flex justify-between items-center mb-4">
-                            <span>Sản phẩm</span>
-                            <span>1 x ${totalPrice}</span>
-                        </div>
-                        <div className="flex justify-between items-center font-bold text-lg">
-                            <span>Tổng cộng</span>
-                            <span>{totalPrice}đ</span>
+                        <h2 className="text-xl font-semibold mb-4">Tóm tắt đơn hàng</h2>
+                        <div className="bg-gray-100 p-4 rounded-lg shadow-inner">
+                            <div className="flex justify-between items-center mb-4 text-[#989AAF]">
+                                <span>Sản phẩm</span>
+                                <span>1 x ${totalPrice}</span>
+                            </div>
+                            <div className="flex justify-between items-center font-bold text-lg text-[#989AAF]">
+                                <span>Tổng cộng</span>
+                                <span>{totalPrice}đ</span>
+                            </div>
                         </div>
                     </div>
                 </div>

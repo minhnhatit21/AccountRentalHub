@@ -5,11 +5,13 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import ImageService from "../../../services/image.service";
 import { AccountServiceContext } from "../../context/AccountServiceContext";
+import RequiredIcon from "../../components/partials/requiredicon";
 
 
 function AddServiceModal({ isOpen, onClose, action, initialData }) {
 
     const { createData, updateData } = useContext(AccountServiceContext);
+    const [loading, setLoading] = useState(false);
 
     const validationSchema = yup.object().shape({
         serviceName: yup.string().required('Tên dịch vụ là bắt buộc'),
@@ -86,6 +88,7 @@ function AddServiceModal({ isOpen, onClose, action, initialData }) {
     }
 
     const onSubmit = async (data) => {
+        setLoading(true);
         const imageData = data.image instanceof File ? data.image : (data.imageUrl ? data.imageUrl : formData.imagePreview);
         const serviceTypeValue = data.serviceType || '';
         const serviceData = {
@@ -101,14 +104,16 @@ function AddServiceModal({ isOpen, onClose, action, initialData }) {
             serviceData.image = responseUploadImage;
         }
 
-        if (action === "add") {
-            createData(serviceData);
-        } else if (action === "edit" && data.serviceID > 0) {
-            updateData(data.serviceID, serviceData)
-        } else {
-            return null;
+        try {
+            if (action === "add") {
+                createData(serviceData);
+            } else if (action === "edit" && data.serviceID > 0) {
+                updateData(data.serviceID, serviceData)
+            }
+            onClose();
+        } finally {
+            setLoading(false);
         }
-        onClose();
     }
 
     const titleModal = (action) => {
@@ -184,7 +189,7 @@ function AddServiceModal({ isOpen, onClose, action, initialData }) {
                                             </div>
                                             <div className="mb-4">
                                                 <label htmlFor="serviceName" className="block text-sm font-medium text-gray-700">
-                                                    Tên dịch vụ
+                                                    Tên dịch vụ<RequiredIcon />
                                                 </label>
                                                 <input
                                                     type="text"
@@ -201,7 +206,7 @@ function AddServiceModal({ isOpen, onClose, action, initialData }) {
                                             </div>
                                             <div className="mb-4">
                                                 <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-                                                    Mô tả
+                                                    Mô tả<RequiredIcon />
                                                 </label>
                                                 <textarea
                                                     id="description"
@@ -217,7 +222,7 @@ function AddServiceModal({ isOpen, onClose, action, initialData }) {
                                             </div>
                                             <div className="mb-4">
                                                 <label htmlFor="serviceType" className="block text-sm font-medium text-gray-700">
-                                                    Loại dịch vụ
+                                                    Loại dịch vụ<RequiredIcon />
                                                 </label>
                                                 <div className="relative">
                                                     <select
@@ -255,7 +260,7 @@ function AddServiceModal({ isOpen, onClose, action, initialData }) {
                                             </div>
                                             <div className="mb-4">
                                                 <label htmlFor="website" className="block text-sm font-medium text-gray-700">
-                                                    Website
+                                                    Website<RequiredIcon />
                                                 </label>
                                                 <input
                                                     type="text"
@@ -272,9 +277,10 @@ function AddServiceModal({ isOpen, onClose, action, initialData }) {
                                                 {action !== "view" && (
                                                     <button
                                                         type="submit"
-                                                        className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                                                        className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50"
+                                                        disabled={loading}
                                                     >
-                                                        Lưu
+                                                        {loading ? 'Đang lưu...' : 'Lưu'}
                                                     </button>
                                                 )}
                                                 <button

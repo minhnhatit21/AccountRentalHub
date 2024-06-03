@@ -5,6 +5,7 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { GlobalContext } from "../../context/GlobalContext";
+import RequiredIcon from "../../components/partials/requiredicon";
 
 const CustomerDropdown = ({ customers, value, onChange, disabled }) => {
     return (
@@ -33,7 +34,7 @@ const CustomerDropdown = ({ customers, value, onChange, disabled }) => {
 };
 
 const PackageDropdown = ({ packages, value, onChange, disabled }) => {
-    const filteredPackages = packages.filter(pack => pack.amount > 0);
+    const filteredPackages = packages.filter(pack => pack.amount >= 0);
 
     return (
         <div>
@@ -102,7 +103,8 @@ const AccountRentalDropdown = ({ accounts, value, onChange, disabled, accountPac
 
 function AddAccountSlotModal({ isOpen, onClose, action, initialData }) {
     const { customerList, accountList, packageList, createData, updateData } = useContext(AccountSlotContext);
-    const { globalUpdate, setGlobalUpdate} = useContext(GlobalContext)
+    const { globalUpdate, setGlobalUpdate} = useContext(GlobalContext);
+    const [loading, setLoading] = useState(false);
     const validationSchema = yup.object().shape({
         accountStatus: yup.string().required('Trạng thái tài khoản là bắt buộc'),
         accountCustomerID: yup.string().required('Người thuê là bắt buộc'),
@@ -176,7 +178,7 @@ function AddAccountSlotModal({ isOpen, onClose, action, initialData }) {
     }, [initialData, reset, action, globalUpdate]);
 
     const onSubmit = async (data) => {
-
+        setLoading(true);
         const accountslotData = {
             startDate: data.accountRentStartDate ? data.accountRentStartDate.toISOString() : null,
             endDate: data.accountRentEndDate ? data.accountRentEndDate.toISOString() : null,
@@ -190,15 +192,19 @@ function AddAccountSlotModal({ isOpen, onClose, action, initialData }) {
 
         };
 
-        if (accountslotData !== null || accountslotData !== undefined) {
-            if (action === "add") {
-                await createData(accountslotData);
-            } else if (action === "edit" && data.accountSlotID !== 0) {
-                await updateData(data.accountSlotID, accountslotData);
+        try {
+            if (accountslotData !== null || accountslotData !== undefined) {
+                if (action === "add") {
+                    await createData(accountslotData);
+                } else if (action === "edit" && data.accountSlotID !== 0) {
+                    await updateData(data.accountSlotID, accountslotData);
+                }
             }
+            onClose();
+        } finally {
+            setGlobalUpdate(true);
+            setLoading(false);
         }
-
-        onClose();
     };
 
     const titleModal = (action) => {
@@ -227,7 +233,7 @@ function AddAccountSlotModal({ isOpen, onClose, action, initialData }) {
                                             <div className="flex flex-col gap-4 mb-28">
                                                 <div className="mb-4">
                                                     <label htmlFor="accountRent" className="block text-sm font-medium text-gray-700 mb-2">
-                                                        Gói tài khoản
+                                                        Gói tài khoản<RequiredIcon />
                                                     </label>
                                                     <Controller
                                                         control={control}
@@ -245,7 +251,7 @@ function AddAccountSlotModal({ isOpen, onClose, action, initialData }) {
                                                 </div>
                                                 <div className="mb-4">
                                                     <label htmlFor="accountRent" className="block text-sm font-medium text-gray-700 mb-2">
-                                                        Tài khoản cho thuê
+                                                        Tài khoản cho thuê<RequiredIcon />
                                                     </label>
                                                     <Controller
                                                         control={control}
@@ -264,7 +270,7 @@ function AddAccountSlotModal({ isOpen, onClose, action, initialData }) {
                                                 </div>
                                                 <div className="mb-4">
                                                     <label htmlFor="accountRenter" className="block text-sm font-medium text-gray-700 mb-2">
-                                                        Người thuê
+                                                        Người thuê<RequiredIcon />
                                                     </label>
                                                     <Controller
                                                         control={control}
@@ -284,7 +290,7 @@ function AddAccountSlotModal({ isOpen, onClose, action, initialData }) {
                                                 <div className="flex flex-row gap-32 my-3">
                                                     <div className="mb-4">
                                                         <label htmlFor="rentStartDate" className="block text-sm font-medium text-gray-700 mb-2">
-                                                            Ngày bắt đầu thuê
+                                                            Ngày bắt đầu thuê<RequiredIcon />
                                                         </label>
                                                         <Controller
                                                             control={control}
@@ -303,7 +309,7 @@ function AddAccountSlotModal({ isOpen, onClose, action, initialData }) {
 
                                                     <div className="mb-4">
                                                         <label htmlFor="rentEndDate" className="block text-sm font-medium text-gray-700 mb-2">
-                                                            Ngày kết thúc thuê
+                                                            Ngày kết thúc thuê<RequiredIcon />
                                                         </label>
                                                         <Controller
                                                             control={control}
@@ -323,7 +329,7 @@ function AddAccountSlotModal({ isOpen, onClose, action, initialData }) {
 
                                                 <div className="mb-4">
                                                     <label htmlFor="accountStatus" className="block text-sm font-medium text-gray-700 mb-2">
-                                                        Trạng thái tài khoản
+                                                        Trạng thái tài khoản<RequiredIcon />
                                                     </label>
                                                     <select
                                                         id="accountStatus"
@@ -354,9 +360,10 @@ function AddAccountSlotModal({ isOpen, onClose, action, initialData }) {
                                             <div className="sm:flex sm:flex-row-reverse mt-5">
                                                 <button
                                                     type="submit"
-                                                    className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                                                    className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50"
+                                                    disabled={loading}
                                                 >
-                                                    Lưu
+                                                    {loading ? 'Đang lưu...' : 'Lưu'}
                                                 </button>
                                                 <button
                                                     type="button"

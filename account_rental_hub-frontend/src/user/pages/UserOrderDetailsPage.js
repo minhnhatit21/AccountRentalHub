@@ -44,7 +44,7 @@ const UserOrderDetails = () => {
                     console.error("Not Found Data");
                 }
             } catch (error) {
-                toast.error("Đã xảy ra lỗi khi tải dữ liệu ban đầu");
+                console.error("Đã xảy ra lỗi khi tải dữ liệu ban đầu");
             }
         };
         fetchOrderDetailsData();
@@ -66,16 +66,38 @@ const UserOrderDetails = () => {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
     };
 
+    const colorStatus = (status) => {
+        switch (status) {
+            case 'PAID':
+                return 'bg-success bg-opacity-10 text-green-400';
+            case 'FINISHED':
+                return 'bg-danger bg-opacity-10 text-blue-400';
+            case 'PENDING':
+                return 'bg-warning bg-opacity-10 text-yellow-400';
+            default:
+                return 'bg-gray-200 text-gray-600';
+        }
+    }
+
+    const showOrderStatus = (status) => {
+        if(status === "PAID")
+            return "Đã thanh toán - Chờ xác nhận";
+        if(status === "FINISHED") 
+            return "Đã xác nhận"
+        if(status === "PENDING") 
+            return "Chờ thanh toán"
+} 
+
     return (
         <div className='flex-1'>
             <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md">
                 <h2 className="text-2xl font-bold mb-4">Chi tiết đơn hàng #{orderCode}</h2>
                 <div className="mb-4">
                     <p className="text-gray-600">Ngày tạo: {formatDate(order.orderDate)}</p>
-                    <p className="text-gray-600">Trạng thái đơn hàng: {order.status}</p>
+                    <p className="text-gray-600">Trạng thái đơn hàng: <span className={`${colorStatus(order.status)}`}>{showOrderStatus(order.status)}</span> </p>
                     <p className="text-gray-600">Người nhận: {order.rentalCustomerEmail}</p>
                 </div>
-                {(order.status === "PAID") ? (
+                {(order.status === "FINISHED") ? (
                     <div className="mb-4">
                         <table className="w-full table-auto">
                             <thead>
@@ -133,7 +155,7 @@ const UserOrderDetails = () => {
                                                         Tài khoản: {od.accountRental.username} || Mật khẩu: {od.accountRental.password}
                                                     </p>
                                                     <p className="text-gray-600">
-                                                        Vui lòng không đổi mật khẩu và sử dụng User của người khác
+                                                        Vui lòng không đổi mật khẩu
                                                     </p>
                                                 </div>
                                             </td>

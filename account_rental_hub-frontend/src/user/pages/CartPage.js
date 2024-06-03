@@ -51,16 +51,16 @@ const CartItem = ({ item, onQuantityChange, onRemove }) => {
                 />
                 <div className="ml-4">
                     <h2 className="text-lg font-bold">{item.accountRentalPackage.name}</h2>
-                    <p className="mb-4">
+                    {/* <p className="mb-4">
                         Tình trạng:
                         <span className={`${item?.accountRentalPackage.amount > 0 ? "text-green-600" : "text-red-600"}`}> {item?.accountRentalPackage.amount > 0 ? "Còn hàng" : "Hết hàng"}</span>
-                    </p>
+                    </p> */}
                     <div className="mt-4 flex items-center">
                         <span className="text-lg font-bold text-slate-700">{formatCurrency(item.accountRentalPackage.discountedPrice)}</span>
-                        {item.originalPrice && (
+                        {item.accountRentalPackage.discountedPrice && (
                             <>
                                 <span className="text-gray-500 line-through ml-2">{formatCurrency(item.accountRentalPackage.price)}</span>
-                                <span className="text-green-600 ml-2">-{formatCurrency(item.accountRentalPackage.discount)}%</span>
+                                <span className="text-green-600 ml-2">-{item.accountRentalPackage.discount}%</span>
                             </>
                         )}
                     </div>
@@ -89,7 +89,7 @@ function CartPage() {
             if (response) {
                 return response;
             } else {
-                console.log("Not Found");
+                console.error("Not Found");
                 return [];
             }
         } catch (error) {
@@ -109,7 +109,6 @@ function CartPage() {
                 const packageDetails = accountPackages.find(
                     pkg => pkg.id === localItem.accountPackageId
                 ) || null;
-                console.log("packageDetails:", packageDetails);
                 if (packageDetails) {
                     if (userId) {
                         try {

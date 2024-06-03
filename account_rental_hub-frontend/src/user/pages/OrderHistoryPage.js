@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback, useContext } from "react";
-import { OrderContext } from "../../admin/context/OrderContext";
 import { SignInModal } from "../components/modals/login_register_modal";
 import { Link } from "react-router-dom";
+import { OrderUserContext } from "../context/UserOderHistoryContext";
 
 function OrderHistoryPage() {
-    const { orderList, searchOrderData, setUserIdSearch, pageable, changePage } = useContext(OrderContext);
+    const { orderList, searchOrderData, setUserIdSearch, pageable, changePage } = useContext(OrderUserContext);
     const [user, setUser] = useState(null);
     const [formData, setFormData] = useState({});
     const [showSiginModal, setShowSigninModal] = useState(false);
