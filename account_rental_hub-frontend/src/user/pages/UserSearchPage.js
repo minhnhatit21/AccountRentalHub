@@ -103,6 +103,17 @@ function UserSearchPage() {
         fetchData();
     };
 
+    const handleResetFilters = () => {
+        setCategory("");
+        setServiceName("");
+        setPriceFrom("");
+        setPriceTo("");
+        setName("");
+        setServiceId("");
+        navigate("?");  // Clear URL parameters
+        fetchData();
+    };
+
     const filteredProducts = products.filter(product => {
         const matchesCategory = category === "" || product.accountRentalServices?.category === category;
         const matchesPrice =
@@ -114,7 +125,6 @@ function UserSearchPage() {
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
     };
-
 
     return (
         <div className="container mx-auto px-4 lg:px-32 py-8 lg:py-16">
@@ -208,6 +218,18 @@ function UserSearchPage() {
                         className="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                     >
                         Lọc
+                    </button>
+                </div>
+                <div>
+                    <label htmlFor="" className="block text-gray-700 font-bold mb-2">
+                        Reset
+                    </label>
+                    <button
+                        type="button"
+                        onClick={handleResetFilters}
+                        className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    >
+                        Reset
                     </button>
                 </div>
             </div>

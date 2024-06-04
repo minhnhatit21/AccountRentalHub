@@ -33,11 +33,20 @@ const changeOrderStatus  = async (orderID, status) => {
     }
 }
 
+const deleteOrder  = async (orderID) => {
+    try {
+        return axios.delete(API_URL + "/" + orderID);
+    } catch (error) {
+        throw error;
+    }
+}
+
 
 const OrderService = {
     searchOrders,
     getOrderByOrderCode,
-    changeOrderStatus 
+    changeOrderStatus,
+    deleteOrder 
 }
 
 export default OrderService;
