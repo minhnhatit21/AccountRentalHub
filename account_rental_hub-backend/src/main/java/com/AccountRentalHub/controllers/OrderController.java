@@ -70,6 +70,16 @@ public class OrderController {
         }
     }
 
+    @DeleteMapping("/{orderId}")
+    public ResponseEntity<String> deleteOrder(@PathVariable Long orderId) {
+        try {
+            orderService.deleteOrder(orderId);
+            return ResponseEntity.ok("Delete order successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error change order status: " + e.getMessage());
+        }
+    }
+
     private OrderResponse convertToOrderResponse(Order order) {
         OrderResponse orderResponse = new OrderResponse();
         orderResponse.setId(order.getId());

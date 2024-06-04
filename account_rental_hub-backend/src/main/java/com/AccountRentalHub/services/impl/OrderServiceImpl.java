@@ -5,10 +5,12 @@ import com.AccountRentalHub.models.Enum.EAccountRental;
 import com.AccountRentalHub.models.Enum.EOrderStatus;
 import com.AccountRentalHub.models.Enum.ERentalHistoryStatus;
 import com.AccountRentalHub.repository.AccountRentalRepository;
+import com.AccountRentalHub.repository.OrderDetailRepository;
 import com.AccountRentalHub.repository.OrderRepository;
 import com.AccountRentalHub.repository.RentalHistoryRepository;
 import com.AccountRentalHub.security.services.EmailService;
 import com.AccountRentalHub.services.OrderService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +30,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     AccountRentalRepository accountRentalRepository;
+
+    @Autowired
+    OrderDetailRepository orderDetailRepository;
 
     @Autowired
     EmailService emailService;
@@ -99,6 +104,22 @@ public class OrderServiceImpl implements OrderService {
             throw new RuntimeException("Can not send email");
         }
 
+    }
+
+    @Override
+    @Transactional
+    public void deleteOrder(Long orderId) {
+        Optional<Order> optionalOrder = orderRepository.findById(orderId);
+        if (optionalOrder.isPresent()) {
+            Order order = optionalOrder.get();
+
+            List<OrderDetail> orderDetails = orderDetailRepository.findByOrderOrderCode(order.getOrderCode());
+            orderDetailRepository.deleteAll(orderDetails);
+
+            orderRepository.delete(order);
+        } else {
+            throw new RuntimeException("Order not found with id: " + orderId);
+        }
     }
 
     @Override

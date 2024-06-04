@@ -15,4 +15,5 @@ public interface OrderService {
     Optional<Order> getOrdersByCode(String orderCode);
     Page<Order> searchOrdersByCriteria(String orderCode, Long userId, Date startDate, Date endDate,String status, Pageable pageable);
     void confirmOrder(Order order, Customer customer);
+    void deleteOrder(Long orderId);
 }

@@ -19,7 +19,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "(:userId IS NULL OR o.customer.user.id = :userId) AND " +
             "(:startDate IS NULL OR o.orderDate >= :startDate) AND " +
             "(:endDate IS NULL OR o.orderDate <= :endDate) AND " +
-            "(:status IS NULL OR :status = '' OR o.status = :status)")
+            "(:status IS NULL OR :status = '' OR o.status = :status) ORDER BY o.orderDate DESC")
     Page<Order> findOrdersByCriteria(@Param("orderCode") String orderCode,
                                      @Param("userId") Long userId,
                                      @Param("startDate") Date startDate,
